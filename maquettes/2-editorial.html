@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoproFirst — Maquette 2 · Éditorial</title>
+<meta name="description" content="CoproFirst raconte la vie d'une copropriété : signalements, travaux, documents et voisinage, dans un logiciel libre.">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --papier:#f7f3ea; --papier-2:#efe8da; --encre:#1a1f29; --encre-douce:#525866;
+  --bleu:#1e3a5f; --or:#c9983a; --or-texte:#7d5a14; --filet:#d9cfbd;
+  --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-in-out:cubic-bezier(0.77,0,0.175,1);
+  --serif:Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif;
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--papier);color:var(--encre);font:400 1.125rem/1.7 var(--serif);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+svg{display:block;max-width:100%}
+.page{width:min(1080px,100% - 32px);margin-inline:auto}
+.evitement{position:absolute;left:16px;top:-60px;background:var(--encre);color:var(--papier);padding:10px 16px;z-index:10}
+.evitement:focus{top:12px}
+:focus-visible{outline:2px solid var(--bleu);outline-offset:4px}
+
+/* Bandeau de titre, façon journal */
+.une{border-bottom:3px double var(--encre);padding:20px 0 14px;display:flex;justify-content:space-between;align-items:center;gap:16px;font:500 .8rem/1.2 var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--encre-douce)}
+.une a.marque{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--bleu);font:700 1.35rem var(--serif);letter-spacing:0;text-transform:none}
+.une svg{width:30px;height:30px;color:var(--bleu)}
+.une nav{display:flex;gap:22px;align-items:center}
+.une nav a{text-decoration:none}
+@media (max-width:720px){.une nav a:not(.lien-git){display:none}.une .date{display:none}}
+
+.lien-git{position:relative;text-decoration:none;font:600 .95rem var(--sans);color:var(--bleu);padding:12px 0}
+.lien-git::after{content:"";position:absolute;left:0;right:0;bottom:6px;height:2px;background:currentColor;transform:scaleX(.3);transform-origin:left;transition:transform 220ms var(--ease-out)}
+@media (hover:hover) and (pointer:fine){.lien-git:hover::after{transform:scaleX(1)}}
+
+/* Ouverture */
+.ouverture{padding:72px 0 56px;display:grid;grid-template-columns:1fr;gap:28px;border-bottom:1px solid var(--filet)}
+.rubrique{font:600 .8rem var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--or-texte)}
+.ouverture h1{margin:0;font-weight:400;font-size:clamp(2.6rem,7.5vw,5.6rem);line-height:1.02;letter-spacing:-.02em;max-width:13ch}
+.ouverture h1 em{font-style:italic;color:var(--bleu)}
+.colonnes{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:end}
+.chapo{font-size:1.3rem;line-height:1.55;margin:0;color:var(--encre)}
+.chapo::first-letter{float:left;font-size:4.2em;line-height:.8;padding:6px 10px 0 0;color:var(--bleu)}
+.appel{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
+.btn{display:inline-flex;align-items:center;min-height:50px;padding:0 24px;background:var(--encre);color:var(--papier);font:600 1rem var(--sans);text-decoration:none;border-radius:2px;transition:transform 160ms var(--ease-out),background-color 200ms ease}
+.btn:active{transform:scale(0.97)}
+@media (hover:hover) and (pointer:fine){.btn:hover{background:var(--bleu)}}
+@media (max-width:760px){.colonnes{grid-template-columns:1fr}}
+
+.js .mot{display:inline-block;opacity:0;transform:translateY(14px);filter:blur(4px);animation:mot 640ms var(--ease-out) forwards}
+@keyframes mot{to{opacity:1;transform:none;filter:none}}
+
+/* Chapitres */
+.chapitre>div{min-width:0}
+.chapitre{display:grid;grid-template-columns:120px 1fr;gap:32px;padding:64px 0;border-bottom:1px solid var(--filet)}
+.numero{font:400 4.5rem/1 var(--serif);color:var(--or)}
+.chapitre h2{margin:0 0 18px;font-weight:400;font-size:clamp(1.8rem,4vw,2.6rem);line-height:1.15}
+.chapitre p{margin:0 0 16px;max-width:38em;color:var(--encre-douce)}
+@media (max-width:640px){.chapitre{grid-template-columns:1fr;gap:8px}.numero{font-size:3rem}}
+
+/* Illustration du kanban, dévoilée au défilement par clip-path */
+.planche{margin-top:28px;background:#fff;border:1px solid var(--filet);padding:18px;overflow-x:auto}
+.js .planche{clip-path:inset(0 0 100% 0);transition:clip-path 900ms var(--ease-in-out)}
+.js .planche.vu{clip-path:inset(0 0 0 0)}
+.kanban{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:12px;min-width:640px;font:400 .82rem/1.35 var(--sans)}
+.colonne h3{margin:0 0 8px;font:700 .72rem var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--encre-douce)}
+.ticket{background:var(--papier);border-left:3px solid var(--bleu);padding:10px;margin-bottom:8px}
+.ticket.or{border-color:var(--or)}
+
+.liste-fonctions{columns:2;column-gap:40px;padding:0;margin:8px 0 0;list-style:none}
+.liste-fonctions li{break-inside:avoid;padding:10px 0;border-top:1px solid var(--filet)}
+.liste-fonctions strong{display:block;font-weight:700;color:var(--encre)}
+.liste-fonctions span{font:400 .98rem/1.5 var(--sans);color:var(--encre-douce)}
+@media (max-width:640px){.liste-fonctions{columns:1}}
+
+/* Témoignages en citations */
+.voix{padding:72px 0;border-bottom:1px solid var(--filet)}
+.voix .rubrique{display:block;margin-bottom:10px}
+.note-fictif{font:500 .9rem var(--sans);color:var(--or-texte);margin:0 0 40px}
+.citation-une{margin:0 0 56px}
+.citation-une blockquote{margin:0;font:italic 400 clamp(1.6rem,3.8vw,2.6rem)/1.3 var(--serif);color:var(--bleu);text-indent:-.45em}
+.citation-une figcaption,.citation figcaption{margin-top:16px;font:500 .95rem var(--sans);color:var(--encre-douce)}
+.citations{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:32px}
+.citation{margin:0;padding-top:20px;border-top:2px solid var(--encre)}
+.citation blockquote{margin:0;font-size:1.12rem;line-height:1.55}
+
+/* Encadré libre */
+.encadre{margin:72px 0;padding:40px;background:var(--bleu);color:#e8edf4;display:grid;grid-template-columns:1fr auto;gap:32px;align-items:center}
+.encadre h2{margin:0 0 10px;font-weight:400;font-size:clamp(1.6rem,3.5vw,2.2rem);color:#fff}
+.encadre p{margin:0;font:400 1.02rem/1.6 var(--sans);color:#c9d4e3;max-width:44em}
+.encadre .btn{background:var(--or);color:#1b1407}
+@media (hover:hover) and (pointer:fine){.encadre .btn:hover{background:#dcae55}}
+@media (max-width:720px){.encadre{grid-template-columns:1fr;padding:28px}}
+
+footer{padding:28px 0 48px;border-top:3px double var(--encre);font:400 .88rem/1.6 var(--sans);color:var(--encre-douce);display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer nav a{display:inline-block;padding:10px 0}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+
+.js .revele{opacity:0;transform:translateY(12px);transition:opacity 600ms var(--ease-out),transform 600ms var(--ease-out)}
+.js .revele.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .js .mot{animation:fondu 200ms ease forwards;transform:none;filter:none}
+  .js .planche{clip-path:none;opacity:0;transition:opacity 200ms ease}.js .planche.vu{opacity:1}
+  .js .revele{transform:none;transition:opacity 200ms ease}
+  .btn:active{transform:none}
+  @keyframes fondu{to{opacity:1}}
+}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<div class="page">
+  <header class="une">
+    <a class="marque" href="#" aria-label="CoproFirst, accueil">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><g transform="translate(256 256) scale(0.8) translate(-256 -296.25)"><g fill="none" stroke="currentColor" stroke-width="29" stroke-linejoin="round"><path d="M137.5 487V137.5a32 32 0 0 1 32-32h173a32 32 0 0 1 32 32V487"/><path d="M137.5 285.5H74.5a28 28 0 0 0-28 28V487"/><path d="M374.5 245.5h63a28 28 0 0 1 28 28V487"/></g><g fill="currentColor"><rect x="200" y="160" width="39" height="34" rx="6"/><rect x="200" y="227" width="39" height="34" rx="6"/><rect x="273" y="227" width="39" height="34" rx="6"/><rect x="200" y="294" width="39" height="34" rx="6"/><rect x="273" y="294" width="39" height="34" rx="6"/><rect x="200" y="361" width="39" height="34" rx="6"/><rect x="273" y="361" width="39" height="34" rx="6"/><rect x="76" y="348" width="32" height="29" rx="6"/><rect x="76" y="407" width="32" height="29" rx="6"/><rect x="404" y="300" width="32" height="28" rx="6"/><rect x="404" y="359" width="32" height="28" rx="6"/><rect x="404" y="418" width="32" height="29" rx="6"/></g><rect x="273" y="160" width="39" height="34" rx="6" fill="#C9983A"/><path d="M24.5 487.5H487.5" stroke="#C9983A" stroke-width="29" stroke-linecap="round"/></g></svg>
+      CoproFirst
+    </a>
+    <span class="date">Logiciel libre · Copropriétés</span>
+    <nav aria-label="Navigation principale"><a href="#recit">Le récit</a><a href="#voix">Témoignages</a><a class="lien-git" href="https://github.com/philippe-tressard/coprofirst">GitHub →</a></nav>
+  </header>
+
+  <main id="contenu">
+    <section class="ouverture">
+      <span class="rubrique">Vie de la résidence</span>
+      <h1 aria-label="Une résidence, une seule conversation."><span class="mot" aria-hidden="true">Une</span> <span class="mot" aria-hidden="true" style="animation-delay:70ms">résidence,</span> <em class="mot" aria-hidden="true" style="animation-delay:140ms">une</em> <em class="mot" aria-hidden="true" style="animation-delay:210ms">seule</em> <em class="mot" aria-hidden="true" style="animation-delay:280ms">conversation.</em></h1>
+      <div class="colonnes">
+        <p class="chapo revele">Dans une copropriété, tout le monde parle de la même chose sans jamais se parler au même endroit. CoproFirst réunit résidents, conseil syndical et syndic autour des affaires de l'immeuble — des pannes aux assemblées générales.</p>
+        <div class="appel revele">
+          <a class="btn" href="https://github.com/philippe-tressard/coprofirst">Lire le code sur GitHub</a>
+          <a class="lien-git" href="#recit">Lire le récit ↓</a>
+        </div>
+      </div>
+    </section>
+
+    <div id="recit">
+      <article class="chapitre">
+        <div class="numero" aria-hidden="true">I.</div>
+        <div class="revele">
+          <h2>Un signalement n'est plus une bouteille à la mer</h2>
+          <p>L'ascenseur s'arrête&nbsp;? Un résident l'écrit une fois. Le conseil syndical qualifie, désigne l'intervenant, relance le syndic. Chaque étape s'inscrit au fil de l'affaire, que tous ceux qui la lisent peuvent suivre.</p>
+          <div class="planche" role="img" aria-label="Illustration : un tableau de suivi en quatre colonnes, AG, Conseil syndical, Syndic et Prestataire">
+            <div class="kanban" aria-hidden="true">
+              <div class="colonne"><h3>AG</h3><div class="ticket or">Ravalement de façade — devis à présenter</div></div>
+              <div class="colonne"><h3>Conseil syndical</h3><div class="ticket">Interphone bât. A</div><div class="ticket">Local vélos à réaménager</div></div>
+              <div class="colonne"><h3>Syndic</h3><div class="ticket or">Fuite au parking — relance n° 2</div></div>
+              <div class="colonne"><h3>Prestataire</h3><div class="ticket">Ascenseur bât. B — intervention jeudi</div></div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="chapitre">
+        <div class="numero" aria-hidden="true">II.</div>
+        <div class="revele">
+          <h2>La mémoire de l'immeuble, enfin tenue</h2>
+          <p>Contrats, interventions, affaires résolues&nbsp;: le carnet d'entretien se constitue de lui-même. Le conseil syndical arrive en assemblée avec un bilan chiffré de l'exercice.</p>
+          <ul class="liste-fonctions">
+            <li><strong>Documents</strong><span>Rangés par catégorie, ouverts selon le profil de chacun.</span></li>
+            <li><strong>Prestataires et contrats</strong><span>Prochaine visite, délai de réaction, notation.</span></li>
+            <li><strong>Badges et télécommandes</strong><span>Demandés, déclarés, confiés au locataire.</span></li>
+            <li><strong>Affiches de hall</strong><span>Un PDF aux couleurs de la résidence, au bon format.</span></li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="chapitre">
+        <div class="numero" aria-hidden="true">III.</div>
+        <div class="revele">
+          <h2>Entre voisins, sans réseau social</h2>
+          <p>Boîte à idées, sondages, petites annonces&nbsp;: un espace réservé aux résidents. Ni publicité, ni algorithme — l'application s'installe sur le téléphone comme une appli, depuis le navigateur.</p>
+        </div>
+      </article>
+    </div>
+
+    <section class="voix" id="voix" aria-labelledby="titre-voix">
+      <span class="rubrique" id="titre-voix">Ils et elles en parlent</span>
+      <p class="note-fictif" role="note">Témoignages fictifs, écrits pour la maquette — à remplacer par de vrais retours, publiés avec l'accord de leurs auteurs.</p>
+      <figure class="citation-une revele">
+        <blockquote>« En assemblée générale, on arrive désormais avec des chiffres, plus avec des impressions. »</blockquote>
+        <figcaption>Hélène D. — membre du conseil syndical, résidence de 64 lots</figcaption>
+      </figure>
+      <div class="citations">
+        <figure class="citation revele"><blockquote>« Les réponses du syndic arrivent dans le fil de l'affaire. Je ne fais plus suivre aucun courriel. »</blockquote><figcaption>Sophie L. — copropriétaire bailleuse</figcaption></figure>
+        <figure class="citation revele"><blockquote>« Je savais que la coupure d'eau concernait mon bâtiment avant de trouver l'affichette. »</blockquote><figcaption>Karim B. — locataire</figcaption></figure>
+        <figure class="citation revele"><blockquote>« Installé sur un petit serveur du local technique. Nos données restent chez nous. »</blockquote><figcaption>Thomas R. — copropriétaire, administrateur bénévole</figcaption></figure>
+      </div>
+    </section>
+
+    <aside class="encadre revele" aria-labelledby="titre-libre">
+      <div>
+        <h2 id="titre-libre">Un logiciel libre, pas un abonnement</h2>
+        <p>CoproFirst est publié sous licence AGPL-3.0-or-later. Chaque résidence peut l'installer chez elle, le lire, le modifier et le partager. Le code, la documentation et le manuel sont sur GitHub.</p>
+      </div>
+      <a class="btn" href="https://github.com/philippe-tressard/coprofirst">Voir le dépôt →</a>
+    </aside>
+  </main>
+
+  <footer>
+    <span>CoproFirst — demande de marque n° 5307183 · Licence AGPL-3.0-or-later</span>
+    <nav aria-label="Liens de pied de page"><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+  </footer>
+</div>
+<script>
+const obs = new IntersectionObserver((entrees) => {
+  for (const e of entrees) if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
+}, { rootMargin: '0px 0px -80px 0px' });
+document.querySelectorAll('.revele, .planche').forEach((el) => obs.observe(el));
+</script>
+</body>
+</html>

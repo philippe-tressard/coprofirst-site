@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoproFirst — Maquette 4 · Libre et technique</title>
+<meta name="description" content="CoproFirst, logiciel libre de copropriété sous AGPL : auto-hébergé, installable avec Docker Compose, code public sur GitHub.">
+<meta name="color-scheme" content="dark">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --nuit:#0b1422; --nuit-2:#101c2e; --nuit-3:#16263d; --ligne:#22344f;
+  --texte:#e6ecf4; --doux:#9fb0c6; --or:#e0b45c; --or-fonce:#c9983a; --bleu:#7fb0e8; --vert:#6fd19b;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+  --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+  --mono:ui-monospace,SFMono-Regular,'Cascadia Code',Consolas,'Liberation Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--nuit);color:var(--texte);font:400 1rem/1.65 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:inherit}
+svg{display:block;max-width:100%}
+.c{width:min(1140px,100% - 32px);margin-inline:auto}
+.evitement{position:absolute;left:16px;top:-60px;background:var(--or);color:#1b1407;padding:10px 16px;border-radius:8px;z-index:10}
+.evitement:focus{top:12px}
+:focus-visible{outline:2px solid var(--or);outline-offset:3px;border-radius:6px}
+
+/* Grain de grille en fond du héros */
+.fond-grille{background-image:linear-gradient(var(--ligne) 1px,transparent 1px),linear-gradient(90deg,var(--ligne) 1px,transparent 1px);background-size:48px 48px;
+  -webkit-mask-image:radial-gradient(80% 70% at 50% 0%,#000 30%,transparent 75%);mask-image:radial-gradient(80% 70% at 50% 0%,#000 30%,transparent 75%);position:absolute;inset:0;opacity:.45;pointer-events:none}
+
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:46px;padding:0 20px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid transparent;cursor:pointer;font-size:.98rem;
+  transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease}
+.btn:active{transform:scale(0.97)}
+.btn-or{background:var(--or);color:#1b1407}
+.btn-trait{border-color:var(--ligne);color:var(--texte);background:transparent}
+@media (hover:hover) and (pointer:fine){
+  .btn-or:hover{background:#ecc36f}
+  .btn-trait:hover{border-color:var(--doux)}
+  .module:hover{border-color:#36507a;background:var(--nuit-3)}
+}
+
+header.barre{border-bottom:1px solid var(--ligne)}
+header.barre .c{display:flex;align-items:center;gap:20px;min-height:64px}
+.marque{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.08rem;text-decoration:none}
+.marque svg{width:30px;height:30px;color:#cfdcec}
+header nav{margin-left:auto;display:flex;align-items:center;gap:22px;font-size:.94rem}
+header nav a:not(.btn){text-decoration:none;color:var(--doux)}
+@media (max-width:720px){header nav a:not(.btn){display:none}}
+
+.heros{position:relative;padding:88px 0 72px;overflow:hidden}
+.heros .c{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
+.etiquette{font:500 .82rem var(--mono);color:var(--vert);display:inline-flex;gap:8px;align-items:center}
+.etiquette::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--vert);box-shadow:0 0 0 4px rgba(111,209,155,.15)}
+.heros h1{font-size:clamp(2.3rem,5.4vw,3.8rem);line-height:1.06;letter-spacing:-.03em;margin:18px 0 0}
+.heros h1 .or{color:var(--or)}
+.heros p{color:var(--doux);font-size:1.12rem;margin:18px 0 28px;max-width:32em}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+@media (max-width:900px){.heros .c{grid-template-columns:1fr}}
+.js .h-in{opacity:0;transform:translateY(8px);animation:in 500ms var(--ease-out) forwards}
+.js .h-in:nth-child(2){animation-delay:60ms}.js .h-in:nth-child(3){animation-delay:120ms}.js .h-in:nth-child(4){animation-delay:180ms}
+@keyframes in{to{opacity:1;transform:none}}
+
+/* Terminal + bouton copier qui se transforme */
+.terminal{background:#070d17;border:1px solid var(--ligne);border-radius:14px;overflow:hidden;box-shadow:0 30px 60px -30px rgba(0,0,0,.8)}
+.js .terminal{opacity:0;transform:translateY(12px);animation:in 600ms var(--ease-out) 220ms forwards}
+.term-tete{display:flex;align-items:center;justify-content:space-between;padding:10px 12px 10px 16px;border-bottom:1px solid var(--ligne);font:500 .8rem var(--mono);color:var(--doux)}
+.copier{position:relative;min-width:96px;min-height:36px;border-radius:8px;border:1px solid var(--ligne);background:var(--nuit-2);color:var(--texte);font:500 .82rem var(--sans);cursor:pointer;
+  transition:transform 160ms var(--ease-out),border-color 200ms ease}
+.copier:active{transform:scale(0.97)}
+.copier span{position:absolute;inset:0;display:grid;place-items:center;transition:opacity 200ms ease,filter 200ms ease,transform 200ms var(--ease-out)}
+.copier .fait{opacity:0;filter:blur(4px);transform:scale(.9);color:var(--vert)}
+.copier.copie .faire{opacity:0;filter:blur(4px);transform:scale(.9)}
+.copier.copie .fait{opacity:1;filter:none;transform:none}
+pre{margin:0;padding:18px 18px 22px;font:400 .9rem/1.8 var(--mono);overflow-x:auto;color:#cfdcec}
+pre .inv{color:var(--vert);user-select:none}
+pre .com{color:#62758f}
+
+/* Pile technique */
+.pile{border-block:1px solid var(--ligne);background:var(--nuit-2)}
+.pile .c{display:flex;flex-wrap:wrap;justify-content:center;gap:10px 32px;padding:22px 0;font:500 .9rem var(--mono);color:var(--doux)}
+.pile b{color:var(--texte);font-weight:600}
+
+section{padding:96px 0}
+.tete{max-width:640px;margin-bottom:44px}
+.tete .etiquette{margin-bottom:10px}
+.tete h2{margin:0;font-size:clamp(1.8rem,3.8vw,2.6rem);letter-spacing:-.02em;line-height:1.12}
+.tete p{color:var(--doux);margin:14px 0 0;font-size:1.06rem}
+
+.modules{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--ligne);border:1px solid var(--ligne);border-radius:16px;overflow:hidden}
+@media (max-width:900px){.modules{grid-template-columns:1fr 1fr}}
+@media (max-width:600px){.modules{grid-template-columns:1fr}}
+.module{background:var(--nuit-2);padding:26px;transition:background-color 200ms ease,border-color 200ms ease}
+.module code{font:500 .78rem var(--mono);color:var(--bleu)}
+.module h3{margin:8px 0 6px;font-size:1.1rem}
+.module p{margin:0;color:var(--doux);font-size:.95rem}
+
+.principes{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:20px}
+.principe{border-top:2px solid var(--or-fonce);padding-top:18px}
+.principe h3{margin:0 0 6px;font-size:1.05rem}
+.principe p{margin:0;color:var(--doux);font-size:.95rem}
+
+.temoins{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+.temoin{margin:0;background:var(--nuit-2);border:1px solid var(--ligne);border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:18px}
+.temoin blockquote{margin:0;font-size:1.02rem;color:var(--texte)}
+.temoin figcaption{margin-top:auto;font-size:.88rem;color:var(--doux)}
+.temoin figcaption b{color:var(--texte);display:block}
+.fictif{display:inline-block;margin-top:14px;font:500 .82rem var(--mono);color:var(--or);border:1px dashed rgba(224,180,92,.5);border-radius:8px;padding:6px 10px}
+
+.etapes{counter-reset:e;display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:16px;padding:0;list-style:none;margin:0}
+.etapes li{counter-increment:e;background:var(--nuit-2);border:1px solid var(--ligne);border-radius:16px;padding:24px}
+.etapes li::before{content:"0" counter(e);display:block;font:600 .85rem var(--mono);color:var(--or);margin-bottom:10px}
+.etapes h3{margin:0 0 6px;font-size:1.05rem}
+.etapes p{margin:0;color:var(--doux);font-size:.95rem}
+.etapes code{font:500 .85rem var(--mono);color:var(--bleu)}
+
+footer{border-top:1px solid var(--ligne);padding:36px 0;color:var(--doux);font-size:.88rem}
+footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+footer nav a{display:inline-block;padding:10px 0}
+footer nav{display:flex;gap:18px;flex-wrap:wrap}
+
+.js .revele{opacity:0;transform:translateY(12px);transition:opacity 500ms var(--ease-out),transform 500ms var(--ease-out)}
+.js .revele.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  .js .h-in,.js .terminal{animation:fondu 200ms ease forwards;transform:none}
+  .js .revele{transform:none;transition:opacity 200ms ease}
+  .copier span{transition:opacity 150ms ease;filter:none!important;transform:none!important}
+  .btn:active,.copier:active{transform:none}
+  @keyframes fondu{to{opacity:1}}
+}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header class="barre">
+  <div class="c">
+    <a class="marque" href="#" aria-label="CoproFirst, accueil">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><g transform="translate(256 256) scale(0.8) translate(-256 -296.25)"><g fill="none" stroke="currentColor" stroke-width="29" stroke-linejoin="round"><path d="M137.5 487V137.5a32 32 0 0 1 32-32h173a32 32 0 0 1 32 32V487"/><path d="M137.5 285.5H74.5a28 28 0 0 0-28 28V487"/><path d="M374.5 245.5h63a28 28 0 0 1 28 28V487"/></g><g fill="currentColor"><rect x="200" y="160" width="39" height="34" rx="6"/><rect x="200" y="227" width="39" height="34" rx="6"/><rect x="273" y="227" width="39" height="34" rx="6"/><rect x="200" y="294" width="39" height="34" rx="6"/><rect x="273" y="294" width="39" height="34" rx="6"/><rect x="200" y="361" width="39" height="34" rx="6"/><rect x="273" y="361" width="39" height="34" rx="6"/><rect x="76" y="348" width="32" height="29" rx="6"/><rect x="76" y="407" width="32" height="29" rx="6"/><rect x="404" y="300" width="32" height="28" rx="6"/><rect x="404" y="359" width="32" height="28" rx="6"/><rect x="404" y="418" width="32" height="29" rx="6"/></g><rect x="273" y="160" width="39" height="34" rx="6" fill="#C9983A"/><path d="M24.5 487.5H487.5" stroke="#C9983A" stroke-width="29" stroke-linecap="round"/></g></svg>
+      CoproFirst
+    </a>
+    <nav aria-label="Navigation principale"><a href="#modules">Modules</a><a href="#temoins">Témoignages</a><a href="#installer">Installer</a><a class="btn btn-trait" href="https://github.com/philippe-tressard/coprofirst">GitHub ↗</a></nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="heros">
+    <div class="fond-grille" aria-hidden="true"></div>
+    <div class="c">
+      <div>
+        <span class="etiquette h-in">AGPL-3.0-or-later · code public</span>
+        <h1 class="h-in">Le logiciel de copropriété <span class="or">que vous pouvez lire.</span></h1>
+        <p class="h-in">Affaires, documents, carnet d'entretien, badges, vie entre voisins. Hébergé par votre résidence, sur votre serveur — vos données ne partent nulle part.</p>
+        <div class="actions h-in">
+          <a class="btn btn-or" href="https://github.com/philippe-tressard/coprofirst">Explorer le dépôt</a>
+          <a class="btn btn-trait" href="#installer">Installer en trois étapes</a>
+        </div>
+      </div>
+      <div class="terminal">
+        <div class="term-tete"><span>~/residence</span>
+          <button class="copier" type="button" aria-label="Copier les commandes d'installation"><span class="faire">Copier</span><span class="fait" aria-hidden="true">✓ Copié</span></button>
+        </div>
+<pre id="commandes"><span class="inv">$ </span>git clone https://github.com/philippe-tressard/coprofirst.git
+<span class="inv">$ </span>cd coprofirst
+<span class="inv">$ </span>cp .env.example .env   <span class="com"># renseigner SECRET_KEY et ORIGIN</span>
+<span class="inv">$ </span>docker compose up --build -d
+<span class="com"># → http://localhost</span></pre>
+      </div>
+    </div>
+  </section>
+
+  <div class="pile" aria-label="Technologies employées">
+    <div class="c"><span><b>FastAPI</b> · API</span><span><b>SvelteKit</b> · interface</span><span><b>PostgreSQL</b> / SQLite</span><span><b>Caddy</b> · HTTPS</span><span><b>Docker</b> Compose</span><span><b>Raspberry Pi</b> 5</span></div>
+  </div>
+
+  <section id="modules">
+    <div class="c">
+      <div class="tete revele"><span class="etiquette">modules</span><h2>Tout ce qu'une résidence se dit, structuré</h2><p>Chaque module répond à un besoin réel, né dans une résidence de cinq bâtiments.</p></div>
+      <div class="modules revele">
+        <article class="module"><code>/affaires</code><h3>Affaires et signalements</h3><p>Fil de suivi, kanban du conseil syndical, réponses du syndic versées par courriel.</p></article>
+        <article class="module"><code>/documents</code><h3>Documents</h3><p>Accès par profil&nbsp;: résidents, copropriétaires, conseil syndical.</p></article>
+        <article class="module"><code>/carnet</code><h3>Carnet d'entretien</h3><p>Une vue sur les contrats et les affaires closes, avec le bilan de l'exercice.</p></article>
+        <article class="module"><code>/mon-lot</code><h3>Lots et accès</h3><p>Badges Vigik, télécommandes, gestion locative du bailleur.</p></article>
+        <article class="module"><code>/communaute</code><h3>Communauté</h3><p>Idées, sondages, petites annonces, entre résidents seulement.</p></article>
+        <article class="module"><code>/prestataires</code><h3>Prestataires et contrats</h3><p>Prochaines visites, notation, délais en jours ouvrés.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="c">
+      <div class="principes">
+        <div class="principe revele"><h3>Vos données chez vous</h3><p>Un serveur de la résidence suffit. Pas de plateforme tierce entre vous et vos voisins.</p></div>
+        <div class="principe revele"><h3>Le code reste ouvert</h3><p>L'AGPL impose à toute version proposée en ligne de publier son code.</p></div>
+        <div class="principe revele"><h3>Rien sans accord</h3><p>Assistant IA et diffusion WhatsApp sont des services qu'on active, ou pas.</p></div>
+        <div class="principe revele"><h3>Testé à chaque modification</h3><p>Tests d'API, tests de navigateur sur bureau et mobile, en intégration continue.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="temoins" style="padding-top:0">
+    <div class="c">
+      <div class="tete revele"><span class="etiquette">retours</span><h2>Ce qu'en disent les résidences</h2><span class="fictif" role="note">// témoignages fictifs, pour la maquette — à remplacer par de vrais retours</span></div>
+      <div class="temoins">
+        <figure class="temoin revele"><blockquote>« Installé sur un petit serveur du local technique. Nos données restent chez nous, et je peux lire chaque ligne du code. »</blockquote><figcaption><b>Thomas R.</b>Copropriétaire, administrateur bénévole</figcaption></figure>
+        <figure class="temoin revele"><blockquote>« Avant, les signalements se perdaient entre trois boîtes mail. Aujourd'hui chacun voit où en est sa demande. »</blockquote><figcaption><b>Claire M.</b>Présidente du conseil syndical · 120 lots</figcaption></figure>
+        <figure class="temoin revele"><blockquote>« Nous ne payons pas d'abonnement, et personne ne peut fermer le service du jour au lendemain. »</blockquote><figcaption><b>Marc V.</b>Trésorier du conseil syndical · 38 lots</figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="installer" style="padding-top:0">
+    <div class="c">
+      <div class="tete revele"><span class="etiquette">installer</span><h2>En ligne en trois étapes</h2></div>
+      <ol class="etapes">
+        <li class="revele"><h3>Cloner le dépôt</h3><p>Sur n'importe quelle machine avec Docker&nbsp;: un Raspberry Pi suffit.</p></li>
+        <li class="revele"><h3>Renseigner <code>.env</code></h3><p>Une clé secrète, l'adresse du site, et c'est tout pour démarrer.</p></li>
+        <li class="revele"><h3>Lancer</h3><p><code>docker compose up -d</code>, puis le nom et le logo de la résidence se règlent dans l'administration.</p></li>
+      </ol>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="c">
+    <span>CoproFirst — demande de marque n° 5307183 · Licence AGPL-3.0-or-later</span>
+    <nav aria-label="Liens de pied de page"><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+  </div>
+</footer>
+<script>
+const obs = new IntersectionObserver((entrees) => {
+  for (const e of entrees) if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
+}, { rootMargin: '0px 0px -60px 0px' });
+document.querySelectorAll('.revele').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 50 + 'ms'; obs.observe(el); });
+
+const bouton = document.querySelector('.copier');
+let minuterie;
+bouton.addEventListener('click', async () => {
+  const texte = [...document.querySelectorAll('#commandes')].map(p => p.innerText).join('')
+    .split('\n').filter(l => l.startsWith('$ ')).map(l => l.slice(2).replace(/\s+#.*$/, '')).join('\n');
+  try { await navigator.clipboard.writeText(texte); } catch { return; }
+  bouton.classList.add('copie');
+  bouton.setAttribute('aria-label', 'Commandes copiées');
+  clearTimeout(minuterie);
+  minuterie = setTimeout(() => { bouton.classList.remove('copie'); bouton.setAttribute('aria-label', "Copier les commandes d'installation"); }, 1800);
+});
+</script>
+</body>
+</html>

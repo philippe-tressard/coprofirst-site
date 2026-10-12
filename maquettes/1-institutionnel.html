@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoproFirst — Maquette 1 · Institutionnel</title>
+<meta name="description" content="CoproFirst, l'application libre qui rassemble résidents, conseil syndical et syndic autour de la vie de la copropriété.">
+<script>document.documentElement.classList.add('js')</script>
+<style>
+:root{
+  --bleu:#1e3a5f; --bleu-fonce:#16304f; --bleu-clair:#eef2f7;
+  --or:#c9983a; --or-texte:#8a6418; --texte:#1c2430; --texte-doux:#4a5566;
+  --fond:#ffffff; --fond-alt:#f6f8fb; --bord:#dde3ec;
+  --ease-out:cubic-bezier(0.23,1,0.32,1);
+  --titres:Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif;
+  --texte-police:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font:400 1.0625rem/1.6 var(--texte-police);color:var(--texte);background:var(--fond);-webkit-font-smoothing:antialiased}
+img,svg{display:block;max-width:100%}
+a{color:inherit}
+h1,h2,h3{font-family:var(--titres);color:var(--bleu);line-height:1.15;margin:0}
+.conteneur{width:min(1120px,100% - 32px);margin-inline:auto}
+.evitement{position:absolute;left:16px;top:-60px;background:var(--bleu);color:#fff;padding:10px 16px;border-radius:8px;z-index:10}
+.evitement:focus{top:12px}
+:focus-visible{outline:3px solid var(--or);outline-offset:3px;border-radius:6px}
+
+/* Boutons : retour au toucher, survol réservé à la souris */
+.btn{display:inline-flex;align-items:center;gap:10px;min-height:48px;padding:0 22px;border-radius:10px;font-weight:600;text-decoration:none;border:1px solid transparent;
+  transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease}
+.btn:active{transform:scale(0.97)}
+.btn-plein{background:var(--bleu);color:#fff}
+.btn-creux{border-color:var(--bord);color:var(--bleu);background:#fff}
+@media (hover:hover) and (pointer:fine){
+  .btn-plein:hover{background:var(--bleu-fonce)}
+  .btn-creux:hover{border-color:var(--bleu)}
+  .carte-fonction:hover{border-color:var(--bleu);transform:translateY(-2px)}
+}
+
+/* En-tête */
+.entete{position:sticky;top:0;z-index:5;background:rgba(255,255,255,.88);backdrop-filter:saturate(1.4) blur(10px);border-bottom:1px solid var(--bord)}
+.entete .conteneur{display:flex;align-items:center;justify-content:space-between;min-height:68px;gap:16px}
+.marque{display:flex;align-items:center;gap:10px;text-decoration:none;font:700 1.25rem var(--titres);color:var(--bleu)}
+.marque svg{width:34px;height:34px;color:var(--bleu)}
+.nav{display:flex;gap:28px;align-items:center}
+.nav a{text-decoration:none;color:var(--texte-doux);font-weight:500}
+.nav .btn{color:#fff}
+@media (max-width:820px){.nav a:not(.btn){display:none}}
+
+/* Héros */
+.heros{padding:72px 0 88px;background:linear-gradient(180deg,var(--bleu-clair),#fff 70%)}
+.heros .conteneur{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
+.surtitre{display:inline-block;font-size:.875rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--or-texte);margin-bottom:16px}
+.heros h1{font-size:clamp(2.2rem,5vw,3.6rem)}
+.heros p.chapo{font-size:1.2rem;color:var(--texte-doux);margin:20px 0 32px;max-width:34em}
+.actions{display:flex;flex-wrap:wrap;gap:12px}
+.reassurance{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:28px;padding:0;list-style:none;color:var(--texte-doux);font-size:.95rem}
+.reassurance li::before{content:"✓";color:var(--or-texte);font-weight:700;margin-right:6px}
+@media (max-width:900px){.heros .conteneur{grid-template-columns:1fr}.telephone{margin-inline:auto}}
+
+/* Entrée échelonnée du héros — une seule fois, au chargement */
+.js .entree{opacity:0;transform:translateY(8px);animation:entree 520ms var(--ease-out) forwards}
+.js .entree:nth-child(2){animation-delay:60ms}.js .entree:nth-child(3){animation-delay:120ms}
+.js .entree:nth-child(4){animation-delay:180ms}.js .entree:nth-child(5){animation-delay:240ms}
+@keyframes entree{to{opacity:1;transform:none}}
+
+/* Téléphone : l'écran d'accueil, dessiné en HTML */
+.telephone{width:300px;border-radius:40px;padding:12px;background:#0f1d30;box-shadow:0 30px 60px -20px rgba(30,58,95,.45),0 0 0 1px rgba(0,0,0,.05)}
+.ecran{border-radius:30px;background:var(--fond-alt);overflow:hidden;height:560px}
+.ecran-entete{background:var(--bleu);color:#fff;padding:22px 18px 18px;font:600 1rem var(--titres)}
+.ecran-entete small{display:block;font:400 .75rem var(--texte-police);opacity:.8;margin-top:2px}
+.ecran-corps{padding:14px;display:grid;gap:10px}
+.mini-carte{background:#fff;border:1px solid var(--bord);border-radius:12px;padding:12px;font-size:.8rem;line-height:1.35}
+.mini-carte b{display:block;color:var(--texte);margin-bottom:6px;font-size:.85rem}
+.pastille{display:inline-block;padding:2px 8px;border-radius:99px;font-size:.7rem;font-weight:600;margin-right:4px}
+.p-cours{background:#fff4dc;color:#7a5410}.p-ok{background:#e3f4ea;color:#1f6b3d}.p-info{background:var(--bleu-clair);color:var(--bleu)}
+.js .telephone .mini-carte{opacity:0;transform:translateY(10px);animation:entree 480ms var(--ease-out) forwards}
+.js .telephone .mini-carte:nth-child(1){animation-delay:320ms}.js .telephone .mini-carte:nth-child(2){animation-delay:380ms}
+.js .telephone .mini-carte:nth-child(3){animation-delay:440ms}.js .telephone .mini-carte:nth-child(4){animation-delay:500ms}
+
+/* Sections */
+section{padding:88px 0}
+.section-alt{background:var(--fond-alt)}
+.tete-section{max-width:640px;margin-bottom:48px}
+.tete-section h2{font-size:clamp(1.8rem,3.6vw,2.5rem)}
+.tete-section p{color:var(--texte-doux);font-size:1.1rem;margin:14px 0 0}
+.grille{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:18px}
+.carte-fonction{background:#fff;border:1px solid var(--bord);border-radius:14px;padding:24px;transition:transform 200ms var(--ease-out),border-color 200ms ease}
+.carte-fonction .icone{width:44px;height:44px;border-radius:10px;background:var(--bleu-clair);display:grid;place-items:center;font-size:1.3rem;margin-bottom:16px}
+.carte-fonction h3{font-size:1.2rem;margin-bottom:8px}
+.carte-fonction p{margin:0;color:var(--texte-doux);font-size:.98rem}
+
+/* Pour qui */
+.profils{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:0;border:1px solid var(--bord);border-radius:14px;overflow:hidden;background:#fff}
+.profil{padding:28px;border-right:1px solid var(--bord)}
+.profil:last-child{border-right:0}
+.profil h3{font-size:1.1rem;margin-bottom:10px}
+.profil ul{margin:0;padding-left:18px;color:var(--texte-doux);font-size:.95rem}
+@media (max-width:960px){.profil{border-right:0;border-bottom:1px solid var(--bord)}}
+
+/* Témoignages */
+.avertissement{display:inline-flex;gap:8px;align-items:center;background:#fff4dc;color:#6b4a0e;border:1px solid #f0d9a8;border-radius:8px;padding:8px 12px;font-size:.9rem;margin-top:16px}
+.temoignages{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px}
+figure.temoin{margin:0;background:#fff;border:1px solid var(--bord);border-radius:14px;padding:28px;display:flex;flex-direction:column;gap:20px}
+figure.temoin blockquote{margin:0;font:1.08rem/1.55 var(--titres);color:var(--texte)}
+figure.temoin blockquote::before{content:"«\00a0";color:var(--or)}
+figure.temoin blockquote::after{content:"\00a0»";color:var(--or)}
+figcaption{display:flex;gap:12px;align-items:center;margin-top:auto}
+.avatar{width:44px;height:44px;flex:none;border-radius:50%;background:var(--bleu);color:#fff;display:grid;place-items:center;font-weight:700}
+figcaption strong{display:block;color:var(--bleu)}
+figcaption span{font-size:.88rem;color:var(--texte-doux)}
+
+/* Bandeau libre */
+.libre{background:var(--bleu);color:#e9eef5}
+.libre h2{color:#fff}
+.libre .conteneur{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:center}
+.libre p{color:#c9d4e3;font-size:1.1rem}
+.libre ul{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+.libre li{display:flex;gap:12px;align-items:flex-start}
+.libre li::before{content:"";flex:none;width:10px;height:10px;margin-top:.55em;border-radius:2px;background:var(--or)}
+.libre .btn-or{background:var(--or);color:#1b1407}
+@media (hover:hover) and (pointer:fine){.libre .btn-or:hover{background:#d9a94a}}
+@media (max-width:860px){.libre .conteneur{grid-template-columns:1fr}}
+
+/* Pied */
+footer{padding:40px 0;border-top:1px solid var(--bord);font-size:.9rem;color:var(--texte-doux)}
+footer .conteneur{display:flex;flex-wrap:wrap;gap:12px 28px;justify-content:space-between}
+footer nav a{display:inline-block;padding:10px 0}
+footer nav{display:flex;flex-wrap:wrap;gap:8px 20px}
+
+/* Apparition au défilement */
+.js .revele{opacity:0;transform:translateY(12px);transition:opacity 500ms var(--ease-out),transform 500ms var(--ease-out)}
+.js .revele.vu{opacity:1;transform:none}
+
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  .js .entree,.js .telephone .mini-carte{animation:fondu 200ms ease forwards;transform:none}
+  .js .revele{transform:none;transition:opacity 200ms ease}
+  .btn:active{transform:none}
+  @keyframes fondu{to{opacity:1}}
+}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+
+<header class="entete">
+  <div class="conteneur">
+    <a class="marque" href="#" aria-label="CoproFirst, accueil">
+      <svg viewBox="0 0 512 512" aria-hidden="true"><g transform="translate(256 256) scale(0.8) translate(-256 -296.25)"><g fill="none" stroke="currentColor" stroke-width="29" stroke-linejoin="round"><path d="M137.5 487V137.5a32 32 0 0 1 32-32h173a32 32 0 0 1 32 32V487"/><path d="M137.5 285.5H74.5a28 28 0 0 0-28 28V487"/><path d="M374.5 245.5h63a28 28 0 0 1 28 28V487"/></g><g fill="currentColor"><rect x="200" y="160" width="39" height="34" rx="6"/><rect x="200" y="227" width="39" height="34" rx="6"/><rect x="273" y="227" width="39" height="34" rx="6"/><rect x="200" y="294" width="39" height="34" rx="6"/><rect x="273" y="294" width="39" height="34" rx="6"/><rect x="200" y="361" width="39" height="34" rx="6"/><rect x="273" y="361" width="39" height="34" rx="6"/><rect x="76" y="348" width="32" height="29" rx="6"/><rect x="76" y="407" width="32" height="29" rx="6"/><rect x="404" y="300" width="32" height="28" rx="6"/><rect x="404" y="359" width="32" height="28" rx="6"/><rect x="404" y="418" width="32" height="29" rx="6"/></g><rect x="273" y="160" width="39" height="34" rx="6" fill="#C9983A"/><path d="M24.5 487.5H487.5" stroke="#C9983A" stroke-width="29" stroke-linecap="round"/></g></svg>
+      CoproFirst
+    </a>
+    <nav class="nav" aria-label="Navigation principale">
+      <a href="#fonctions">Fonctionnalités</a>
+      <a href="#temoignages">Témoignages</a>
+      <a href="#libre">Logiciel libre</a>
+      <a class="btn btn-plein" href="https://github.com/philippe-tressard/coprofirst">Voir sur GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="heros">
+    <div class="conteneur">
+      <div>
+        <span class="surtitre entree">Logiciel libre pour copropriétés</span>
+        <h1 class="entree">Votre résidence a désormais son appli.</h1>
+        <p class="chapo entree">Signalez un problème, suivez les travaux, retrouvez vos documents, commandez un badge ou échangez entre voisins&nbsp;: résidents, conseil syndical et syndic se retrouvent dans un seul espace.</p>
+        <div class="actions entree">
+          <a class="btn btn-plein" href="https://github.com/philippe-tressard/coprofirst">Voir le code sur GitHub →</a>
+          <a class="btn btn-creux" href="#fonctions">Découvrir les fonctionnalités</a>
+        </div>
+        <ul class="reassurance entree">
+          <li>Licence AGPL-3.0</li><li>Hébergé chez vous</li><li>Installable sur téléphone</li>
+        </ul>
+      </div>
+      <div class="telephone" role="img" aria-label="Aperçu de l'écran d'accueil de CoproFirst sur un téléphone">
+        <div class="ecran">
+          <div class="ecran-entete">Résidence des Tilleuls<small>Bonjour Claire · 3 affaires suivies</small></div>
+          <div class="ecran-corps">
+            <div class="mini-carte"><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pastille p-cours">En cours</span><span class="pastille p-info">Bât. B</span><br>Le technicien passe jeudi matin.</div>
+            <div class="mini-carte"><b>Coupure d'eau — jeudi 9 h à 12 h</b><span class="pastille p-info">Actualité</span><br>Travaux sur la colonne montante.</div>
+            <div class="mini-carte"><b>Éclairage du parking</b><span class="pastille p-ok">Résolu</span><br>Deux luminaires remplacés.</div>
+            <div class="mini-carte"><b>Assemblée générale — 14 novembre</b><span class="pastille p-info">Calendrier</span><br>Convocation dans vos documents.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fonctions">
+    <div class="conteneur">
+      <div class="tete-section revele">
+        <h2>Tout ce qui fait la vie d'une résidence, au même endroit</h2>
+        <p>Fini les fils de courriels perdus et les affichettes arrachées. Chacun voit ce qui le concerne, et seulement cela.</p>
+      </div>
+      <div class="grille">
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">🛠️</div><h3>Affaires et signalements</h3><p>Une panne, une nuisance, des travaux&nbsp;: chaque demande a son fil, son suivi et ses pièces jointes.</p></article>
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">📄</div><h3>Documents</h3><p>Procès-verbaux, règlement, contrats&nbsp;: rangés, et ouverts à qui doit les lire.</p></article>
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">📘</div><h3>Carnet d'entretien</h3><p>L'histoire du bâti se constitue d'elle-même à partir des contrats et des affaires closes.</p></article>
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">🔑</div><h3>Badges et accès</h3><p>Demander un badge, une télécommande de parking, les confier à son locataire.</p></article>
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">💬</div><h3>Vie de la résidence</h3><p>Boîte à idées, sondages et petites annonces, entre voisins seulement.</p></article>
+        <article class="carte-fonction revele"><div class="icone" aria-hidden="true">🧾</div><h3>Prestataires et contrats</h3><p>Les entreprises, leurs contrats, la prochaine visite et le délai de réaction.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="section-alt" aria-labelledby="pourqui">
+    <div class="conteneur">
+      <div class="tete-section revele"><h2 id="pourqui">Un espace, quatre façons de s'en servir</h2></div>
+      <div class="profils revele">
+        <div class="profil"><h3>Copropriétaires</h3><ul><li>Signaler et suivre</li><li>Documents et AG</li><li>Lots, badges, bail</li></ul></div>
+        <div class="profil"><h3>Locataires</h3><ul><li>Infos de leur bâtiment</li><li>Badges confiés par le bailleur</li><li>Petites annonces</li></ul></div>
+        <div class="profil"><h3>Conseil syndical</h3><ul><li>Kanban des dossiers</li><li>Bilan chiffré pour l'AG</li><li>Affiches de hall en PDF</li></ul></div>
+        <div class="profil"><h3>Syndic</h3><ul><li>Demandes structurées</li><li>Réponses versées au fil</li><li>Moins d'appels répétés</li></ul></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="temoignages">
+    <div class="conteneur">
+      <div class="tete-section revele">
+        <h2>Ce qu'en disent les copropriétés</h2>
+        <p class="avertissement" role="note">⚠️ Témoignages fictifs, rédigés pour illustrer la maquette — à remplacer par de vrais retours, avec l'accord écrit de leurs auteurs.</p>
+      </div>
+      <div class="temoignages">
+        <figure class="temoin revele"><blockquote>Avant, les signalements se perdaient entre trois boîtes mail. Aujourd'hui chacun voit où en est sa demande, et nous ne répondons plus dix fois à la même question.</blockquote><figcaption><span class="avatar" aria-hidden="true">CM</span><div><strong>Claire M.</strong><span>Présidente du conseil syndical · 120 lots</span></div></figcaption></figure>
+        <figure class="temoin revele"><blockquote>Le carnet d'entretien se remplit à partir des affaires closes. En assemblée générale, on arrive avec des chiffres, plus avec des impressions.</blockquote><figcaption><span class="avatar" aria-hidden="true">HD</span><div><strong>Hélène D.</strong><span>Membre du conseil syndical · 64 lots</span></div></figcaption></figure>
+        <figure class="temoin revele"><blockquote>Je suis locataire&nbsp;: je reçois les coupures d'eau de mon bâtiment, et mon propriétaire m'a confié mon badge en deux clics.</blockquote><figcaption><span class="avatar" aria-hidden="true">KB</span><div><strong>Karim B.</strong><span>Locataire · 5 bâtiments</span></div></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section class="libre" id="libre">
+    <div class="conteneur">
+      <div class="revele">
+        <h2>Libre, ouvert, et chez vous</h2>
+        <p>CoproFirst est un logiciel libre. Le code est public, chacun peut le lire, l'installer et l'améliorer. Vos données restent sur le serveur de votre résidence.</p>
+        <a class="btn btn-or" href="https://github.com/philippe-tressard/coprofirst">Explorer le dépôt GitHub →</a>
+      </div>
+      <ul class="revele">
+        <li>Licence AGPL-3.0-or-later&nbsp;: toute version proposée en ligne publie son code.</li>
+        <li>S'installe avec Docker Compose, jusque sur un Raspberry Pi.</li>
+        <li>Aucune publicité, aucun traceur publicitaire.</li>
+        <li>Assistant IA facultatif, désactivé tant que vous ne l'activez pas.</li>
+      </ul>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="conteneur">
+    <span>CoproFirst — demande de marque n° 5307183 · Logiciel libre sous licence AGPL-3.0-or-later</span>
+    <nav aria-label="Liens de pied de page"><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+  </div>
+</footer>
+
+<script>
+const obs = new IntersectionObserver((entrees) => {
+  for (const e of entrees) if (e.isIntersecting) { e.target.classList.add('vu'); obs.unobserve(e.target); }
+}, { rootMargin: '0px 0px -80px 0px' });
+document.querySelectorAll('.revele').forEach((el, i) => { el.style.transitionDelay = (i % 3) * 50 + 'ms'; obs.observe(el); });
+</script>
+</body>
+</html>

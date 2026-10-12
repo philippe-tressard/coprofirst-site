@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" aria-label="CoproFirst">
+  <!--
+    Le logo neutre du logiciel — affiché tant que la résidence n'a pas téléversé
+    le sien (#1728). Trois immeubles bleus, une fenêtre allumée et la ligne de
+    sol en or, sur une tuile blanche : les documents imprimés le posent sur leur
+    en-tête bleu marine, où un tracé bleu sans fond disparaîtrait.
+
+    Redessiné en vecteur le 09/10/2026 d'après le logo de CoproFirst.
+    Hors de l'AGPL : LICENSES/LicenseRef-CoproFirst-Logo.txt (MARQUE.md).
+    La composition — une tour entre deux immeubles plus bas — est celle de
+    l'icône « building-2 » de Lucide (ISC) ; les tracés sont propres au projet.
+
+    Couleurs de la charte : Bleu Seine #1E3A5F, Or Croissy #C9983A.
+    🔒 Copie octet pour octet : api/app/utils/logo-neutre.svg
+       (api/tests/test_logo_neutre.py), et ses rendus PNG en dérivent.
+  -->
+  <rect width="512" height="512" rx="96" fill="#FFFFFF"/>
+  <g transform="translate(256 256) scale(0.8) translate(-256 -296.25)">
+    <g fill="none" stroke="#1E3A5F" stroke-width="29" stroke-linejoin="round">
+      <path d="M137.5 487V137.5a32 32 0 0 1 32-32h173a32 32 0 0 1 32 32V487"/>
+      <path d="M137.5 285.5H74.5a28 28 0 0 0-28 28V487"/>
+      <path d="M374.5 245.5h63a28 28 0 0 1 28 28V487"/>
+    </g>
+    <g fill="#1E3A5F">
+      <rect x="200" y="160" width="39" height="34" rx="6"/>
+      <rect x="200" y="227" width="39" height="34" rx="6"/><rect x="273" y="227" width="39" height="34" rx="6"/>
+      <rect x="200" y="294" width="39" height="34" rx="6"/><rect x="273" y="294" width="39" height="34" rx="6"/>
+      <rect x="200" y="361" width="39" height="34" rx="6"/><rect x="273" y="361" width="39" height="34" rx="6"/>
+      <rect x="76" y="348" width="32" height="29" rx="6"/><rect x="76" y="407" width="32" height="29" rx="6"/>
+      <rect x="404" y="300" width="32" height="28" rx="6"/><rect x="404" y="359" width="32" height="28" rx="6"/>
+      <rect x="404" y="418" width="32" height="29" rx="6"/>
+    </g>
+    <rect x="273" y="160" width="39" height="34" rx="6" fill="#C9983A"/>
+    <path d="M24.5 487.5H487.5" stroke="#C9983A" stroke-width="29" stroke-linecap="round"/>
+  </g>
+</svg>

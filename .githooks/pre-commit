@@ -1,0 +1,6 @@
+#!/bin/bash
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Armé une fois par clone : git config core.hooksPath .githooks
+exec bash "$(git rev-parse --show-toplevel)/scripts/verifier-depot.sh"

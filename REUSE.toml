@@ -1,0 +1,27 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Conformité REUSE (standards/14 §6.2). Les fichiers qui portent leur en-tête SPDX
+# n'ont rien à faire ici ; ne s'y déclarent que ceux qui ne le peuvent pas.
+version = 1
+
+# Le logo de CoproFirst : licence propre, hors de l'AGPL (MARQUE.md de coprofirst).
+[[annotations]]
+path = "site/logo.svg"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "LicenseRef-CoproFirst-Logo"
+
+# Les maquettes d'archive portent le code de la page ET une copie en ligne du logo.
+[[annotations]]
+path = "maquettes/*.html"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "AGPL-3.0-or-later AND LicenseRef-CoproFirst-Logo"
+
+# Le JSON n'admet pas de commentaire : l'en-tête ne peut pas y vivre.
+[[annotations]]
+path = ".claude/settings.json"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "AGPL-3.0-or-later"

@@ -1,0 +1,26 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Les contrôles que Windows et l'oubli ne laissent pas passer.
+# Actions épinglées par SHA, outils par version : la CI se rejoue à l'identique.
+name: CI
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  depot:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Le contrôle lui-même (selftest)
+        run: bash scripts/verifier-depot.sh --selftest
+      - name: Encodage, fins de ligne, bits d'exécution, syntaxe des scripts
+        run: bash scripts/verifier-depot.sh
+      - name: Licences (REUSE)
+        run: |
+          python -m pip install reuse==6.2.0
+          python -m reuse lint
