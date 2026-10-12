@@ -16,7 +16,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   La page est `site/index.html`, le logo `site/logo.svg`.
-- **Domaine** : `coprofirst.fr` (pas encore acheté au 12/10/2026). **Démo** :
+- **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
+  `contact@coprofirst.fr`, un alias que l'utilisateur crée — à vérifier en y
+  écrivant avant de le publier sur la page. **Démo** :
   `demo.coprofirst.fr` — un sous-domaine, parce qu'il ne coûte rien de plus et ne
   demande aucune modification de l'application (arbitrage du 12/10/2026 :
   « possible techniquement sans surcoût »).
@@ -49,7 +51,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ### Avant la mise en ligne — ce qui manque
 
 - les pages **Mentions légales** et **Confidentialité** (`standards/14` §3) : les
-  liens du pied de page pointent sur `#` ;
+  liens du pied de page pointent sur `#`. Elles donnent `contact@coprofirst.fr`
+  comme adresse de contact, jamais l'adresse personnelle de l'utilisateur ;
 - le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair ;
 - les adresses d'entrée de la démo par rôle (la session qui monte la démo les
   fournira) : les trois boutons pointent sur `#demo` ;
