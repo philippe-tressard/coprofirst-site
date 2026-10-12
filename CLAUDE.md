@@ -21,8 +21,11 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   demande aucune modification de l'application (arbitrage du 12/10/2026 :
   « possible techniquement sans surcoût »).
 - **Hébergement** : Oracle Cloud Always Free, comme la démo.
-- **Dépôt** : local seulement ; `philippe-tressard/coprofirst-site` à créer sur
-  GitHub, avec l'accord de l'utilisateur (publication).
+- **Dépôt** : `philippe-tressard/coprofirst-site`, **public**, sous
+  AGPL-3.0-or-later comme l'application (accord de l'utilisateur, 13/10/2026).
+  Les commits portent l'adresse *noreply* de GitHub, réglée dans la configuration
+  **locale** du clone : l'adresse globale du poste est personnelle, et GitHub
+  refuse de la publier (GH007).
 - `maquettes/` garde les dix propositions qui ont mené à la page ; `E` est la
   version retenue. Ce sont des archives : on ne les corrige pas.
 
