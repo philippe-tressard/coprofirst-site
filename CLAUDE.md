@@ -17,8 +17,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   La page est `site/index.html`, le logo `site/logo.svg`.
 - **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
-  `contact@coprofirst.fr`, un alias que l'utilisateur crée — à vérifier en y
-  écrivant avant de le publier sur la page. **Démo** :
+  `contact@coprofirst.fr`, un alias vérifié le 13/10/2026 (courriel reçu), au pied
+  de la page. **Démo** :
   `demo.coprofirst.fr` — un sous-domaine, parce qu'il ne coûte rien de plus et ne
   demande aucune modification de l'application (arbitrage du 12/10/2026 :
   « possible techniquement sans surcoût »).
