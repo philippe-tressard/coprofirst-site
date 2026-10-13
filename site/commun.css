@@ -18,7 +18,7 @@ en-tête et pied de page. Les styles propres à une page restent dans la page.
 body{margin:0;background:var(--creme);color:var(--encre);font:400 1.0625rem/1.65 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit}
 svg{display:block;max-width:100%}
-h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;line-height:1.15}
+h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;line-height:1.15;text-wrap:balance}
 .c{width:min(1140px,100% - 32px);margin-inline:auto}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .evitement{position:absolute;left:16px;top:-60px;background:var(--bleu);color:#fff;padding:10px 16px;border-radius:99px;z-index:10}

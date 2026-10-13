@@ -12,10 +12,11 @@ lecture, des fiches pour les coordonnées. S'ajoute à commun.css.
 .document section{padding:0;margin-top:44px}
 .document h2{font-size:1.45rem;margin-bottom:12px}
 .document p,.document li{color:#3f4a5a}
-.document p{margin:10px 0 0}
+.document p{margin:10px 0 0;text-wrap:pretty}
 .document ul{margin:10px 0 0;padding-left:1.2em}
 .document li+li{margin-top:6px}
-.document a{color:var(--bleu);text-underline-offset:3px}
+.document a{color:var(--bleu);text-underline-offset:3px;text-decoration-color:rgba(30,58,95,.35);transition:text-decoration-color 200ms ease}
+@media (hover:hover) and (pointer:fine){.document a:hover{text-decoration-color:currentColor}}
 .document code{font:500 .9em var(--mono);background:#fff;border:1px solid var(--bord);border-radius:6px;padding:1px 6px}
 
 /* Une fiche de coordonnées : qui, où, comment le joindre */
