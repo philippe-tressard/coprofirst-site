@@ -15,12 +15,26 @@ Destinée à **coprofirst.fr** ; la démonstration sera sur **demo.coprofirst.fr
 
 | Chemin | Rôle |
 |---|---|
-| `site/index.html` | la page — HTML, CSS et JavaScript, sans dépendance ni build |
+| `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
+| `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
+| `site/commun.css`, `site/document.css`, `site/accueil.js` | styles partagés, styles des pages de texte, script de l'accueil |
 | `site/logo.svg` | le logo de CoproFirst (licence propre, voir plus bas) |
+| `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
 | `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |
 | `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
 
-Pour voir la page : ouvrir `site/index.html` dans un navigateur.
+Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
+
+## Mise en ligne
+
+Le site est servi sur **https://coprofirst.fr** par un conteneur Caddy
+(`deploiement/`) sur une instance Oracle Cloud, derrière un tunnel Cloudflare.
+`www.coprofirst.fr` redirige vers `coprofirst.fr`.
+
+```bash
+bash deploiement/deployer.sh             # déploie HEAD, une fois poussé
+bash deploiement/deployer.sh --verifier  # compare ce qui est servi au dépôt
+```
 
 ## Contrôles
 

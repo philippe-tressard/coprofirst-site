@@ -1,0 +1,36 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Sert site/ derrière le tunnel Cloudflare. Le HTTPS est assuré par Cloudflare :
+# Caddy n'écoute qu'en HTTP, sur 8080 (port sans privilège : cap_drop ALL), publié
+# sur 127.0.0.1 de l'instance seulement (compose.yaml) — rien hors du tunnel.
+{
+	admin off
+	auto_https off
+}
+
+:8080 {
+	# www.coprofirst.fr → coprofirst.fr, et http → https (Cloudflare transmet le
+	# protocole d'origine du visiteur dans X-Forwarded-Proto).
+	@www host www.coprofirst.fr
+	redir @www https://coprofirst.fr{uri} permanent
+	@http header X-Forwarded-Proto http
+	redir @http https://{host}{uri} permanent
+
+	root * /srv
+	file_server
+
+	header {
+		# Seuls les fichiers du site : ni script, ni police, ni image d'ailleurs.
+		# 'unsafe-inline' pour les styles seulement (<style> et style="" de la page).
+		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
+		Strict-Transport-Security "max-age=31536000"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		Permissions-Policy "camera=(), microphone=(), geolocation=(), interest-cohort=()"
+		# no-transform : Cloudflare ne réécrit pas la page (masquage des adresses
+		# de courriel, minification) — ce qui est servi est ce qui est dans le dépôt.
+		Cache-Control "public, max-age=300, no-transform"
+		-Server
+	}
+}

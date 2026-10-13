@@ -15,14 +15,24 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ## Stack et état
 
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
-  La page est `site/index.html`, le logo `site/logo.svg`.
+  `site/index.html` (accueil), `site/mentions-legales.html`,
+  `site/confidentialite.html` ; styles partagés dans `site/commun.css`, ceux des
+  pages de texte dans `site/document.css`, le script de l'accueil dans
+  `site/accueil.js` (pas de script en ligne : la CSP n'admet que `'self'`). Un site
+  sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
+  exige que les pieds soient identiques.
 - **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
   `contact@coprofirst.fr`, un alias vérifié le 13/10/2026 (courriel reçu), au pied
   de la page. **Démo** :
   `demo.coprofirst.fr` — un sous-domaine, parce qu'il ne coûte rien de plus et ne
   demande aucune modification de l'application (arbitrage du 12/10/2026 :
   « possible techniquement sans surcoût »).
-- **Hébergement** : Oracle Cloud Always Free, comme la démo.
+- **Hébergement** : Oracle Cloud (instance `coprofirst-demo`, Paris), comme la démo.
+  En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
+  tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
+  réservé à la démo. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
+  seulement, puis comparaison octet par octet de ce qui est servi ;
+  `--verifier` pour le seul contrôle). Jamais de geste à la main sur le serveur.
 - **Dépôt** : `philippe-tressard/coprofirst-site`, **public**, sous
   AGPL-3.0-or-later comme l'application (accord de l'utilisateur, 13/10/2026).
   Les commits portent l'adresse *noreply* de GitHub, réglée dans la configuration
@@ -48,14 +58,18 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
   consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
 
-### Avant la mise en ligne — ce qui manque
+- **Mentions légales** : éditeur particulier, **à titre non professionnel**, sans
+  adresse publiée (LCEN — choix de l'utilisateur, 13/10/2026 : l'adresse est
+  connue de l'hébergeur). Si CoproFirst devient une activité commerciale, l'adresse
+  doit y figurer. Contact : `contact@coprofirst.fr`, jamais l'adresse personnelle.
 
-- les pages **Mentions légales** et **Confidentialité** (`standards/14` §3) : les
-  liens du pied de page pointent sur `#`. Elles donnent `contact@coprofirst.fr`
-  comme adresse de contact, jamais l'adresse personnelle de l'utilisateur ;
+### Ce qui reste
+
 - le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair ;
-- les adresses d'entrée de la démo par rôle (la session qui monte la démo les
-  fournira) : les trois boutons pointent sur `#demo` ;
+- la **démo** : la section l'annonce « Bientôt disponible », et les trois rôles
+  sont une liste, pas des liens. À son ouverture, en refaire des liens vers les
+  adresses d'entrée par rôle (fournies par la session qui monte la démo), et
+  retirer la mention « pas encore ouverte » de `confidentialite.html` ;
 - le remplacement des témoignages fictifs.
 
 ## Contrôles

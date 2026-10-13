@@ -1,0 +1,20 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Le site sur l'instance Oracle « coprofirst-demo ». Port 8080 de la boucle locale
+# uniquement : cloudflared y envoie coprofirst.fr et www.coprofirst.fr. Le port 80
+# est réservé à la démonstration (demo.coprofirst.fr → http://localhost:80).
+name: coprofirst-site
+services:
+  site:
+    build:
+      context: ..
+      dockerfile: deploiement/Dockerfile
+    image: coprofirst-site:courant
+    ports:
+      - "127.0.0.1:8080:8080"
+    restart: unless-stopped
+    read_only: true
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    tmpfs: [/config, /data]
