@@ -1,0 +1,31 @@
+/*
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+Pages de texte du site (mentions légales, confidentialité) : une colonne de
+lecture, des fiches pour les coordonnées. S'ajoute à commun.css.
+*/
+.document{width:min(46rem,100% - 32px);margin:24px auto 0;padding-bottom:24px}
+.document h1{font-size:clamp(2rem,5vw,2.8rem)}
+.document .chapo{color:var(--doux);margin:12px 0 0;font-size:1.08rem}
+.document .maj{display:inline-block;margin-top:16px;padding:4px 12px;border-radius:99px;background:#fff;border:1px solid var(--bord);font-size:.85rem;color:var(--doux)}
+.document section{padding:0;margin-top:44px}
+.document h2{font-size:1.45rem;margin-bottom:12px}
+.document p,.document li{color:#3f4a5a}
+.document p{margin:10px 0 0}
+.document ul{margin:10px 0 0;padding-left:1.2em}
+.document li+li{margin-top:6px}
+.document a{color:var(--bleu);text-underline-offset:3px}
+.document code{font:500 .9em var(--mono);background:#fff;border:1px solid var(--bord);border-radius:6px;padding:1px 6px}
+
+/* Une fiche de coordonnées : qui, où, comment le joindre */
+.fiche{margin:14px 0 0;padding:20px 22px;background:#fff;border:1px solid var(--bord);border-radius:20px;display:grid;grid-template-columns:max-content 1fr;gap:8px 20px}
+.fiche dt{color:var(--doux);font-size:.9rem;padding-top:1px}
+.fiche dd{margin:0;color:var(--encre);overflow-wrap:anywhere}
+@media (max-width:560px){.fiche{grid-template-columns:1fr;gap:2px}.fiche dd+dt{margin-top:10px}}
+
+/* Ce qui ne se fait pas : la liste qui rassure, mise en avant */
+.rien{margin:14px 0 0;padding:18px 22px;list-style:none;background:var(--menthe);border-radius:20px;display:grid;gap:8px}
+.rien li{display:flex;gap:10px;align-items:flex-start;color:var(--encre)}
+.rien li+li{margin-top:0}
+.rien li::before{content:"";flex:none;width:20px;height:20px;margin-top:3px;border-radius:50%;background:#fff var(--coche) center/12px no-repeat}
