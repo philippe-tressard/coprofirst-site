@@ -28,7 +28,7 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   demande aucune modification de l'application (arbitrage du 12/10/2026 :
   « possible techniquement sans surcoût »).
 - **Hébergement** : Oracle Cloud (instance `coprofirst-demo`, Paris), comme la démo.
-  En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
+  Déployé le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
   tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
   réservé à la démo. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
   seulement, puis comparaison octet par octet de ce qui est servi ;
