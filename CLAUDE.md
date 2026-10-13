@@ -66,10 +66,14 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ### Ce qui reste
 
 - le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair ;
-- la **démo** : la section l'annonce « Bientôt disponible », et les trois rôles
-  sont une liste, pas des liens. À son ouverture, en refaire des liens vers les
-  adresses d'entrée par rôle (fournies par la session qui monte la démo), et
-  retirer la mention « pas encore ouverte » de `confidentialite.html` ;
+- la **démo** ([#1](https://github.com/philippe-tressard/coprofirst-site/issues/1)) :
+  la section l'annonce « Bientôt disponible ». On y entre **par le formulaire de
+  connexion**, avec trois comptes publics (CS, copropriétaire, locataire) ;
+  l'administrateur n'en est pas un, et il n'y a plus d'adresse d'entrée par rôle
+  (coprofirst#1932, arbitrage du 13/10/2026). À l'ouverture : une page `demo.html`
+  publie ces comptes, repris du générateur de l'application ; le bouton de l'en-tête
+  et `#demo` y mènent ; retirer « Bientôt disponible » et la mention « pas encore
+  ouverte » de `confidentialite.html` ;
 - le remplacement des témoignages fictifs.
 
 ## Contrôles
