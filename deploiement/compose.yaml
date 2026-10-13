@@ -16,5 +16,9 @@ services:
     restart: unless-stopped
     read_only: true
     cap_drop: [ALL]
+    # Le binaire caddy de l'image porte la capacité de fichier NET_BIND_SERVICE :
+    # sans elle dans l'ensemble autorisé, no-new-privileges refuse de l'exécuter
+    # (« exec /usr/bin/caddy: operation not permitted », constaté le 13/10/2026).
+    cap_add: [NET_BIND_SERVICE]
     security_opt: [no-new-privileges:true]
     tmpfs: [/config, /data]

@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Sert site/ derrière le tunnel Cloudflare. Le HTTPS est assuré par Cloudflare :
-# Caddy n'écoute qu'en HTTP, sur 8080 (port sans privilège : cap_drop ALL), publié
+# Caddy n'écoute qu'en HTTP, sur 8080, publié
 # sur 127.0.0.1 de l'instance seulement (compose.yaml) — rien hors du tunnel.
 {
 	admin off
