@@ -64,7 +64,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   copropriétaire, locataire) que publie `site/demo.html` ; l'administrateur n'en est
   pas un (coprofirst#1932). Ces identifiants viennent de
   `api/app/demo/personnages.py` de CoproFirst : **s'ils y changent, `demo.html` doit
-  suivre** — rien ne le vérifie automatiquement.
+  suivre** — `scripts/verifier-comptes-demo.py` le vérifie chaque jour en CI (voir
+  Contrôles).
 
 - **Mentions légales** : éditeur particulier, **à titre non professionnel**, sans
   adresse publiée (LCEN — choix de l'utilisateur, 13/10/2026 : l'adresse est
@@ -82,3 +83,14 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 d'exécution et syntaxe des scripts. Il tourne en `pre-commit`
 (`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
 `reuse lint`.
+
+`python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
+listes `.identifiants` de `site/demo.html` sont exactement ceux de
+`api/app/demo/personnages.py` de CoproFirst (branche `main`, lu sur
+raw.githubusercontent.com sans jeton). Sortie 0 conforme, 1 écart, **2 INCONNU**
+(source injoignable, page ou source illisible) ; `--selftest`, `--source`, `--page`.
+**En CI seulement** (`.github/workflows/comptes-demo.yml`, à chaque poussée et
+chaque jour à 06:17 UTC), pas en pre-commit : la dérive naît dans l'autre dépôt, et
+le réseau ne doit pas conditionner un commit. Il compare la page au code de `main`,
+pas à la démo déployée. ⚠️ GitHub suspend un workflow planifié après 60 jours sans
+activité du dépôt.

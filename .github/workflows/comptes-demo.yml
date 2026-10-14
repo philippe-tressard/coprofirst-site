@@ -1,0 +1,29 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Les comptes publiés par site/demo.html sont-ils ceux de la démonstration ?
+# Hors du pre-commit : la source vit dans le dépôt de CoproFirst, et la lire
+# demande le réseau. Le passage QUOTIDIEN attrape un compte changé côté
+# application, même quand ce site ne bouge pas ; son échec part par courriel
+# (notifications GitHub des workflows planifiés).
+# ⚠️ GitHub suspend un workflow planifié après 60 jours sans activité du dépôt.
+name: Comptes de la démo
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: "17 6 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  comptes:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Le contrôle lui-même (selftest)
+        run: python3 scripts/verifier-comptes-demo.py --selftest
+      - name: demo.html contre api/app/demo/personnages.py (coprofirst, main)
+        run: python3 scripts/verifier-comptes-demo.py

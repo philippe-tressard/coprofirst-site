@@ -5,7 +5,7 @@
 # verifier-depot.sh — ce que Windows abîme sans un mot (standards/08 §3, standards/10) :
 #   - un BOM UTF-8 en tête de fichier texte ;
 #   - des fins de ligne CRLF dans un dépôt écrit en LF (.gitattributes) ;
-#   - un script .sh ou un hook de .githooks/ sans bit d'exécution dans l'index
+#   - un script .sh ou .py, ou un hook de .githooks/, sans bit d'exécution dans l'index
 #     (Windows avale `chmod +x`) ;
 #   - un script dont la syntaxe est fausse (`bash -n`).
 # Et ce que la page publiée doit à la loi et à ses visiteurs (standards/14 §3, §4, §9) :
@@ -35,8 +35,11 @@ juger_fichier() {
     echo "CRLF     $f"
   fi
   # Les hooks git n'ont pas d'extension, mais s'exécutent comme les scripts
-  if [[ "$f" == *.sh || "$f" == .githooks/* ]]; then
+  if [[ "$f" == *.sh || "$f" == *.py || "$f" == .githooks/* ]]; then
     [ "$mode" = "100755" ] || echo "MODE     $f ($mode, attendu 100755 : git update-index --chmod=+x $f)"
+  fi
+  # Un script Python prouve sa syntaxe par son --selftest, lancé en CI
+  if [[ "$f" == *.sh || "$f" == .githooks/* ]]; then
     bash -n "$f" 2>/dev/null || echo "SYNTAXE  $f (bash -n)"
   fi
 }
@@ -80,6 +83,7 @@ selftest() {
   printf '#!/bin/bash\necho ok\n' > "$t/bon.sh"
   printf '#!/bin/bash\nif then\n' > "$t/faux.sh"
   printf '\x89PNG\r\n' > "$t/image.png"
+  printf '#!/usr/bin/env python3\n' > "$t/outil.py"
   local echecs=0
   verifie() { # <attendu> <fichier> <mode>
     local obtenu; obtenu=$(juger_fichier "$t/$2" "$3" | awk '{print $1}' | tr '\n' ' ')
@@ -92,6 +96,8 @@ selftest() {
   verifie "MODE " bon.sh 100644
   verifie "SYNTAXE " faux.sh 100755
   verifie "" image.png 100644
+  verifie "" outil.py 100755
+  verifie "MODE " outil.py 100644
   # Règles d'une page publiée
   local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'
   printf '%s

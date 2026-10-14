@@ -24,6 +24,7 @@ page `demo.html` en publie les trois comptes publics.
 | `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
 | `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |
 | `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
+| `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
 
 Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
 
@@ -45,7 +46,13 @@ git config core.hooksPath .githooks && git config pull.ff only
 bash scripts/verifier-depot.sh --selftest
 bash scripts/verifier-depot.sh
 python -m reuse lint
+python3 scripts/verifier-comptes-demo.py --selftest
+python3 scripts/verifier-comptes-demo.py   # réseau : lit personnages.py sur GitHub
 ```
+
+Le dernier contrôle ne tourne pas en pre-commit : il lit le dépôt de CoproFirst, où
+naît la dérive, et la CI le lance chaque jour. Il sort en **2 (INCONNU)** si la
+source est injoignable ou illisible — jamais en vert faute d'avoir comparé.
 
 ## Licences
 
