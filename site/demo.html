@@ -1,0 +1,139 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Démonstration — CoproFirst</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="commun.css">
+<link rel="stylesheet" href="document.css">
+<meta name="description" content="Essayez CoproFirst en ligne sur une résidence fictive : trois comptes publics, sans inscription.">
+<script src="demo.js" defer></script>
+<style>
+/* Les comptes de la démonstration (identifiants repris de app/demo/personnages.py
+   de CoproFirst — jamais inventés ici). */
+.comptes{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.compte{background:#fff;border:1px solid var(--bord);border-radius:24px;padding:22px;scroll-margin-top:24px;transition:border-color 200ms ease,box-shadow 200ms ease}
+.compte:target{border-color:var(--or);box-shadow:0 0 0 3px rgba(201,152,58,.25)}
+.document .compte+.compte{margin-top:0}
+.compte-tete{display:flex;gap:14px;align-items:center}
+.compte-ico{flex:none;width:48px;height:48px;border-radius:14px;display:grid;place-items:center;font-size:1.4rem;line-height:1}
+.compte h3{font-size:1.3rem}
+.document .compte .qui{margin:2px 0 0;font-size:.92rem;color:var(--doux)}
+.complet{display:inline-block;margin-left:6px;padding:1px 9px;border-radius:99px;background:var(--sable);color:var(--or-texte);font:600 .74rem var(--sans);vertical-align:3px}
+.document .compte>p{margin-top:14px}
+.identifiants{margin:16px 0 0;display:grid;gap:8px}
+.identifiants div{display:grid;grid-template-columns:7.5em 1fr;align-items:center;gap:4px 12px;padding:6px 6px 6px 16px;background:var(--creme);border-radius:16px}
+.identifiants dt{color:var(--doux);font-size:.9rem}
+.identifiants dd{margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;min-width:0}
+.document .identifiants code{background:none;border:0;padding:0;font-size:.95rem;color:var(--encre);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
+.copier{flex:none;min-height:44px;min-width:5.5em;padding:0 16px;border-radius:99px;border:1px solid var(--bord);background:#fff;color:var(--bleu);font:600 .88rem var(--sans);cursor:pointer;
+  transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease,color 200ms ease}
+.copier:active{transform:scale(0.97)}
+.copier.fait{background:var(--menthe);border-color:#b7dcc6;color:#1f6b3d}
+@media (hover:hover) and (pointer:fine){.copier:not(.fait):hover{background:var(--ciel);border-color:var(--ciel)}}
+/* Téléphone : l'identifiant prend toute la largeur, le bouton monte à côté du libellé */
+@media (max-width:560px){
+  .identifiants div{position:relative;grid-template-columns:1fr;gap:10px;padding:16px 6px 12px 14px}
+  .identifiants dt{min-height:32px;display:flex;align-items:center}
+  .identifiants dd{min-height:0}
+  .document .identifiants code{font-size:.9rem;white-space:nowrap}
+  .copier{position:absolute;top:6px;right:6px}
+}
+@media (max-width:359px){.document .identifiants code{white-space:normal}}
+.ouvrir{margin:32px 0 0;text-align:center}
+.document .ouvrir .btn{color:#fff;text-decoration:none}
+.document .ouvrir+p{margin-top:12px;text-align:center;font-size:.92rem}
+@media (prefers-reduced-motion:reduce){.copier:active{transform:none}}
+</style>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header>
+  <div class="c">
+    <a class="marque" href="./" aria-label="CoproFirst, accueil">
+      <img src="logo.svg" alt="" width="38" height="38">
+      CoproFirst
+    </a>
+    <nav aria-label="Navigation principale"><a class="btn btn-contour" href="./">← Accueil</a></nav>
+  </div>
+</header>
+
+<main id="contenu" class="document">
+  <h1>Essayer la démonstration</h1>
+  <p class="chapo">Une résidence fictive, ouverte à tous. Choisissez un compte, copiez ses identifiants, connectez-vous&nbsp;: rien à installer, aucun compte à créer.</p>
+
+  <ul class="rien" aria-label="Ce qu'il faut savoir avant d'entrer">
+    <li>Les données sont fictives et repartent de zéro chaque nuit.</li>
+    <li>Aucun courriel, message WhatsApp ni appel à l'assistant IA n'est réellement envoyé.</li>
+    <li>Les comptes sont partagés entre tous les visiteurs&nbsp;: n'y saisissez aucune donnée réelle.</li>
+  </ul>
+
+  <section aria-labelledby="t-comptes">
+    <h2 id="t-comptes">Trois comptes, trois regards sur la résidence</h2>
+    <ul class="comptes">
+      <li class="compte" id="conseil-syndical">
+        <div class="compte-tete">
+          <span class="compte-ico" style="background:var(--menthe)" aria-hidden="true">🗂️</span>
+          <div><h3>Conseil syndical <span class="complet">le plus complet</span></h3><p class="qui">Copropriétaire résident, membre du conseil syndical</p></div>
+        </div>
+        <p>Tout ce que voit un copropriétaire, plus le kanban des dossiers, le bilan chiffré de l'exercice et les affiches de hall en PDF.</p>
+        <dl class="identifiants">
+          <div><dt>Identifiant</dt><dd><code>user-cs@demo.coprofirst.fr</code><button class="copier" type="button" hidden data-quoi="Identifiant du compte Conseil syndical" aria-label="Copier l'identifiant du compte Conseil syndical"><span>Copier</span></button></dd></div>
+          <div><dt>Mot de passe</dt><dd><code>PSWD-user-cs1</code><button class="copier" type="button" hidden data-quoi="Mot de passe du compte Conseil syndical" aria-label="Copier le mot de passe du compte Conseil syndical"><span>Copier</span></button></dd></div>
+        </dl>
+      </li>
+      <li class="compte" id="coproprietaire">
+        <div class="compte-tete">
+          <span class="compte-ico" style="background:var(--ciel)" aria-hidden="true">🏠</span>
+          <div><h3>Copropriétaire</h3><p class="qui">Copropriétaire résident</p></div>
+        </div>
+        <p>Signaler un problème et suivre sa résolution, lire les documents de ses lots, demander un badge, échanger entre voisins.</p>
+        <dl class="identifiants">
+          <div><dt>Identifiant</dt><dd><code>user-copro@demo.coprofirst.fr</code><button class="copier" type="button" hidden data-quoi="Identifiant du compte Copropriétaire" aria-label="Copier l'identifiant du compte Copropriétaire"><span>Copier</span></button></dd></div>
+          <div><dt>Mot de passe</dt><dd><code>PSWD-user-copro1</code><button class="copier" type="button" hidden data-quoi="Mot de passe du compte Copropriétaire" aria-label="Copier le mot de passe du compte Copropriétaire"><span>Copier</span></button></dd></div>
+        </dl>
+      </li>
+      <li class="compte" id="locataire">
+        <div class="compte-tete">
+          <span class="compte-ico" style="background:var(--peche)" aria-hidden="true">🔑</span>
+          <div><h3>Locataire</h3><p class="qui">Résident locataire</p></div>
+        </div>
+        <p>Être informé comme un voisin&nbsp;: coupures, pannes et travaux de son bâtiment, badges confiés par le bailleur, idées, sondages et petites annonces.</p>
+        <dl class="identifiants">
+          <div><dt>Identifiant</dt><dd><code>user-loc@demo.coprofirst.fr</code><button class="copier" type="button" hidden data-quoi="Identifiant du compte Locataire" aria-label="Copier l'identifiant du compte Locataire"><span>Copier</span></button></dd></div>
+          <div><dt>Mot de passe</dt><dd><code>PSWD-user-loc1</code><button class="copier" type="button" hidden data-quoi="Mot de passe du compte Locataire" aria-label="Copier le mot de passe du compte Locataire"><span>Copier</span></button></dd></div>
+        </dl>
+      </li>
+    </ul>
+    <p class="sr" role="status" id="annonce-copie"></p>
+    <p class="ouvrir"><a class="btn btn-bleu" href="https://demo.coprofirst.fr/auth/connexion">Ouvrir la démonstration →</a></p>
+    <p>demo.coprofirst.fr · formulaire de connexion</p>
+  </section>
+
+  <section aria-labelledby="t-limites">
+    <h2 id="t-limites">Ce que la démonstration ne montre pas</h2>
+    <ul>
+      <li>L'administration du site (paramétrage, services, maintenance)&nbsp;: elle n'a pas de compte public.</li>
+      <li>Le changement de mot de passe ou d'adresse&nbsp;: un visiteur ne peut pas fermer un compte aux autres.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-regles">
+    <h2 id="t-regles">Ses propres règles</h2>
+    <p>La démonstration est une installation de CoproFirst distincte de ce site. Elle a ses <a href="https://demo.coprofirst.fr/mentions-legales">mentions légales</a> et sa <a href="https://demo.coprofirst.fr/politique-de-confidentialite">politique de confidentialité</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="c">
+    <span>CoproFirst — demande de marque n° 5307183 · Licence AGPL-3.0-or-later</span>
+    <nav aria-label="Liens de pied de page"><a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
+  </div>
+</footer>
+</body>
+</html>

@@ -9,15 +9,17 @@ La page d'accueil de [CoproFirst](https://github.com/philippe-tressard/coprofirs
 l'application libre de gestion de copropriétés : ce qu'elle fait, pour qui, son
 assistant IA facultatif, une démonstration en ligne et le lien vers son code.
 
-Destinée à **coprofirst.fr** ; la démonstration sera sur **demo.coprofirst.fr**.
+Servie sur **coprofirst.fr** ; la démonstration est sur **demo.coprofirst.fr**, et la
+page `demo.html` en publie les trois comptes publics.
 
 ## Contenu
 
 | Chemin | Rôle |
 |---|---|
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
+| `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
-| `site/commun.css`, `site/document.css`, `site/accueil.js` | styles partagés, styles des pages de texte, script de l'accueil |
+| `site/commun.css`, `site/document.css`, `site/accueil.js`, `site/demo.js` | styles partagés, styles des pages de texte, scripts de l'accueil et de la page Démo |
 | `site/logo.svg` | le logo de CoproFirst (licence propre, voir plus bas) |
 | `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
 | `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |

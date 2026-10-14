@@ -16,6 +16,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 @media (hover:hover) and (pointer:fine){
   .bulle:hover{transform:rotate(0deg) translateY(-3px)}
   .tuile:hover{transform:translateY(-3px)}
+  .role:hover{transform:translateY(-2px);box-shadow:0 16px 30px -20px rgba(29,42,58,.55)}
 }
 
 /* Héros : le texte, puis la résidence — ses immeubles, l'appli sur ordinateur et sur téléphone */
@@ -210,21 +211,21 @@ section{padding:88px 0}
 .final p{color:var(--doux);max-width:36em;margin:14px auto 26px}
 .terminal{display:inline-block;margin-top:20px;font:500 .88rem var(--mono);background:var(--creme);border:1px dashed var(--bord);border-radius:12px;padding:10px 16px;color:var(--bleu);max-width:100%;overflow-x:auto;white-space:nowrap}
 
-/* Démonstration en ligne : un rôle, un clic, connecté */
+/* Démonstration en ligne : un rôle, et ses identifiants sur la page Démo */
 .demo{display:grid;grid-template-columns:1fr 1fr;gap:36px;align-items:center;background:var(--menthe);border-radius:32px;padding:48px}
 .demo h2{font-size:clamp(1.8rem,3.8vw,2.5rem)}
 .surtitre-demo{display:block;font:600 .82rem var(--sans);letter-spacing:.1em;text-transform:uppercase;color:#1f6b3d;margin-bottom:12px}
 .demo-texte p{color:#3f4a5a;margin:14px 0 0}
 .demo-mention{display:flex;gap:10px;align-items:flex-start;background:rgba(255,255,255,.65);border-radius:16px;padding:12px 14px;font-size:.92rem}
-/* Tant que la démo n'est pas en ligne, les rôles sont une annonce, pas des liens :
-   pas d'ombre portée ni de flèche, qui promettraient un clic. */
-.bientot{display:inline-block;margin-left:4px;padding:2px 10px;border-radius:99px;background:#fff;color:#1f6b3d;letter-spacing:.04em}
 .roles ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-.role{display:flex;gap:14px;align-items:center;min-height:68px;padding:12px 18px;background:rgba(255,255,255,.6);border:1px dashed rgba(31,107,61,.35);border-radius:20px}
+.role{display:flex;gap:14px;align-items:center;min-height:68px;padding:12px 18px;background:#fff;border-radius:20px;text-decoration:none;box-shadow:0 12px 26px -20px rgba(29,42,58,.45);transition:transform 160ms var(--ease-out),box-shadow 200ms ease}
+.role::after{content:"→";margin-left:auto;padding-left:8px;color:var(--bleu);font-weight:700}
+.role:active{transform:scale(0.98)}
 .role-ico{font-size:1.5rem;line-height:1}
 .role b{display:block;color:var(--bleu);font-family:var(--titres);font-size:1.1rem}
 .role small{display:block;color:#4a5566;font-size:.88rem}
 .adresse-demo{font-size:.88rem;color:#3f4a5a;margin:12px 0 0;text-align:center}
+.adresse-demo a{color:#1f6b3d;text-underline-offset:3px}
 @media (max-width:860px){.demo{grid-template-columns:1fr;padding:28px 22px;border-radius:28px}}
 
 .js .revele{opacity:0;transform:translateY(12px);transition:opacity 500ms var(--ease-out),transform 500ms var(--ease-out)}
@@ -238,6 +239,7 @@ section{padding:88px 0}
   .illu-g i{transition:none;transform:none}
   .js .panneau:not([hidden]){animation:fondu 150ms ease}
   .onglets.copie{transition:none}
+  .role:active,.role:hover{transform:none}
   .jauge i{transition:none}
   .piste{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
   .piste [aria-hidden="true"]{display:none}
@@ -254,7 +256,7 @@ section{padding:88px 0}
       <img src="logo.svg" alt="" width="38" height="38">
       CoproFirst
     </a>
-    <nav aria-label="Navigation principale"><a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#avis">Témoignages</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a><a class="btn btn-bleu" href="#demo">Essayer la démo</a></nav>
+    <nav aria-label="Navigation principale"><a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#avis">Témoignages</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a><a class="btn btn-bleu" href="demo.html">Essayer la démo</a></nav>
   </div>
 </header>
 
@@ -411,18 +413,18 @@ section{padding:88px 0}
     <div class="c">
       <div class="demo revele">
         <div class="demo-texte">
-          <span class="surtitre-demo">Démonstration en ligne · <span class="bientot">Bientôt disponible</span></span>
-          <h2 id="titre-demo">Bientôt, essayez-la sans rien installer</h2>
-          <p>Une résidence fictive, ouverte à tous, est en préparation. Vous y choisirez un rôle et entrerez directement, sans créer de compte.</p>
-          <p class="demo-mention"><span aria-hidden="true">🧪</span><span>Données fictives, effacées chaque nuit. Aucun courriel, message WhatsApp ni appel à l'assistant IA n'y sera réellement envoyé.</span></p>
+          <span class="surtitre-demo">Démonstration en ligne</span>
+          <h2 id="titre-demo">Essayez-la sans rien installer</h2>
+          <p>Une résidence fictive, ouverte à tous. Choisissez un rôle&nbsp;: ses identifiants sont publiés, aucun compte n'est à créer.</p>
+          <p class="demo-mention"><span aria-hidden="true">🧪</span><span>Données fictives, effacées chaque nuit. Aucun courriel, message WhatsApp ni appel à l'assistant IA n'y est réellement envoyé.</span></p>
         </div>
         <div class="roles">
-          <ul aria-label="Rôles proposés à l'ouverture de la démonstration">
-            <li class="role"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Résident</b><small>Signaler, suivre, lire ses documents</small></span></li>
-            <li class="role"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Kanban, bilan de l'exercice, affiches</small></span></li>
-            <li class="role"><span class="role-ico" aria-hidden="true">⚙️</span><span><b>Administrateur</b><small>Paramétrage, services, maintenance</small></span></li>
+          <ul aria-label="Comptes de la démonstration">
+            <li><a class="role" href="demo.html#conseil-syndical"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Kanban, bilan de l'exercice, affiches</small></span></a></li>
+            <li><a class="role" href="demo.html#coproprietaire"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Copropriétaire</b><small>Signaler, suivre, lire ses documents</small></span></a></li>
+            <li><a class="role" href="demo.html#locataire"><span class="role-ico" aria-hidden="true">🔑</span><span><b>Locataire</b><small>Coupures, travaux, badges confiés</small></span></a></li>
           </ul>
-          <p class="adresse-demo">Ouverture prochaine sur demo.coprofirst.fr</p>
+          <p class="adresse-demo">Sur <a href="https://demo.coprofirst.fr/auth/connexion">demo.coprofirst.fr</a></p>
         </div>
       </div>
     </div>

@@ -15,10 +15,11 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ## Stack et état
 
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
-  `site/index.html` (accueil), `site/mentions-legales.html`,
-  `site/confidentialite.html` ; styles partagés dans `site/commun.css`, ceux des
-  pages de texte dans `site/document.css`, le script de l'accueil dans
-  `site/accueil.js` (pas de script en ligne : la CSP n'admet que `'self'`). Un site
+  `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
+  `site/mentions-legales.html`, `site/confidentialite.html` ; styles partagés dans
+  `site/commun.css`, ceux des pages de texte dans `site/document.css`, les scripts
+  dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
+  que `'self'`). Un site
   sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
   exige que les pieds soient identiques.
 - **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
@@ -58,6 +59,13 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
   consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
 
+- **La démo** est ouverte depuis le 14/10/2026. On y entre **par le formulaire de
+  connexion** de `demo.coprofirst.fr`, avec trois comptes publics (CS,
+  copropriétaire, locataire) que publie `site/demo.html` ; l'administrateur n'en est
+  pas un (coprofirst#1932). Ces identifiants viennent de
+  `api/app/demo/personnages.py` de CoproFirst : **s'ils y changent, `demo.html` doit
+  suivre** — rien ne le vérifie automatiquement.
+
 - **Mentions légales** : éditeur particulier, **à titre non professionnel**, sans
   adresse publiée (LCEN — choix de l'utilisateur, 13/10/2026 : l'adresse est
   connue de l'hébergeur). Si CoproFirst devient une activité commerciale, l'adresse
@@ -66,14 +74,6 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ### Ce qui reste
 
 - le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair ;
-- la **démo** ([#1](https://github.com/philippe-tressard/coprofirst-site/issues/1)) :
-  la section l'annonce « Bientôt disponible ». On y entre **par le formulaire de
-  connexion**, avec trois comptes publics (CS, copropriétaire, locataire) ;
-  l'administrateur n'en est pas un, et il n'y a plus d'adresse d'entrée par rôle
-  (coprofirst#1932, arbitrage du 13/10/2026). À l'ouverture : une page `demo.html`
-  publie ces comptes, repris du générateur de l'application ; le bouton de l'en-tête
-  et `#demo` y mènent ; retirer « Bientôt disponible » et la mention « pas encore
-  ouverte » de `confidentialite.html` ;
 - le remplacement des témoignages fictifs.
 
 ## Contrôles
