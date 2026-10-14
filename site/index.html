@@ -111,6 +111,16 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 .barre-bas .ici::before{background:var(--bleu)}
 
 section{padding:88px 0}
+/* Défilement aimanté : un geste qui s'arrête près du haut d'une section s'y pose — la
+   courante, la suivante ou la précédente. « proximity » et non « mandatory » : sur
+   téléphone, la plupart des sections dépassent l'écran, et « mandatory » y renvoyait
+   en arrière tout geste plus court qu'un demi-écran (molette bloquée, vérifié le
+   14/10/2026). Le héros englobe l'en-tête (marge) pour que l'arrêt du haut le montre ;
+   le pied s'aimante par le bas. */
+html{scroll-snap-type:y proximity}
+main>section{scroll-snap-align:start}
+.heros{scroll-margin-top:var(--haut-entete)}
+footer{scroll-snap-align:end}
 .tete{text-align:center;max-width:660px;margin:0 auto 44px}
 .tete h2{font-size:clamp(1.9rem,4vw,2.7rem)}
 .tete p{color:var(--doux);margin:14px 0 0;font-size:1.08rem}
@@ -244,6 +254,7 @@ section{padding:88px 0}
   .piste{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
   .piste [aria-hidden="true"]{display:none}
   .defile{-webkit-mask-image:none;mask-image:none}
+  html{scroll-snap-type:none}
   @keyframes fondu{from{opacity:0}to{opacity:1}}
 }
 </style>

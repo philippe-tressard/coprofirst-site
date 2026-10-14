@@ -8,6 +8,7 @@ en-tête et pied de page. Les styles propres à une page restent dans la page.
 :root{
   --creme:#fdf8f0; --creme-2:#fff8ee; --sable:#f5ead8; --peche:#f9dcc4; --ciel:#dbe8f5; --menthe:#d9efe3; --lilas:#e7e3f4;
   --encre:#1d2a3a; --doux:#5b6676; --bleu:#1e3a5f; --bleu-nuit:#14294a; --or:#c9983a; --or-vif:#e2b45a; --or-texte:#7d5a14; --bord:#eadfcc; --violet:#4b3d8f;
+  --haut-entete:76px;
   --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-in-out:cubic-bezier(0.77,0,0.175,1);
   --titres:Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif;
   --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
@@ -39,7 +40,7 @@ h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;li
 @media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 
 /* En-tête */
-header .c{display:flex;align-items:center;gap:20px;min-height:76px}
+header .c{display:flex;align-items:center;gap:20px;min-height:var(--haut-entete)}
 .marque{display:flex;align-items:center;gap:10px;font:700 1.3rem var(--titres);color:var(--bleu);text-decoration:none}
 .marque img{width:38px;height:38px;border-radius:12px;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}
 header nav{margin-left:auto;display:flex;gap:24px;align-items:center}
@@ -49,7 +50,10 @@ header nav a:not(.btn){text-decoration:none;color:var(--doux);font-weight:500}
 
 /* Pied de page */
 footer{padding:40px 0 56px;color:var(--doux);font-size:.9rem}
-footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
+/* Les liens ont 10 px de marge intérieure (cible tactile de 44 px) et la mention
+   n'en a pas : sans alignement sur la ligne de base, elle flottait 10 px plus haut. */
+footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:0 24px}
 footer nav{display:flex;flex-wrap:wrap;gap:0 18px}
-footer nav a{display:inline-block;padding:10px 0}
+footer nav a{display:inline-block;padding:10px 0;text-underline-offset:3px;text-decoration-color:var(--bord);transition:color 200ms ease,text-decoration-color 200ms ease}
 footer nav a[aria-current="page"]{color:var(--bleu);font-weight:600;text-decoration:none}
+@media (hover:hover) and (pointer:fine){footer nav a:hover{color:var(--bleu);text-decoration-color:currentColor}}
