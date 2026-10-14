@@ -49,19 +49,21 @@ header nav a:not(.btn){text-decoration:none;color:var(--doux);font-weight:500}
 @media (max-width:640px){header .btn{min-height:44px;padding:0 16px;white-space:nowrap}.marque{font-size:1.15rem}}
 
 /* Pied de page */
-/* Bandeau bleu nuit (maquette 4 de maquettes/pied-de-page.html) : il ferme la page
-   dans la couleur de la marque. Texte #c8d3e3 sur --bleu-nuit : contraste 10:1. */
-footer{background:var(--bleu-nuit);padding:28px 0 40px;color:#c8d3e3;font-size:.9rem}
+/* Une carte blanche posée sur le fond crème (maquette 5 de maquettes/pied-de-page.html),
+   dans la famille des cartes de la page. */
+footer{padding:8px 0 32px;color:var(--doux);font-size:.9rem}
 /* Deux blocs centrés verticalement : la marque (logo, nom, mention sur deux lignes)
    et les liens. Le centrage ne dépend pas des marges intérieures des liens (cible
    tactile de 44 px), contrairement à l'alignement sur la ligne de base. */
-footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 40px}
+footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 40px;
+  background:#fff;border:1px solid var(--bord);border-radius:20px;padding:16px 24px}
 .pied-marque{display:flex;align-items:center;gap:12px;margin:0;line-height:1.4}
-.pied-marque img{width:32px;height:32px;border-radius:10px;flex:none;box-shadow:0 0 0 1px rgba(255,255,255,.15)}
-.pied-marque b{display:block;font:700 1rem var(--titres);color:#fff}
+.pied-marque img{width:32px;height:32px;border-radius:10px;flex:none;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}
+.pied-marque b{display:block;font:700 1rem var(--titres);color:var(--bleu)}
 .pied-marque small{display:block;font-size:.82rem}
 .pied-marque small span{white-space:nowrap}
 footer nav{display:flex;flex-wrap:wrap;gap:0 20px}
-footer nav a{display:inline-block;padding:10px 0;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.25);transition:color 200ms ease,text-decoration-color 200ms ease}
-footer nav a[aria-current="page"]{color:#fff;font-weight:600;text-decoration:none}
-@media (hover:hover) and (pointer:fine){footer nav a:hover{color:#fff;text-decoration-color:currentColor}}
+footer nav a{display:inline-block;padding:10px 0;text-underline-offset:3px;text-decoration-color:var(--bord);transition:color 200ms ease,text-decoration-color 200ms ease}
+footer nav a[aria-current="page"]{color:var(--bleu);font-weight:600;text-decoration:none}
+@media (hover:hover) and (pointer:fine){footer nav a:hover{color:var(--bleu);text-decoration-color:currentColor}}
+@media (max-width:640px){footer .c{padding:16px 20px}}
