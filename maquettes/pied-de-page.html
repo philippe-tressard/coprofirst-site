@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoproFirst — dix pieds de page</title>
+<!--
+Dix propositions de pied de page (14/10/2026). Archive de travail : la version
+retenue vit dans site/commun.css. Les jetons de couleur viennent de commun.css ;
+le logo reste dans son fichier (licence propre).
+-->
+<link rel="stylesheet" href="../site/commun.css">
+<style>
+body{padding:24px 0 80px}
+.intro{margin-bottom:8px}
+.intro h1{font-size:2rem}
+.intro p{color:var(--doux);margin:8px 0 0}
+.maquette{margin-top:56px}
+.etiquette{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin-bottom:14px}
+.etiquette b{font:700 1.15rem var(--titres);color:var(--bleu)}
+.etiquette span{color:var(--doux);font-size:.92rem}
+/* Un faux bas de page au-dessus de chaque pied, pour juger la séparation. */
+.scene{border-radius:20px;overflow:hidden;background:var(--creme);box-shadow:0 0 0 1px var(--bord)}
+.scene::before{content:"";display:block;height:56px;background:linear-gradient(var(--creme-2),var(--creme))}
+.v{color:var(--doux);font-size:.9rem;padding:28px 32px 36px}
+.v a{color:inherit;text-underline-offset:3px;text-decoration-color:var(--bord);transition:color 200ms ease,text-decoration-color 200ms ease}
+@media (hover:hover) and (pointer:fine){.v a:hover{color:var(--bleu);text-decoration-color:currentColor}}
+.v nav{display:flex;flex-wrap:wrap;gap:0 20px}
+.v nav a{display:inline-block;padding:10px 0}
+.logo{width:32px;height:32px;border-radius:10px;flex:none;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}
+.nom{font:700 1rem var(--titres);color:var(--bleu)}
+.mention{font-size:.82rem}
+.mention span{white-space:nowrap}
+.ligne{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 40px}
+.bloc-marque{display:flex;align-items:center;gap:12px;line-height:1.4}
+.bloc-marque .nom,.bloc-marque .mention{display:block}
+@media (max-width:640px){.v{padding:24px 20px 30px}}
+
+/* 1 — actuelle */
+.v1{border-top:1px solid var(--bord)}
+
+/* 2 — centrée */
+.v2{text-align:center;border-top:1px solid var(--bord)}
+.v2 .tete{display:inline-flex;align-items:center;gap:10px}
+.v2 nav{justify-content:center;margin:10px 0 6px}
+
+/* 3 — colonnes */
+.v3{border-top:1px solid var(--bord);display:grid;grid-template-columns:1.6fr repeat(3,1fr);gap:28px 32px}
+.v3 h3{font:600 .78rem var(--sans);letter-spacing:.06em;text-transform:uppercase;color:var(--encre);margin:4px 0 6px}
+.v3 ul{list-style:none;margin:0;padding:0}
+.v3 li a{display:inline-block;padding:7px 0}
+.v3 .accroche{margin:10px 0 0;max-width:30ch}
+.v3 .bas{grid-column:1/-1;border-top:1px solid var(--bord);padding-top:16px}
+@media (max-width:760px){.v3{grid-template-columns:1fr 1fr}.v3>.bloc-col:first-child{grid-column:1/-1}}
+
+/* 4 — bandeau bleu nuit */
+.v4{background:var(--bleu-nuit);color:#c8d3e3}
+.v4 .nom{color:#fff}
+.v4 a{text-decoration-color:rgba(255,255,255,.25)}
+@media (hover:hover) and (pointer:fine){.v4 a:hover{color:#fff}}
+.v4 .logo{box-shadow:0 0 0 1px rgba(255,255,255,.15)}
+
+/* 5 — carte */
+.v5{padding:8px 16px 24px}
+.v5 .carte{background:#fff;border:1px solid var(--bord);border-radius:20px;padding:20px 24px}
+
+/* 6 — deux rangées */
+.v6{border-top:1px solid var(--bord)}
+.v6 .bas{display:flex;flex-wrap:wrap;justify-content:space-between;gap:6px 24px;border-top:1px solid var(--bord);margin-top:14px;padding-top:14px;font-size:.82rem}
+.v6 .bloc-marque .nom{font-size:1.15rem}
+
+/* 7 — une ligne */
+.v7{border-top:1px solid var(--bord);padding-block:14px 18px}
+.v7 .ligne{gap:4px 20px}
+.v7 .court{display:flex;align-items:center;gap:8px}
+.v7 .logo{width:22px;height:22px;border-radius:7px}
+
+/* 8 — nom en filigrane */
+.v8{position:relative;overflow:hidden;border-top:1px solid var(--bord);padding-bottom:0}
+.v8 .filigrane{font:700 clamp(3.5rem,13vw,9rem)/.8 var(--titres);color:var(--sable);letter-spacing:-.02em;margin:18px 0 -.12em;user-select:none}
+
+/* 9 — pastilles */
+.v9{border-top:1px solid var(--bord)}
+.v9 nav{gap:8px}
+.v9 nav a{padding:0 16px;min-height:44px;display:inline-flex;align-items:center;border:1px solid var(--bord);border-radius:99px;background:#fff;text-decoration:none;transition:transform 160ms var(--ease-out),border-color 200ms ease,color 200ms ease}
+.v9 nav a:active{transform:scale(0.97)}
+@media (hover:hover) and (pointer:fine){.v9 nav a:hover{border-color:var(--bleu)}}
+
+/* 10 — avec appel à l'action */
+.v10{border-top:1px solid var(--bord)}
+.v10 .haut{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:16px 32px;padding-bottom:20px;border-bottom:1px solid var(--bord);margin-bottom:6px}
+.v10 .haut p{margin:0;font:700 1.25rem var(--titres);color:var(--bleu)}
+.v10 .actions{display:flex;flex-wrap:wrap;gap:10px}
+.v10 .btn{min-height:44px;padding:0 20px;font-size:.92rem;color:#fff}
+.v10 .btn-contour{color:var(--bleu)}
+</style>
+</head>
+<body>
+<div class="c">
+  <div class="intro">
+    <h1>Dix pieds de page</h1>
+    <p>Mêmes liens et même mention partout ; seule la mise en forme change. Réduisez la fenêtre pour voir le comportement sur téléphone.</p>
+  </div>
+
+  <!-- 1 -->
+  <section class="maquette">
+    <div class="etiquette"><b>1 — Actuelle</b><span>marque sur deux lignes à gauche, liens à droite, filet</span></div>
+    <div class="scene"><div class="v v1">
+      <div class="ligne">
+        <p class="bloc-marque" style="margin:0"><img class="logo" src="../site/logo.svg" alt=""><span><b class="nom">CoproFirst</b><small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+        <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 2 -->
+  <section class="maquette">
+    <div class="etiquette"><b>2 — Centrée</b><span>tout sur l'axe, la mention en dernier</span></div>
+    <div class="scene"><div class="v v2">
+      <div class="tete"><img class="logo" src="../site/logo.svg" alt=""><b class="nom">CoproFirst</b></div>
+      <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      <small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small>
+    </div></div>
+  </section>
+
+  <!-- 3 -->
+  <section class="maquette">
+    <div class="etiquette"><b>3 — Colonnes</b><span>liens rangés par thème, une phrase sous la marque</span></div>
+    <div class="scene"><div class="v v3">
+      <div class="bloc-col">
+        <div class="bloc-marque"><img class="logo" src="../site/logo.svg" alt=""><b class="nom">CoproFirst</b></div>
+        <p class="accroche">L'application libre des copropriétés.</p>
+      </div>
+      <div class="bloc-col"><h3>Produit</h3><ul><li><a href="#">Essayer la démo</a></li><li><a href="#">Code source</a></li></ul></div>
+      <div class="bloc-col"><h3>Légal</h3><ul><li><a href="#">Mentions légales</a></li><li><a href="#">Confidentialité</a></li></ul></div>
+      <div class="bloc-col"><h3>Contact</h3><ul><li><a href="#">contact@coprofirst.fr</a></li></ul></div>
+      <small class="mention bas">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small>
+    </div></div>
+  </section>
+
+  <!-- 4 -->
+  <section class="maquette">
+    <div class="etiquette"><b>4 — Bandeau bleu nuit</b><span>la disposition 1, sur le bleu de la marque</span></div>
+    <div class="scene"><div class="v v4">
+      <div class="ligne">
+        <p class="bloc-marque" style="margin:0"><img class="logo" src="../site/logo.svg" alt=""><span><b class="nom">CoproFirst</b><small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+        <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 5 -->
+  <section class="maquette">
+    <div class="etiquette"><b>5 — Carte</b><span>le pied posé dans une carte blanche, comme la section « résidence »</span></div>
+    <div class="scene"><div class="v v5"><div class="carte">
+      <div class="ligne">
+        <p class="bloc-marque" style="margin:0"><img class="logo" src="../site/logo.svg" alt=""><span><b class="nom">CoproFirst</b><small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+        <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div></div>
+  </section>
+
+  <!-- 6 -->
+  <section class="maquette">
+    <div class="etiquette"><b>6 — Deux rangées</b><span>marque et liens en haut, mentions légales en bas</span></div>
+    <div class="scene"><div class="v v6">
+      <div class="ligne">
+        <div class="bloc-marque"><img class="logo" src="../site/logo.svg" alt=""><b class="nom">CoproFirst</b></div>
+        <nav aria-label="Liens"><a href="#">Essayer la démo</a><a href="#">Code source</a><a href="#">contact@coprofirst.fr</a></nav>
+      </div>
+      <div class="bas">
+        <span>Demande de marque n° 5307183 · Licence AGPL-3.0-or-later</span>
+        <span><a href="#">Mentions légales</a> · <a href="#">Confidentialité</a></span>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 7 -->
+  <section class="maquette">
+    <div class="etiquette"><b>7 — Une ligne</b><span>le plus discret : tout tient sur une ligne au bureau</span></div>
+    <div class="scene"><div class="v v7">
+      <div class="ligne">
+        <span class="court"><img class="logo" src="../site/logo.svg" alt="">CoproFirst — demande de marque n° 5307183 · <span>AGPL-3.0-or-later</span></span>
+        <nav aria-label="Liens"><a href="#">Contact</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 8 -->
+  <section class="maquette">
+    <div class="etiquette"><b>8 — Nom en filigrane</b><span>la disposition 1, et le nom en très grand, couleur sable, qui ferme la page</span></div>
+    <div class="scene"><div class="v v8">
+      <div class="ligne">
+        <small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small>
+        <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+      <div class="filigrane" aria-hidden="true">CoproFirst</div>
+    </div></div>
+  </section>
+
+  <!-- 9 -->
+  <section class="maquette">
+    <div class="etiquette"><b>9 — Pastilles</b><span>liens en pastilles de 44 px, faciles à toucher sur téléphone</span></div>
+    <div class="scene"><div class="v v9">
+      <div class="ligne">
+        <p class="bloc-marque" style="margin:0"><img class="logo" src="../site/logo.svg" alt=""><span><b class="nom">CoproFirst</b><small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+        <nav aria-label="Liens"><a href="#">Contact</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 10 -->
+  <section class="maquette">
+    <div class="etiquette"><b>10 — Dernier appel</b><span>une invitation à essayer avant les liens de service</span></div>
+    <div class="scene"><div class="v v10">
+      <div class="haut">
+        <p>Prêt à voir votre résidence dedans ?</p>
+        <div class="actions"><a class="btn btn-bleu" href="#">Essayer la démo</a><a class="btn btn-contour" href="#">Voir le code</a></div>
+      </div>
+      <div class="ligne">
+        <p class="bloc-marque" style="margin:0"><img class="logo" src="../site/logo.svg" alt=""><span><b class="nom">CoproFirst</b><small class="mention">Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+        <nav aria-label="Liens"><a href="#">contact@coprofirst.fr</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav>
+      </div>
+    </div></div>
+  </section>
+</div>
+</body>
+</html>
