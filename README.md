@@ -21,9 +21,14 @@ page `demo.html` en publie les trois comptes publics.
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
 | `site/commun.css`, `site/document.css`, `site/accueil.js`, `site/demo.js` | styles partagés, styles des pages de texte, scripts de l'accueil et de la page Démo |
 | `site/logo.svg` | le logo de CoproFirst (licence propre, voir plus bas) |
+| `site/robots.txt`, `site/sitemap.xml`, `site/llms.txt` | ce que lisent les moteurs de recherche et les assistants IA : tout le site leur est ouvert |
+| `site/partage.png`, `site/apple-touch-icon.png` | l'image des aperçus de lien (Open Graph), l'icône des écrans d'accueil |
 | `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
 | `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |
 | `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
+| `scripts/verifier-referencement.py` | balises de tête (canonique, Open Graph, JSON-LD), sitemap, robots.txt, llms.txt — complets et cohérents |
+| `scripts/generer-image-partage.sh` | refait `site/partage.png` à partir de `scripts/image-partage.html` |
+| `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main |
 | `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
 
 Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
@@ -46,6 +51,8 @@ git config core.hooksPath .githooks && git config pull.ff only
 bash scripts/verifier-depot.sh --selftest
 bash scripts/verifier-depot.sh
 python -m reuse lint
+python3 scripts/verifier-referencement.py --selftest
+python3 scripts/verifier-referencement.py
 python3 scripts/verifier-comptes-demo.py --selftest
 python3 scripts/verifier-comptes-demo.py   # réseau : lit personnages.py sur GitHub
 ```

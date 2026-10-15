@@ -3,4 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # Armé une fois par clone : git config core.hooksPath .githooks
-exec bash "$(git rev-parse --show-toplevel)/scripts/verifier-depot.sh"
+racine="$(git rev-parse --show-toplevel)"
+bash "$racine/scripts/verifier-depot.sh" || exit 1
+# Le référencement lit l'arbre de travail, pas l'index : un fichier modifié mais non
+# indexé est jugé tel qu'il est sur le disque. La CI, elle, juge ce qui est parti.
+python3 "$racine/scripts/verifier-referencement.py"
