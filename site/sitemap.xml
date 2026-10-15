@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+Les pages du site, par leur adresse canonique. scripts/verifier-referencement.py
+exige que la liste soit exactement celle des pages site/*.html. lastmod : la date de
+la dernière modification du contenu de la page, à avancer avec elle.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://coprofirst.fr/</loc><lastmod>2026-10-15</lastmod></url>
+  <url><loc>https://coprofirst.fr/demo.html</loc><lastmod>2026-10-15</lastmod></url>
+  <url><loc>https://coprofirst.fr/mentions-legales.html</loc><lastmod>2026-10-15</lastmod></url>
+  <url><loc>https://coprofirst.fr/confidentialite.html</loc><lastmod>2026-10-15</lastmod></url>
+</urlset>

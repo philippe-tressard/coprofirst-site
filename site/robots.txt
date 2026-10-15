@@ -1,0 +1,57 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# coprofirst.fr présente un logiciel libre : tout le site est ouvert, aux moteurs
+# de recherche comme aux robots des assistants IA (indexation, réponses, et
+# entraînement). Les groupes nommés ci-dessous ne restreignent rien : ils disent
+# à chaque robot, par son nom, qu'il est le bienvenu. Chaque nom vient de la page
+# officielle de son éditeur (relevé du 15/10/2026) ; un robot absent de la liste
+# relève du groupe « * », tout aussi ouvert.
+#
+# Content-Signal : la préférence d'usage proposée par Cloudflare
+# (contentsignals.org). Un robot qui trouve son nom dans un groupe ignore le groupe
+# « * » : la ligne est donc répétée dans chaque groupe.
+
+User-agent: *
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+# Moteurs de recherche
+User-agent: Googlebot
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: DuckDuckBot
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+# Assistants IA — robots d'indexation, de recherche et de lecture à la demande
+User-agent: OAI-SearchBot
+User-agent: ChatGPT-User
+User-agent: GPTBot
+User-agent: Claude-SearchBot
+User-agent: Claude-User
+User-agent: ClaudeBot
+User-agent: PerplexityBot
+User-agent: Perplexity-User
+User-agent: MistralAI-Index
+User-agent: MistralAI-User
+User-agent: MistralAI-Training
+User-agent: meta-webindexer
+User-agent: meta-externalfetcher
+User-agent: meta-externalagent
+User-agent: Amzn-SearchBot
+User-agent: Amzn-User
+User-agent: Amazonbot
+User-agent: DuckAssistBot
+User-agent: CCBot
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+# Jetons de contrôle (pas des robots) : Google et Apple les lisent pour décider si
+# le contenu déjà collecté sert à leurs modèles d'IA.
+User-agent: Google-Extended
+User-agent: Applebot-Extended
+Content-Signal: search=yes, ai-input=yes, ai-train=yes
+Allow: /
+
+Sitemap: https://coprofirst.fr/sitemap.xml

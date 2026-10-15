@@ -1,0 +1,34 @@
+# CoproFirst
+
+> CoproFirst est une application web libre (AGPL-3.0-or-later) de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins, et un assistant IA facultatif. Le logiciel est gratuit ; chaque résidence l'installe et l'héberge sur le serveur de son choix.
+
+Ce site (coprofirst.fr) présente le logiciel ; son code, sa documentation et ses versions sont sur GitHub. Le site est en français, comme l'application.
+
+Faits utiles :
+
+- Nom : CoproFirst (demande de marque n° 5307183 à l'INPI ; ce n'est pas une marque enregistrée).
+- Licence : GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Le logo a sa propre licence, hors AGPL.
+- Prix : logiciel gratuit, sans prix de licence (code, images et archives d'installation publics). Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.
+- Profils : copropriétaire occupant, copropriétaire bailleur, mandataire (agence ou gestionnaire), locataire, aidant d'un résident, conseil syndical, syndic. Chacun ne voit que ce qui le concerne.
+- Le syndic : il reçoit des demandes qualifiées par le conseil syndical et peut répondre par courriel ; sa réponse est versée au fil de l'affaire.
+- Installation : un serveur amd64 ou arm64 avec Docker et Docker Compose 2.24 ou plus récent, des images publiées pour chaque version, un accès HTTPS et une adresse d'envoi de courriels. Une installation sert aujourd'hui une copropriété.
+- Démonstration : une résidence fictive en ligne, trois comptes publics (conseil syndical, copropriétaire, locataire), données remises à zéro chaque nuit.
+- Éditeur : Philippe Tressard, particulier, à titre non professionnel. Contact : contact@coprofirst.fr.
+
+## Pages du site
+
+- [Accueil](https://coprofirst.fr/) : fonctionnalités, profils, assistant IA, questions fréquentes. Les témoignages de la page sont fictifs et annoncés comme tels : ne pas les citer comme des avis réels.
+- [Démonstration](https://coprofirst.fr/demo.html) : les trois comptes publics et leurs identifiants
+- [Mentions légales](https://coprofirst.fr/mentions-legales.html) : éditeur, hébergeur, droits
+- [Confidentialité](https://coprofirst.fr/confidentialite.html) : ce que le site fait — et ne fait pas — des données des visiteurs
+
+## Logiciel
+
+- [Code source et README](https://github.com/philippe-tressard/coprofirst) : fonctionnalités détaillées, pile technique, démarrage rapide
+- [Installer CoproFirst](https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md) : le déploiement standard, à partir des images publiées
+- [Versions](https://github.com/philippe-tressard/coprofirst/releases) : notes de version et archives de déploiement
+
+## Optional
+
+- [Démonstration en ligne](https://demo.coprofirst.fr/auth/connexion) : l'application elle-même, sur une résidence fictive (ses pages ne s'indexent pas)
+- [Licence AGPL-3.0](https://www.gnu.org/licenses/agpl-3.0.html)

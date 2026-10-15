@@ -19,6 +19,36 @@ precedence = "override"
 SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
 SPDX-License-Identifier = "AGPL-3.0-or-later AND LicenseRef-CoproFirst-Logo"
 
+# L'icône des écrans d'accueil (apple-touch-icon) : front/static/icons/icon-192.png
+# de coprofirst, recopié octet pour octet — un rendu du logo, sous sa licence.
+[[annotations]]
+path = "site/apple-touch-icon.png"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "LicenseRef-CoproFirst-Logo"
+
+# L'image de partage (og:image) : photographie de scripts/image-partage.html, qui
+# affiche le logo tel quel pour désigner CoproFirst (permission 3 de sa licence).
+[[annotations]]
+path = "site/partage.png"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "AGPL-3.0-or-later AND LicenseRef-CoproFirst-Logo"
+
+# llms.txt doit commencer par son titre (llmstxt.org) : pas d'en-tête possible.
+[[annotations]]
+path = "site/llms.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
+# La clé IndexNow : le fichier ne doit contenir que la clé (scripts/signaler-indexnow.sh).
+[[annotations]]
+path = "site/186f40c6a1732344a557b47fb1ccb17c.txt"
+precedence = "override"
+SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
+SPDX-License-Identifier = "AGPL-3.0-or-later"
+
 # Le JSON n'admet pas de commentaire : l'en-tête ne peut pas y vivre.
 [[annotations]]
 path = ".claude/settings.json"

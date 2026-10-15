@@ -58,6 +58,15 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   vrais.
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
   consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
+- **Référencement** : le site est ouvert à tous les robots, moteurs **et** assistants
+  IA, entraînement compris (`site/robots.txt`, demande du 15/10/2026). Les données
+  structurées ne balisent **jamais** les témoignages (fictifs) en avis ou en note.
+  La FAQ de l'accueil porte son balisage schema.org en microdonnées, sur le texte
+  visible : aucune copie à tenir à jour. L'image de partage se refait par
+  `bash scripts/generer-image-partage.sh`. ⚠️ Cloudflare sert aussi son propre
+  `robots.txt` géré (préambule *Content Signals*) et peut bloquer les robots IA à
+  la périphérie, quoi que dise le fichier du dépôt : cela se règle dans son tableau
+  de bord, pas ici.
 
 - **La démo** est ouverte depuis le 14/10/2026. On y entre **par le formulaire de
   connexion** de `demo.coprofirst.fr`, avec trois comptes publics (CS,
@@ -83,6 +92,16 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 d'exécution et syntaxe des scripts. Il tourne en `pre-commit`
 (`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
 `reuse lint`.
+
+`python3 scripts/verifier-referencement.py` — chaque page a son adresse canonique
+(`https://coprofirst.fr/…`), ses balises Open Graph, un `<h1>` et aucun `noindex` ;
+ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages, et
+chaque `lastmod` est au moins la date du dernier commit de sa page (**l'avancer**
+quand on modifie une page) ;
+`robots.txt` désigne le sitemap et ne ferme aucun robot ; les liens de `llms.txt`
+mènent à des fichiers du site. En `pre-commit` et en CI, avec `--selftest`. **Une page
+ajoutée** se déclare donc dans le sitemap (et dans `llms.txt`), avec ses balises de
+tête recopiées d'une page voisine.
 
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de

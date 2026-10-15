@@ -50,8 +50,11 @@ juger_page() {
   grep -q 'href="#"' "$f" && echo "LIEN     $f (href=\"#\" : lien qui ne mène nulle part)"
   grep -q 'href="mentions-legales.html"' "$f" || echo "MENTIONS $f (pas de lien vers mentions-legales.html)"
   grep -q 'href="confidentialite.html"' "$f" || echo "CONFID   $f (pas de lien vers confidentialite.html)"
-  # Ressource tierce : <script src>, <link href>, <img src>, url() ou @import vers http(s)
-  grep -Eiq '<(script|img|iframe)[^>]* src="(https?:)?//|<link[^>]* href="(https?:)?//|url\((["'"'"'])?(https?:)?//|@import' "$f" \
+  # Ressource tierce : <script src>, <link href>, <img src>, url() ou @import vers http(s).
+  # Un <link rel="canonical"> ou « alternate » désigne une adresse, il ne charge rien :
+  # il est écarté (une balise par ligne, comme dans les pages du site).
+  grep -Eiv '<link rel="(canonical|alternate)"' "$f" \
+    | grep -Eiq '<(script|img|iframe)[^>]* src="(https?:)?//|<link[^>]* href="(https?:)?//|url\((["'"'"'])?(https?:)?//|@import' \
     && echo "TIERS    $f (ressource chargée depuis un autre site)"
   return 0
 }
@@ -112,6 +115,10 @@ selftest() {
 ' "$liens" '<script src="//traceur.example/t.js"></script>' > "$t/traceur.html"
   printf '%s
 ' "$liens" '<a href="https://github.com/x">code</a>' > "$t/lien-sortant.html"
+  printf '%s
+' "$liens" '<link rel="canonical" href="https://coprofirst.fr/">' > "$t/canonique.html"
+  printf '%s
+' "$liens" '<link rel="canonical" href="https://coprofirst.fr/">' '<link rel="stylesheet" href="https://fonts.example/f.css">' > "$t/canonique-et-police.html"
   page() { # <attendu> <fichier>
     local obtenu; obtenu=$(juger_page "$t/$2" | awk '{print $1}' | tr '
 ' ' ')
@@ -123,6 +130,8 @@ selftest() {
   page "TIERS " police.html
   page "TIERS " traceur.html
   page "" lien-sortant.html
+  page "" canonique.html
+  page "TIERS " canonique-et-police.html
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }

@@ -1,0 +1,44 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+Gabarit de l'image de partage (site/partage.png, 1200 × 630) : celle qu'affichent
+les réseaux sociaux et les messageries quand on y colle un lien vers coprofirst.fr.
+Ce n'est pas une page du site — scripts/generer-image-partage.sh la photographie.
+Mêmes couleurs et typographie que le site (commun.css) ; le logo est le fichier
+du site, affiché tel quel (sa licence : LICENSES/LicenseRef-CoproFirst-Logo.txt).
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Image de partage — CoproFirst</title>
+<link rel="stylesheet" href="../site/commun.css">
+<style>
+html,body{margin:0;width:1200px;height:630px;overflow:hidden}
+body{display:grid;grid-template-columns:1fr 330px;align-items:center;gap:40px;padding:0 80px;
+  background:radial-gradient(90% 120% at 100% 0%,var(--ciel) 0%,var(--creme) 55%)}
+.marque{font-size:2.2rem;gap:16px}
+.marque img{width:64px;height:64px;border-radius:18px}
+h1{font-size:4.6rem;margin-top:34px;max-width:11ch}
+.souligne{background:linear-gradient(transparent 62%,var(--peche) 62%)}
+p{margin:28px 0 0;font-size:1.6rem;line-height:1.4;color:var(--doux);max-width:24em}
+.pied{display:flex;gap:12px;margin-top:40px;font-size:1.25rem}
+.pied span{padding:8px 20px;border-radius:99px;background:#fff;border:1px solid var(--bord);color:var(--bleu);font-weight:600}
+.pied span:first-child{color:var(--or-texte)}
+.imm{align-self:end;display:grid;grid-template-columns:repeat(3,1fr);gap:14px;align-content:start;padding:26px;height:520px;
+  border-radius:26px 26px 0 0;background:#fff;border:2px solid var(--bord);border-bottom:8px solid var(--or)}
+.imm i{height:30px;border-radius:6px;background:rgba(30,58,95,.14)}
+.imm i.on{background:var(--or)}
+</style>
+</head>
+<body>
+<div>
+  <div class="marque"><img src="../site/logo.svg" alt="">CoproFirst</div>
+  <h1>La copropriété, <span class="souligne">enfin en ordre.</span></h1>
+  <p>L'application libre des copropriétés&nbsp;: résidents, conseil syndical et syndic au même endroit.</p>
+  <div class="pied"><span>Logiciel libre · AGPL-3.0</span><span>coprofirst.fr</span></div>
+</div>
+<div class="imm" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i><i></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+</body>
+</html>

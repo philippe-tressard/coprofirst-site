@@ -7,10 +7,110 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CoproFirst — l'application libre des copropriétés</title>
+<title>CoproFirst — l'application libre de gestion de copropriété</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <link rel="stylesheet" href="commun.css">
-<meta name="description" content="CoproFirst rassemble résidents, conseil syndical et syndic dans une application libre, installable et hébergée par la résidence.">
+<meta name="description" content="Application web libre et gratuite de gestion de copropriété : signalements suivis, documents, carnet d'entretien, badges. Pour les résidents, le conseil syndical et le syndic.">
+<link rel="canonical" href="https://coprofirst.fr/">
+<link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CoproFirst">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://coprofirst.fr/">
+<meta property="og:title" content="CoproFirst — l'application libre de gestion de copropriété">
+<meta property="og:description" content="Application web libre et gratuite de gestion de copropriété : signalements suivis, documents, carnet d'entretien, badges. Pour les résidents, le conseil syndical et le syndic.">
+<meta property="og:image" content="https://coprofirst.fr/partage.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CoproFirst — La copropriété, enfin en ordre. L'application libre des copropriétés.">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@graph": [
+  {
+   "@type": "WebSite",
+   "@id": "https://coprofirst.fr/#site",
+   "url": "https://coprofirst.fr/",
+   "name": "CoproFirst",
+   "inLanguage": "fr",
+   "publisher": {
+    "@id": "https://coprofirst.fr/#editeur"
+   },
+   "about": {
+    "@id": "https://coprofirst.fr/#logiciel"
+   }
+  },
+  {
+   "@type": "Person",
+   "@id": "https://coprofirst.fr/#editeur",
+   "name": "Philippe Tressard",
+   "url": "https://coprofirst.fr/mentions-legales.html",
+   "sameAs": [
+    "https://github.com/philippe-tressard"
+   ]
+  },
+  {
+   "@type": "SoftwareApplication",
+   "@id": "https://coprofirst.fr/#logiciel",
+   "name": "CoproFirst",
+   "url": "https://coprofirst.fr/",
+   "description": "Application web libre de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins, assistant IA facultatif.",
+   "applicationCategory": "BusinessApplication",
+   "applicationSubCategory": "Gestion de copropriété",
+   "operatingSystem": "Serveur Docker (amd64 ou arm64) ; navigateur web, installable sur téléphone",
+   "softwareRequirements": "Docker et Docker Compose 2.24 ou plus récent, accès HTTPS, adresse d'envoi de courriels (SMTP)",
+   "featureList": [
+    "Signalements suivis jusqu'à leur résolution, kanban du conseil syndical",
+    "Documents accessibles selon le profil",
+    "Carnet d'entretien constitué à partir des contrats et des affaires closes",
+    "Bilan de l'exercice pour l'assemblée générale",
+    "Badges d'accès et télécommandes de parking, confiés au locataire",
+    "Communauté : idées, sondages, petites annonces",
+    "Affiches de hall en PDF",
+    "Assistant IA facultatif, désactivé par défaut"
+   ],
+   "inLanguage": "fr",
+   "isAccessibleForFree": true,
+   "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+   "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "EUR"
+   },
+   "author": {
+    "@id": "https://coprofirst.fr/#editeur"
+   },
+   "installUrl": "https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md",
+   "downloadUrl": "https://github.com/philippe-tressard/coprofirst/releases",
+   "image": "https://coprofirst.fr/partage.png",
+   "sameAs": [
+    "https://github.com/philippe-tressard/coprofirst"
+   ]
+  },
+  {
+   "@type": "SoftwareSourceCode",
+   "@id": "https://coprofirst.fr/#code",
+   "name": "CoproFirst — code source",
+   "codeRepository": "https://github.com/philippe-tressard/coprofirst",
+   "programmingLanguage": [
+    "Python",
+    "TypeScript"
+   ],
+   "runtimePlatform": "Docker",
+   "license": "https://spdx.org/licenses/AGPL-3.0-or-later.html",
+   "targetProduct": {
+    "@id": "https://coprofirst.fr/#logiciel"
+   },
+   "author": {
+    "@id": "https://coprofirst.fr/#editeur"
+   }
+  }
+ ]
+}
+</script>
 <script src="accueil.js"></script>
 <style>
 @media (hover:hover) and (pointer:fine){
@@ -215,6 +315,19 @@ footer{scroll-snap-align:end}
 .fictif::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--or)}
 .tete p:has(.fictif)+p{margin-top:10px}
 
+/* Questions fréquentes : chaque réponse visible d'emblée, sans accordéon — une
+   question se lit d'un coup d'œil, et un robot lit la même chose qu'un visiteur.
+   Balisage schema.org (FAQPage) en microdonnées sur le texte même : pas de copie
+   à tenir à jour ailleurs. */
+.faq{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.question{background:#fff;border:1px solid var(--bord);border-radius:24px;padding:24px 26px}
+.question h3{font-size:1.15rem;margin-bottom:8px}
+.question p{margin:0;color:#3f4a5a;font-size:.97rem;text-wrap:pretty}
+.question p+p{margin-top:8px}
+.question a{color:var(--bleu);text-underline-offset:3px}
+.question code{font:500 .88em var(--mono);background:var(--creme);border-radius:6px;padding:1px 6px}
+@media (max-width:760px){.faq{grid-template-columns:1fr}.question{padding:20px}}
+
 /* Appel final */
 .final{background:#fff;border:1px solid var(--bord);border-radius:32px;padding:56px 40px;text-align:center}
 .final h2{font-size:clamp(1.8rem,3.8vw,2.6rem)}
@@ -276,7 +389,7 @@ footer{scroll-snap-align:end}
     <div class="c">
       <a class="pastille-libre h-in" href="https://github.com/philippe-tressard/coprofirst">Logiciel libre · <b>AGPL-3.0 →</b></a>
       <h1 class="h-in">La copropriété, <span class="souligne">enfin en ordre.</span></h1>
-      <p class="chapo h-in">Signalements suivis, documents rangés, carnet d'entretien tenu, voisins informés. Une application installable, hébergée par votre résidence — sur l'ordinateur comme sur le téléphone.</p>    </div>
+      <p class="chapo h-in">Signalements suivis, documents rangés, carnet d'entretien tenu, voisins informés. Une application libre de gestion de copropriété, installée et hébergée par votre résidence — sur l'ordinateur comme sur le téléphone.</p>    </div>
     <div class="c">
       <div class="scene">
         <div class="imm i1" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i></div>
@@ -441,7 +554,7 @@ footer{scroll-snap-align:end}
     </div>
   </section>
 
-  <section id="avis" aria-labelledby="titre-avis" style="padding-top:0">
+  <section id="avis" aria-labelledby="titre-avis" style="padding-top:0" data-nosnippet>
     <div class="c"><div class="tete revele"><h2 id="titre-avis">Des nouvelles des résidences</h2><p><span class="fictif">Témoignages fictifs, à titre d'illustration</span></p><p>CoproFirst attend ses premiers retours&nbsp;: ils remplaceront ceux-ci, avec l'accord de leurs auteurs.</p></div></div>
     <div class="defile" tabindex="0" aria-label="Témoignages fictifs, à titre d'illustration — défilement en pause au survol ou au focus">
       <div class="piste">
@@ -457,6 +570,54 @@ footer{scroll-snap-align:end}
         <figure class="postale" aria-hidden="true"><blockquote>« La synthèse de clôture arrive prête à relire. On corrige deux phrases et elle part au carnet. »</blockquote><figcaption><span class="rond">HD</span><span><b>Hélène D.</b>Conseil syndical, 64 lots</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« Mon propriétaire m'a confié mon badge sans un seul appel. »</blockquote><figcaption><span class="rond">KB</span><span><b>Karim B.</b>Locataire</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« À la sortie du locataire, je récupère les badges en un geste. »</blockquote><figcaption><span class="rond">SL</span><span><b>Sophie L.</b>Copropriétaire bailleuse</span></figcaption></figure>
+      </div>
+    </div>
+  </section>
+
+  <section id="questions" aria-labelledby="titre-questions" style="padding-top:0" itemscope itemtype="https://schema.org/FAQPage">
+    <div class="c">
+      <div class="tete revele"><h2 id="titre-questions">Questions fréquentes</h2><p>Ce qu'on demande avant d'installer CoproFirst dans sa résidence.</p></div>
+      <div class="faq">
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Qu'est-ce que CoproFirst&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Une application web de gestion de copropriété, du côté des résidents et du conseil syndical&nbsp;: signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins. C'est un logiciel libre, publié sous licence AGPL-3.0-or-later.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">À qui s'adresse-t-elle&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>À toute la résidence&nbsp;: copropriétaires occupants ou bailleurs, locataires, agences mandataires, aidants d'un résident, conseil syndical et syndic. Chacun n'y voit que ce qui le concerne.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Combien coûte CoproFirst&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Le logiciel est gratuit, sans prix de licence&nbsp;: son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Comment l'installer&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur un serveur <code>amd64</code> ou <code>arm64</code> équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">installer CoproFirst</a>.</p><p>Une installation sert aujourd'hui une copropriété.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Faut-il des compétences techniques&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: savoir lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Où sont les données de la résidence&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur le serveur que la résidence a choisi&nbsp;: c'est elle qui installe et héberge l'application. Le guide d'installation explique comment en garder une sauvegarde copiée hors de la machine.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Et le syndic&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>CoproFirst est l'outil des résidents et du conseil syndical. Le syndic y reçoit des demandes qualifiées par le conseil, et peut répondre par simple courriel&nbsp;: sa réponse est versée au fil de l'affaire.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">L'assistant IA est-il obligatoire&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Non. Il est désactivé tant que la résidence ne l'active pas, usage par usage, avec un plafond d'appels. Il propose&nbsp;; une personne relit et décide, et tout texte assisté est signalé ✨.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Peut-on l'essayer avant de l'installer&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Oui&nbsp;: <a href="demo.html">la démonstration en ligne</a> ouvre une résidence fictive sous trois comptes publics — conseil syndical, copropriétaire, locataire —, sans inscription. Ses données repartent de zéro chaque nuit.</p></div></div>
+        </article>
+        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+          <h3 itemprop="name">Qui l'édite&nbsp;?</h3>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Philippe Tressard, à titre non professionnel. Le code est public, et les contributions sont les bienvenues&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst">le dépôt GitHub</a>.</p></div></div>
+        </article>
       </div>
     </div>
   </section>
