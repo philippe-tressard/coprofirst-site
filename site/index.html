@@ -66,6 +66,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     "Signalements suivis jusqu'à leur résolution, kanban du conseil syndical",
     "Documents accessibles selon le profil",
     "Carnet d'entretien constitué à partir des contrats et des affaires closes",
+    "Fil de courriels transféré par le conseil syndical, versé à l'affaire message par message",
     "Bilan de l'exercice pour l'assemblée générale",
     "Badges d'accès et télécommandes de parking, confiés au locataire",
     "Communauté : idées, sondages, petites annonces",
@@ -194,9 +195,13 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 .telephone{width:300px;border-radius:42px;padding:11px;background:#0f1d30;box-shadow:0 40px 70px -28px rgba(20,41,74,.55)}
 .ecran{border-radius:32px;background:var(--creme);overflow:hidden;height:520px;display:flex;flex-direction:column}
-.ecran-tete{background:var(--bleu);color:#fff;padding:20px 18px 14px}
-.ecran-tete small{display:block;font-size:.72rem;opacity:.8}
-.ecran-tete b{font:700 1.25rem var(--titres)}
+/* En-tête mobile de l'application : marque de la résidence et menu ☰ (Nav.svelte) */
+.ecran-tete{display:flex;align-items:center;gap:8px;background:#fff;border-bottom:1px solid var(--bord);padding:20px 14px 10px}
+.ecran-logo{flex:none;width:22px;height:22px;border-radius:7px;background:var(--bleu)}
+.ecran-tete small{flex:1;min-width:0;font-size:.76rem;font-weight:700;color:var(--encre);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hamb{flex:none;width:18px;display:grid;gap:4px}
+.hamb i{display:block;height:2px;border-radius:2px;background:var(--encre)}
+.ecran-titre{display:block;padding:14px 14px 0;font:700 1.2rem var(--titres);color:var(--bleu)}
 .filtres{display:flex;gap:5px;padding:12px 12px 4px;overflow:hidden}
 .filtres span{flex:none;white-space:nowrap;font-size:.7rem;font-weight:600;border-radius:99px;padding:4px 9px;background:#fff;border:1px solid var(--bord);color:var(--doux)}
 .filtres .retenu{background:var(--bleu);border-color:var(--bleu);color:#fff}
@@ -204,11 +209,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 .carte-m{display:grid;grid-template-columns:38px 1fr;gap:10px;background:#fff;border:1px solid var(--bord);border-radius:14px;padding:10px;font-size:.78rem;line-height:1.35}
 .carte-m .quand{font-size:.95rem}
 .carte-m b{display:block;font-size:.82rem;margin-bottom:5px}
-.carte-m .pa{font-size:.66rem;padding:1px 7px;margin:0 3px 3px 0}
-.barre-bas{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--bord);background:#fff;padding:8px 4px 14px;font-size:.66rem;text-align:center;color:var(--doux)}
-.barre-bas span::before{content:"";display:block;width:18px;height:18px;border-radius:6px;margin:0 auto 3px;background:var(--bord)}
-.barre-bas .ici{color:var(--bleu);font-weight:700}
-.barre-bas .ici::before{background:var(--bleu)}
+.carte-m .pa{font-size:.66rem;padding:1px 7px;margin:0 3px 3px 0;white-space:nowrap}
 
 section{padding:88px 0}
 /* Défilement aimanté : un geste qui s'arrête près du haut d'une section s'y pose — la
@@ -229,7 +230,7 @@ footer{scroll-snap-align:end}
 .bento{display:grid;grid-template-columns:repeat(6,1fr);gap:16px}
 .tuile{grid-column:span 2;border-radius:24px;padding:26px;transition:transform 220ms var(--ease-out)}
 .tuile.large{grid-column:span 4}.tuile.moyenne{grid-column:span 3}.tuile.pleine{grid-column:span 6}
-.t-ciel{background:var(--ciel)}.t-peche{background:var(--peche)}.t-menthe{background:var(--menthe)}.t-sable{background:var(--sable)}.t-blanc{background:#fff;border:1px solid var(--bord)}
+.t-ciel{background:var(--ciel)}.t-lilas{background:var(--lilas)}.t-peche{background:var(--peche)}.t-menthe{background:var(--menthe)}.t-sable{background:var(--sable)}.t-blanc{background:#fff;border:1px solid var(--bord)}
 .tuile h3{font-size:1.2rem;margin-bottom:6px}
 .tuile p{margin:0;color:#3f4a5a;font-size:.97rem}
 .fil{margin-top:18px;border-left:2px solid rgba(30,58,95,.25);padding-left:16px;display:grid;gap:9px;font-size:.86rem}
@@ -405,26 +406,26 @@ footer{scroll-snap-align:end}
         <div class="capture" role="img" aria-label="Aperçu de la liste des affaires dans CoproFirst">
       <div class="fenetre-barre" aria-hidden="true"><i></i><i></i><i></i></div>
       <div class="appli" aria-hidden="true">
-        <div class="menu"><span>Accueil</span><span class="actif">Affaires</span><span>Documents</span><span>Mes lots &amp; accès</span><span>Communauté</span><span>Résidence</span></div>
+        <div class="menu"><span>Accueil</span><span>Résidence</span><span class="actif">Affaires</span><span>Mes lots &amp; accès</span><span>Annuaire</span><span>Communauté</span><span>FAQ</span></div>
         <div class="liste">
-          <div class="ligne"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-c">En cours</span><span class="pa pa-b">Bât. B · Ascenseur</span></div></div>
+          <div class="ligne"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-c">Chez le prestataire</span><span class="pa pa-b">Bât. B · Ascenseur</span></div></div>
           <div class="ligne"><div class="quand">09<small>oct.</small></div><div><b>Coupure d'eau jeudi de 9 h à 12 h</b><span class="pa pa-b">Actualité</span></div></div>
           <div class="ligne"><div class="quand">02<small>oct.</small></div><div><b>Infiltration au niveau −1 du parking</b><span class="pa pa-c">Chez le syndic</span><span class="pa pa-b">Parking</span></div></div>
-          <div class="ligne"><div class="quand">28<small>sept.</small></div><div><b>Éclairage de l'allée des caves</b><span class="pa pa-r">Résolu</span><span class="pa pa-ia">✨ Synthèse validée</span></div></div>
+          <div class="ligne"><div class="quand">28<small>sept.</small></div><div><b>Éclairage de l'allée des caves</b><span class="pa pa-r">Résolu</span><span class="pa pa-ia">🧾 Synthèse validée</span></div></div>
         </div>
       </div>
     </div>
         <div class="telephone" role="img" aria-label="Aperçu de la liste des affaires de CoproFirst sur un téléphone">
           <div class="ecran" aria-hidden="true">
-            <div class="ecran-tete"><small>Résidence des Tilleuls</small><b>Affaires</b></div>
-            <div class="filtres"><span class="retenu">Tout 4</span><span>Actualité</span><span>Calendrier</span><span>Affaire</span></div>
+            <div class="ecran-tete"><span class="ecran-logo"></span><small>Résidence des Tilleuls</small><span class="hamb"><i></i><i></i><i></i></span></div>
+            <b class="ecran-titre">Mes affaires</b>
+            <div class="filtres"><span class="retenu">Tous 4</span><span>Actualité</span><span>Calendrier</span><span>Affaire</span></div>
             <div class="ecran-liste">
-              <div class="carte-m"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-c">En cours</span><span class="pa pa-b">Bât. B · Ascenseur</span></div></div>
+              <div class="carte-m"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-c">Chez le prestataire</span><span class="pa pa-b">Bât. B · Ascenseur</span></div></div>
               <div class="carte-m"><div class="quand">09<small>oct.</small></div><div><b>Coupure d'eau jeudi de 9 h à 12 h</b><span class="pa pa-b">Actualité</span></div></div>
               <div class="carte-m"><div class="quand">02<small>oct.</small></div><div><b>Infiltration au niveau −1 du parking</b><span class="pa pa-c">Chez le syndic</span><span class="pa pa-b">Parking</span></div></div>
-              <div class="carte-m"><div class="quand">28<small>sept.</small></div><div><b>Éclairage de l'allée des caves</b><span class="pa pa-r">Résolu</span><span class="pa pa-ia">✨ Synthèse validée</span></div></div>
+              <div class="carte-m"><div class="quand">28<small>sept.</small></div><div><b>Éclairage de l'allée des caves</b><span class="pa pa-r">Résolu</span><span class="pa pa-ia">🧾 Synthèse validée</span></div></div>
             </div>
-            <div class="barre-bas"><span>Accueil</span><span class="ici">Affaires</span><span>Documents</span><span>Plus</span></div>
           </div>
         </div>
         <div class="bulle b1" aria-hidden="true"><b>Bât. B · 3ᵉ</b>L'ascenseur est réparé, merci&nbsp;!</div>
@@ -454,7 +455,8 @@ footer{scroll-snap-align:end}
         <article class="tuile t-sable revele"><h3>Carnet d'entretien</h3><p>Constitué à partir des contrats et des affaires closes, sans ressaisie.</p></article>
         <article class="tuile t-blanc revele"><h3>Communauté</h3><p>Idées, sondages, petites annonces — entre résidents.</p></article>
         <article class="tuile t-ciel revele"><h3>Affiches de hall</h3><p>Un PDF au format qui convient, prêt à punaiser.</p></article>
-        <article class="tuile pleine t-blanc revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
+        <article class="tuile moyenne t-lilas revele"><h3>Un fil de courriels devient une affaire</h3><p>Un membre du conseil transfère le fil reçu&nbsp;: chaque message devient une suite de l'affaire, datée et signée de son auteur.</p><div class="chips" aria-hidden="true"><span>Daté</span><span>Signé</span><span>Jamais en double</span></div></article>
+        <article class="tuile moyenne t-blanc revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
       </div>
     </div>
   </section>
@@ -476,7 +478,7 @@ footer{scroll-snap-align:end}
       </div>
 
       <div class="panneau" role="tabpanel" id="p-occ" aria-labelledby="t-occ">
-        <div><h3>Votre bien, vos documents, vos voisins</h3><p class="qui">Copropriétaire occupant</p><ul><li>Signaler un problème et suivre sa résolution</li><li>Procès-verbaux, règlement, diagnostics de vos lots</li><li>Badges et télécommandes de parking</li></ul></div>
+        <div><h3>Votre bien, vos documents, vos voisins</h3><p class="qui">Copropriétaire occupant</p><ul><li>Signaler un problème et suivre sa résolution</li><li>Procès-verbaux, règlement et diagnostics de votre résidence</li><li>Badges et télécommandes de parking</li></ul></div>
         <div class="vignette" style="background:var(--ciel)" aria-hidden="true"><div><b>Mes lots</b><br><small>Appartement · Cave · Parking</small></div><div><b>AG du 14 novembre</b><br><small>Convocation disponible</small></div></div>
       </div>
       <div class="panneau" role="tabpanel" id="p-bail" aria-labelledby="t-bail" hidden>
@@ -484,16 +486,16 @@ footer{scroll-snap-align:end}
         <div class="vignette" style="background:var(--sable)" aria-hidden="true"><div><b>Bail en cours</b><br><small>Appartement 24 · jusqu'au 30/06</small></div><div><b>2 badges confiés</b><br><small>Rendus à la sortie</small></div></div>
       </div>
       <div class="panneau" role="tabpanel" id="p-mand" aria-labelledby="t-mand" hidden>
-        <div><h3>L'agence a enfin le bon interlocuteur</h3><p class="qui">Agence ou gestionnaire qui loue pour un copropriétaire</p><ul><li>Signaler une panne du logement géré et en suivre le fil</li><li>Recevoir ce que le conseil syndical adresse aux bailleurs</li><li>Un compte à son nom, distinct de celui du propriétaire</li></ul></div>
-        <div class="vignette" style="background:var(--peche)" aria-hidden="true"><div><b>Fuite sous évier — Apt 31</b><br><small>Déposée par l'agence · En cours</small></div><div><b>Message aux bailleurs</b><br><small>Ravalement : accès aux balcons</small></div></div>
+        <div><h3>L'agence a enfin le bon interlocuteur</h3><p class="qui">Agence ou gestionnaire qui loue pour un copropriétaire</p><ul><li>Recevoir ce que le conseil syndical adresse aux bailleurs</li><li>Consulter, sans agir au nom du propriétaire&nbsp;: le conseil syndical peut lui ajouter un rôle</li><li>Un compte à son nom, distinct de celui du propriétaire</li></ul></div>
+        <div class="vignette" style="background:var(--peche)" aria-hidden="true"><div><b>Coupure d'eau jeudi</b><br><small>Adressée aux bailleurs du bâtiment B</small></div><div><b>Message aux bailleurs</b><br><small>Ravalement : accès aux balcons</small></div></div>
       </div>
       <div class="panneau" role="tabpanel" id="p-loc" aria-labelledby="t-loc" hidden>
         <div><h3>Informé comme un voisin</h3><p class="qui">Locataire</p><ul><li>Coupures, pannes et travaux de votre bâtiment</li><li>Les badges que votre bailleur vous confie</li><li>Idées, sondages et petites annonces</li></ul></div>
         <div class="vignette" style="background:var(--menthe)" aria-hidden="true"><div><b>Coupure d'eau jeudi</b><br><small>Bâtiment B · 9 h à 12 h</small></div><div><b>Badge confié</b><br><small>Jusqu'à la fin du bail</small></div></div>
       </div>
       <div class="panneau" role="tabpanel" id="p-aid" aria-labelledby="t-aid" hidden>
-        <div><h3>Veiller sur un proche, sans parler à sa place</h3><p class="qui">Aidant d'un résident</p><ul><li>Lire ce qui est adressé à la personne aidée, tant qu'elle le souhaite</li><li>C'est elle qui ouvre la délégation, et elle peut la retirer</li><li>Ce que l'aidant écrit l'est sous son propre nom</li></ul></div>
-        <div class="vignette" style="background:var(--lilas)" aria-hidden="true"><div><b>Délégation active</b><br><small>Accordée par votre mère</small></div><div><b>Coupure d'eau jeudi</b><br><small>Ce qu'elle reçoit, vous le lisez</small></div></div>
+        <div><h3>Veiller sur un proche, sans parler à sa place</h3><p class="qui">Aidant d'un résident</p><ul><li>Lire ce qui est adressé à la personne aidée, tant qu'elle le souhaite</li><li>Le conseil syndical ouvre la délégation à sa demande, et elle peut la retirer</li><li>L'aidant lit, il n'agit pas à sa place</li></ul></div>
+        <div class="vignette" style="background:var(--lilas)" aria-hidden="true"><div><b>Délégation active</b><br><small>Ouverte à la demande de votre mère</small></div><div><b>Coupure d'eau jeudi</b><br><small>Ce qu'elle reçoit, vous le lisez</small></div></div>
       </div>
       <div class="panneau" role="tabpanel" id="p-cs" aria-labelledby="t-cs" hidden>
         <div><h3>Moins de relances, plus de décisions</h3><p class="qui">Conseil syndical</p><ul><li>Le kanban des dossiers&nbsp;: AG, conseil, syndic, prestataire</li><li>Un bilan chiffré de l'exercice pour l'assemblée</li><li>Des affiches de hall en PDF, prêtes à imprimer</li></ul></div>
@@ -511,7 +513,7 @@ footer{scroll-snap-align:end}
     <div class="carrousel revele" tabindex="0" aria-label="Usages de l'assistant IA, à faire défiler">
       <article class="carte-ia">
         <div class="illu illu-q" aria-hidden="true"><div class="bulle-q">Ai-je le droit d'installer une pergola&nbsp;?</div><div class="citation">« …sans l'autorisation de l'assemblée… »</div><div class="ok">✓ Extrait retrouvé dans le règlement</div></div>
-        <h3>Questions au règlement</h3><p>Une réponse argumentée, chaque extrait cité mot pour mot et vérifié dans le texte. Un avis indicatif, pas un acte.</p>
+        <h3>Questions au règlement</h3><p>Posée depuis Ma résidence, une réponse argumentée&nbsp;: chaque extrait cité est recherché dans le texte, et l'écran dit s'il y a été retrouvé. Un avis indicatif, pas un acte.</p>
       </article>
       <article class="carte-ia">
         <div class="illu illu-g" aria-hidden="true"><i style="height:40%"></i><i style="height:65%"></i><i style="height:30%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i></div>
@@ -527,10 +529,10 @@ footer{scroll-snap-align:end}
       </article>
       <article class="carte-ia">
         <div class="illu illu-d" aria-hidden="true"><div class="bulle-q">la porte du garage reste ouverte depuis hier…</div><div class="barre-ia"><span>Appliquer</span><span>Ignorer</span></div></div>
-        <h3>Une description à reprendre</h3><p>Une proposition apparaît sous le champ. Appliquer, ou ignorer&nbsp;: c'est vous qui choisissez.</p>
+        <h3>Une description à reprendre</h3><p>Pour le conseil syndical, une proposition apparaît sous le champ. Appliquer, ou ignorer&nbsp;: c'est lui qui choisit.</p>
       </article>
     </div>
-    <div class="c"><ul class="garde-fous" aria-label="Garde-fous"><li>Désactivé par défaut</li><li>Plafond d'appels par mois</li><li>Texte assisté signalé ✨</li><li>Votre fournisseur, votre clé</li></ul></div>
+    <div class="c"><ul class="garde-fous" aria-label="Garde-fous"><li>Désactivé par défaut</li><li>Plafonds d'appels, par mois et par heure</li><li>Texte assisté signalé ✨</li><li>Votre fournisseur, votre clé</li></ul></div>
   </section>
 
   <section id="demo" aria-labelledby="titre-demo">
@@ -544,9 +546,9 @@ footer{scroll-snap-align:end}
         </div>
         <div class="roles">
           <ul aria-label="Comptes de la démonstration">
-            <li><a class="role" href="demo.html#conseil-syndical"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Kanban, bilan de l'exercice, affiches</small></span></a></li>
-            <li><a class="role" href="demo.html#coproprietaire"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Copropriétaire</b><small>Signaler, suivre, lire ses documents</small></span></a></li>
-            <li><a class="role" href="demo.html#locataire"><span class="role-ico" aria-hidden="true">🔑</span><span><b>Locataire</b><small>Coupures, travaux, badges confiés</small></span></a></li>
+            <li><a class="role" href="demo.html#conseil-syndical"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Bilan de l'exercice, prestataires, affiches</small></span></a></li>
+            <li><a class="role" href="demo.html#coproprietaire"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Copropriétaire</b><small>Signaler, suivre, demander un badge</small></span></a></li>
+            <li><a class="role" href="demo.html#locataire"><span class="role-ico" aria-hidden="true">🔑</span><span><b>Locataire</b><small>Pannes du bâtiment, vie entre voisins</small></span></a></li>
           </ul>
           <p class="adresse-demo">Sur <a href="https://demo.coprofirst.fr/auth/connexion">demo.coprofirst.fr</a></p>
         </div>
@@ -560,13 +562,13 @@ footer{scroll-snap-align:end}
       <div class="piste">
         <figure class="postale"><blockquote>« Chacun voit où en est sa demande. Nous ne répondons plus dix fois à la même question. »</blockquote><figcaption><span class="rond" aria-hidden="true">CM</span><span><b>Claire M.</b>Présidente du conseil syndical</span></figcaption></figure>
         <figure class="postale"><blockquote>« J'aide ma mère&nbsp;: je lis ce qu'elle reçoit, et je la préviens des coupures d'eau avant qu'elles n'arrivent. »</blockquote><figcaption><span class="rond" aria-hidden="true">JP</span><span><b>Julien P.</b>Aidant</span></figcaption></figure>
-        <figure class="postale"><blockquote>« Pour les logements que nous gérons, une fuite se signale en deux minutes et se suit sans appeler le propriétaire. »</blockquote><figcaption><span class="rond" aria-hidden="true">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
+        <figure class="postale"><blockquote>« Pour les logements que nous gérons, nous lisons ce que le conseil adresse aux bailleurs, sans attendre que le propriétaire nous le transfère. »</blockquote><figcaption><span class="rond" aria-hidden="true">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
         <figure class="postale"><blockquote>« La synthèse de clôture arrive prête à relire. On corrige deux phrases et elle part au carnet. »</blockquote><figcaption><span class="rond" aria-hidden="true">HD</span><span><b>Hélène D.</b>Conseil syndical, 64 lots</span></figcaption></figure>
         <figure class="postale"><blockquote>« Mon propriétaire m'a confié mon badge sans un seul appel. »</blockquote><figcaption><span class="rond" aria-hidden="true">KB</span><span><b>Karim B.</b>Locataire</span></figcaption></figure>
         <figure class="postale"><blockquote>« À la sortie du locataire, je récupère les badges en un geste. »</blockquote><figcaption><span class="rond" aria-hidden="true">SL</span><span><b>Sophie L.</b>Copropriétaire bailleuse</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« Chacun voit où en est sa demande. Nous ne répondons plus dix fois à la même question. »</blockquote><figcaption><span class="rond">CM</span><span><b>Claire M.</b>Présidente du conseil syndical</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« J'aide ma mère&nbsp;: je lis ce qu'elle reçoit, et je la préviens des coupures d'eau avant qu'elles n'arrivent. »</blockquote><figcaption><span class="rond">JP</span><span><b>Julien P.</b>Aidant</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« Pour les logements que nous gérons, une fuite se signale en deux minutes et se suit sans appeler le propriétaire. »</blockquote><figcaption><span class="rond">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
+        <figure class="postale" aria-hidden="true"><blockquote>« Pour les logements que nous gérons, nous lisons ce que le conseil adresse aux bailleurs, sans attendre que le propriétaire nous le transfère. »</blockquote><figcaption><span class="rond">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« La synthèse de clôture arrive prête à relire. On corrige deux phrases et elle part au carnet. »</blockquote><figcaption><span class="rond">HD</span><span><b>Hélène D.</b>Conseil syndical, 64 lots</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« Mon propriétaire m'a confié mon badge sans un seul appel. »</blockquote><figcaption><span class="rond">KB</span><span><b>Karim B.</b>Locataire</span></figcaption></figure>
         <figure class="postale" aria-hidden="true"><blockquote>« À la sortie du locataire, je récupère les badges en un geste. »</blockquote><figcaption><span class="rond">SL</span><span><b>Sophie L.</b>Copropriétaire bailleuse</span></figcaption></figure>
