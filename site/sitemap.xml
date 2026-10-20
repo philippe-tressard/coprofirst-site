@@ -8,8 +8,8 @@ exige que la liste soit exactement celle des pages site/*.html. lastmod : la dat
 la dernière modification du contenu de la page, à avancer avec elle.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <url><loc>https://coprofirst.fr/</loc><lastmod>2026-10-16</lastmod></url>
+  <url><loc>https://coprofirst.fr/</loc><lastmod>2026-10-20</lastmod></url>
   <url><loc>https://coprofirst.fr/demo.html</loc><lastmod>2026-10-16</lastmod></url>
-  <url><loc>https://coprofirst.fr/mentions-legales.html</loc><lastmod>2026-10-15</lastmod></url>
-  <url><loc>https://coprofirst.fr/confidentialite.html</loc><lastmod>2026-10-15</lastmod></url>
+  <url><loc>https://coprofirst.fr/mentions-legales.html</loc><lastmod>2026-10-20</lastmod></url>
+  <url><loc>https://coprofirst.fr/confidentialite.html</loc><lastmod>2026-10-20</lastmod></url>
 </urlset>

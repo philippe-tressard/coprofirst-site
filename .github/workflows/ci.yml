@@ -28,6 +28,10 @@ jobs:
         run: python3 scripts/verifier-referencement.py --selftest
       - name: Référencement — canoniques, Open Graph, JSON-LD, sitemap, robots.txt, llms.txt
         run: python3 scripts/verifier-referencement.py
+      - name: Avis publiés (selftest)
+        run: python3 scripts/verifier-avis.py --selftest
+      - name: Avis publiés — forme de l'export, clés en liste blanche, aucune coordonnée
+        run: python3 scripts/verifier-avis.py
       - name: Licences (REUSE)
         run: |
           python -m pip install reuse==6.2.0

@@ -303,18 +303,29 @@ footer{scroll-snap-align:end}
 
 /* Témoignages : cartes postales qui défilent */
 .defile{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);padding:6px 0}
-.piste{display:flex;gap:18px;width:max-content;animation:defile 60s linear infinite}
+.piste{display:flex;gap:18px;width:max-content;animation:defile var(--duree,60s) linear infinite}
 .defile:hover .piste,.defile:focus-within .piste{animation-play-state:paused}
 @keyframes defile{to{transform:translateX(calc(-50% - 9px))}}
-.postale{width:330px;flex:none;margin:0;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:16px}
-.postale:nth-child(4n+1){background:var(--ciel)}.postale:nth-child(4n+2){background:var(--peche)}.postale:nth-child(4n+3){background:var(--menthe)}.postale:nth-child(4n+4){background:var(--sable)}
+/* La teinte vient de accueil.js (data-teinte), pas de :nth-child : la copie de la
+   boucle garde celle de sa carte, et la jonction ne change pas de couleur. */
+.postale{width:min(330px,100vw - 32px);flex:none;margin:0;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:14px}
+.postale[data-teinte="0"]{background:var(--ciel)}.postale[data-teinte="1"]{background:var(--peche)}.postale[data-teinte="2"]{background:var(--menthe)}.postale[data-teinte="3"]{background:var(--sable)}
+.etoiles{margin:0;color:var(--or-texte);font-size:1.1rem;letter-spacing:2px;line-height:1}
+.etoiles span{color:rgba(29,42,58,.22)}
 .postale blockquote{margin:0;font:1.04rem/1.55 var(--titres)}
+.postale blockquote p{margin:0;white-space:pre-line;overflow-wrap:anywhere}
+.postale .titre-avis{font-weight:700;color:var(--bleu);margin-bottom:6px}
 .postale figcaption{margin-top:auto;display:flex;gap:12px;align-items:center;font-size:.88rem;color:var(--doux)}
-.postale figcaption b{display:block;color:var(--encre)}
+.postale figcaption b,.postale figcaption time{display:block}
+.postale figcaption b{color:var(--encre)}
 .rond{width:42px;height:42px;flex:none;border-radius:50%;background:#fff;display:grid;place-items:center;font-weight:700;color:var(--bleu);font-size:.85rem}
-.fictif{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:99px;background:#fff;border:1px solid var(--bord);font-size:.92rem;font-weight:600;color:var(--or-texte)}
-.fictif::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--or)}
-.tete p:has(.fictif)+p{margin-top:10px}
+/* Immobile : trop peu d'avis pour remplir la largeur, ou mouvement réduit demandé
+   (accueil.js pose .fixe dans les deux cas) — les cartes se rangent, sans copie. */
+.defile.fixe{-webkit-mask-image:none;mask-image:none}
+.defile.fixe .piste{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
+.defile.fixe .piste>[aria-hidden="true"]{display:none}
+.avis-mention{max-width:46em;margin:22px auto 0;text-align:center;font-size:.88rem;color:var(--doux);text-wrap:pretty}
+.avis-mention a{color:var(--bleu);text-underline-offset:3px}
 
 /* Questions fréquentes : chaque réponse visible d'emblée, sans accordéon — une
    question se lit d'un coup d'œil, et un robot lit la même chose qu'un visiteur.
@@ -365,9 +376,6 @@ footer{scroll-snap-align:end}
   .onglets.copie{transition:none}
   .role:active,.role:hover{transform:none}
   .jauge i{transition:none}
-  .piste{animation:none;flex-wrap:wrap;width:auto;justify-content:center}
-  .piste [aria-hidden="true"]{display:none}
-  .defile{-webkit-mask-image:none;mask-image:none}
   html{scroll-snap-type:none}
   @keyframes fondu{from{opacity:0}to{opacity:1}}
 }
@@ -381,7 +389,7 @@ footer{scroll-snap-align:end}
       <img src="logo.svg" alt="" width="38" height="38">
       CoproFirst
     </a>
-    <nav aria-label="Navigation principale"><a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#avis">Témoignages</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a><a class="btn btn-bleu" href="demo.html">Essayer la démo</a></nav>
+    <nav aria-label="Navigation principale"><a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#avis" hidden>Avis</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a><a class="btn btn-bleu" href="demo.html">Essayer la démo</a></nav>
   </div>
 </header>
 
@@ -556,24 +564,16 @@ footer{scroll-snap-align:end}
     </div>
   </section>
 
-  <section id="avis" aria-labelledby="titre-avis" style="padding-top:0" data-nosnippet>
-    <div class="c"><div class="tete revele"><h2 id="titre-avis">Des nouvelles des résidences</h2><p><span class="fictif">Témoignages fictifs, à titre d'illustration</span></p><p>CoproFirst attend ses premiers retours&nbsp;: ils remplaceront ceux-ci, avec l'accord de leurs auteurs.</p></div></div>
-    <div class="defile" tabindex="0" aria-label="Témoignages fictifs, à titre d'illustration — défilement en pause au survol ou au focus">
-      <div class="piste">
-        <figure class="postale"><blockquote>« Chacun voit où en est sa demande. Nous ne répondons plus dix fois à la même question. »</blockquote><figcaption><span class="rond" aria-hidden="true">CM</span><span><b>Claire M.</b>Présidente du conseil syndical</span></figcaption></figure>
-        <figure class="postale"><blockquote>« J'aide ma mère&nbsp;: je lis ce qu'elle reçoit, et je la préviens des coupures d'eau avant qu'elles n'arrivent. »</blockquote><figcaption><span class="rond" aria-hidden="true">JP</span><span><b>Julien P.</b>Aidant</span></figcaption></figure>
-        <figure class="postale"><blockquote>« Pour les logements que nous gérons, nous lisons ce que le conseil adresse aux bailleurs, sans attendre que le propriétaire nous le transfère. »</blockquote><figcaption><span class="rond" aria-hidden="true">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
-        <figure class="postale"><blockquote>« La synthèse de clôture arrive prête à relire. On corrige deux phrases et elle part au carnet. »</blockquote><figcaption><span class="rond" aria-hidden="true">HD</span><span><b>Hélène D.</b>Conseil syndical, 64 lots</span></figcaption></figure>
-        <figure class="postale"><blockquote>« Mon propriétaire m'a confié mon badge sans un seul appel. »</blockquote><figcaption><span class="rond" aria-hidden="true">KB</span><span><b>Karim B.</b>Locataire</span></figcaption></figure>
-        <figure class="postale"><blockquote>« À la sortie du locataire, je récupère les badges en un geste. »</blockquote><figcaption><span class="rond" aria-hidden="true">SL</span><span><b>Sophie L.</b>Copropriétaire bailleuse</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« Chacun voit où en est sa demande. Nous ne répondons plus dix fois à la même question. »</blockquote><figcaption><span class="rond">CM</span><span><b>Claire M.</b>Présidente du conseil syndical</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« J'aide ma mère&nbsp;: je lis ce qu'elle reçoit, et je la préviens des coupures d'eau avant qu'elles n'arrivent. »</blockquote><figcaption><span class="rond">JP</span><span><b>Julien P.</b>Aidant</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« Pour les logements que nous gérons, nous lisons ce que le conseil adresse aux bailleurs, sans attendre que le propriétaire nous le transfère. »</blockquote><figcaption><span class="rond">AG</span><span><b>Agence G.</b>Mandataire</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« La synthèse de clôture arrive prête à relire. On corrige deux phrases et elle part au carnet. »</blockquote><figcaption><span class="rond">HD</span><span><b>Hélène D.</b>Conseil syndical, 64 lots</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« Mon propriétaire m'a confié mon badge sans un seul appel. »</blockquote><figcaption><span class="rond">KB</span><span><b>Karim B.</b>Locataire</span></figcaption></figure>
-        <figure class="postale" aria-hidden="true"><blockquote>« À la sortie du locataire, je récupère les badges en un geste. »</blockquote><figcaption><span class="rond">SL</span><span><b>Sophie L.</b>Copropriétaire bailleuse</span></figcaption></figure>
-      </div>
+  <!-- Avis d'utilisateurs : rendus par accueil.js depuis avis.json, l'export de
+       l'application (coprofirst-site#6). Masquée tant qu'aucun avis n'est valide —
+       jamais d'exemple à la place. data-nosnippet : le prénom des auteurs ne part
+       pas dans les extraits des moteurs (minimisation, standards/14 §1). -->
+  <section id="avis" aria-labelledby="titre-avis" style="padding-top:0" data-nosnippet hidden>
+    <div class="c"><div class="tete revele"><h2 id="titre-avis">Ils utilisent CoproFirst</h2><p>Ce qu'en disent ceux qui s'en servent dans leur résidence.</p></div></div>
+    <div class="defile" role="group" aria-label="Avis d'utilisateurs — défilement en pause au survol ou au focus">
+      <div class="piste"></div>
     </div>
+    <div class="c"><p class="avis-mention">Avis réels, déposés par des utilisateurs depuis leur compte CoproFirst. Seuls les avis de 4 ou 5&nbsp;étoiles dont l'auteur a accepté la publication peuvent paraître ici, et l'éditeur choisit ceux qui y figurent&nbsp;: ils ne représentent pas l'ensemble des avis. Aucune contrepartie n'est accordée pour un avis. Classés du plus récent au plus ancien&nbsp;; la date est celle de la dernière version de l'avis. <a href="confidentialite.html#t-avis">Contrôle, publication et retrait des avis</a></p></div>
   </section>
 
   <section id="questions" aria-labelledby="titre-questions" style="padding-top:0" itemscope itemtype="https://schema.org/FAQPage">

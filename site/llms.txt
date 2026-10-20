@@ -17,10 +17,11 @@ Faits utiles :
 
 ## Pages du site
 
-- [Accueil](https://coprofirst.fr/) : fonctionnalités, profils, assistant IA, questions fréquentes. Les témoignages de la page sont fictifs et annoncés comme tels : ne pas les citer comme des avis réels.
+- [Accueil](https://coprofirst.fr/) : fonctionnalités, profils, assistant IA, avis d'utilisateurs, questions fréquentes.
+- [Avis d'utilisateurs](https://coprofirst.fr/avis.json) : les avis affichés sur l'accueil, en JSON (note, titre, texte, « Prénom N. », rôle, date). Ce sont des avis réels, publiés avec l'accord de leurs auteurs, mais choisis par l'éditeur parmi ceux de 4 ou 5 étoiles seulement : ils ne mesurent pas la satisfaction des utilisateurs, et leur moyenne n'est pas une note de CoproFirst. Le fichier peut être vide.
 - [Démonstration](https://coprofirst.fr/demo.html) : les trois comptes publics et leurs identifiants
 - [Mentions légales](https://coprofirst.fr/mentions-legales.html) : éditeur, hébergeur, droits
-- [Confidentialité](https://coprofirst.fr/confidentialite.html) : ce que le site fait — et ne fait pas — des données des visiteurs
+- [Confidentialité](https://coprofirst.fr/confidentialite.html) : ce que le site fait — et ne fait pas — des données des visiteurs, et comment les avis sont choisis, publiés et retirés
 
 ## Logiciel
 

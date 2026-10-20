@@ -53,14 +53,27 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   qu'elle n'est pas enregistrée (`MARQUE.md` de coprofirst). Le logo est sous
   `LicenseRef-CoproFirst-Logo`, hors de l'AGPL : il reste dans son fichier, jamais
   recopié en ligne dans le HTML.
-- **Témoignages fictifs** : la page les annonce comme tels. Ils se remplacent par
-  de vrais retours, avec l'accord écrit de leurs auteurs — jamais présentés comme
-  vrais.
+- **Avis d'utilisateurs** (coprofirst-site#6, depuis le 20/10/2026 ; les
+  témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
+  ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
+  `avis-coprofirst-AAAA-MM-JJ.json`), **commité tel quel**, puis
+  `deploiement/deployer.sh` — à refaire **après chaque export** : un auteur qui
+  retire son accord ne sort du site qu'au redéploiement. `accueil.js` les rend ;
+  sans avis valide, la section et son lien restent masqués, **jamais** d'exemple à
+  la place. La mention sous la section (L111-7-2, D111-17 du Code de la
+  consommation) et `confidentialite.html#t-avis` disent comment ils sont choisis :
+  les changer ensemble. Le fichier est sous `LicenseRef-CoproFirst-Avis` (les avis
+  appartiennent à leurs auteurs), hors de l'AGPL. Un nom de résidence ou de
+  personne dans le texte d'un avis ne se détecte pas : il se relit avant de retenir
+  l'avis dans l'application.
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
   consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
 - **Référencement** : le site est ouvert à tous les robots, moteurs **et** assistants
   IA, entraînement compris (`site/robots.txt`, demande du 15/10/2026). Les données
-  structurées ne balisent **jamais** les témoignages (fictifs) en avis ou en note.
+  structurées ne balisent **jamais** les avis (`Review`, `AggregateRating`) : ce
+  sont des avis sur son propre produit, choisis par l'éditeur parmi les 4 et 5
+  étoiles — une note moyenne tirée d'eux tromperait, et Google écarte ces avis
+  « auto-publiés » (décision du 20/10/2026, coprofirst-site#6).
   La FAQ de l'accueil porte son balisage schema.org en microdonnées, sur le texte
   visible : aucune copie à tenir à jour. L'image de partage se refait par
   `bash scripts/generer-image-partage.sh`. ⚠️ Cloudflare sert aussi son propre
@@ -83,8 +96,7 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 
 ### Ce qui reste
 
-- le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair ;
-- le remplacement des témoignages fictifs.
+- le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair.
 
 ## Contrôles
 
@@ -102,6 +114,13 @@ quand on modifie une page) ;
 mènent à des fichiers du site. En `pre-commit` et en CI, avec `--selftest`. **Une page
 ajoutée** se déclare donc dans le sitemap (et dans `llms.txt`), avec ses balises de
 tête recopiées d'une page voisine.
+
+`python3 scripts/verifier-avis.py` — `site/avis.json` a la forme de l'export
+(clés en **liste blanche** : une donnée ajoutée côté application ne part pas sans
+décision), des notes de 4 ou 5, des dates, des auteurs « Prénom N. », et aucun
+courriel ni téléphone dans un texte. Sortie 0 conforme, 1 écart, 2 INCONNU ;
+`--selftest`, `--fichier`. En `pre-commit` et en CI. Ses règles de forme sont aussi
+celles de `avisValide` dans `site/accueil.js`.
 
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de
