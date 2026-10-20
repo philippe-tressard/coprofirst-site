@@ -4,7 +4,8 @@
 #
 # verifier-depot.sh — ce que Windows abîme sans un mot (standards/08 §3, standards/10) :
 #   - un BOM UTF-8 en tête de fichier texte ;
-#   - des fins de ligne CRLF dans un dépôt écrit en LF (.gitattributes) ;
+#   - des fins de ligne CRLF dans un dépôt écrit en LF (.gitattributes) — sauf les
+#     scripts .cmd, qui doivent au contraire être entièrement en CRLF ;
 #   - un script .sh ou .py, ou un hook de .githooks/, sans bit d'exécution dans l'index
 #     (Windows avale `chmod +x`) ;
 #   - un script dont la syntaxe est fausse (`bash -n`).
@@ -31,7 +32,10 @@ juger_fichier() {
     echo "BOM      $f"
   fi
   # Compter les octets CR : le grep de Git Bash retire le CR avant de comparer
-  if [ "$(tr -cd '\r' < "$f" | wc -c)" -gt 0 ]; then
+  if [[ "$f" == *.cmd ]]; then
+    # Autant de CR que de LF : chaque ligne finit en CRLF (cmd.exe lit mal le LF seul)
+    [ "$(tr -cd '\r' < "$f" | wc -c)" -eq "$(tr -cd '\n' < "$f" | wc -c)" ] || echo "LF       $f (un script .cmd s'écrit en CRLF)"
+  elif [ "$(tr -cd '\r' < "$f" | wc -c)" -gt 0 ]; then
     echo "CRLF     $f"
   fi
   # Les hooks git n'ont pas d'extension, mais s'exécutent comme les scripts
@@ -83,6 +87,8 @@ selftest() {
   printf 'ok\n' > "$t/bon.html"
   printf '\xef\xbb\xbfok\n' > "$t/bom.html"
   printf 'ok\r\n' > "$t/crlf.css"
+  printf '@echo off\r\nexit /b 0\r\n' > "$t/bon.cmd"
+  printf '@echo off\nexit /b 0\n' > "$t/lf.cmd"
   printf '#!/bin/bash\necho ok\n' > "$t/bon.sh"
   printf '#!/bin/bash\nif then\n' > "$t/faux.sh"
   printf '\x89PNG\r\n' > "$t/image.png"
@@ -95,6 +101,8 @@ selftest() {
   verifie "" bon.html 100644
   verifie "BOM " bom.html 100644
   verifie "CRLF " crlf.css 100644
+  verifie "" bon.cmd 100644
+  verifie "LF " lf.cmd 100644
   verifie "" bon.sh 100755
   verifie "MODE " bon.sh 100644
   verifie "SYNTAXE " faux.sh 100755

@@ -57,11 +57,17 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Avis d'utilisateurs** (coprofirst-site#6, depuis le 20/10/2026 ; les
   témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
   ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
-  `avis-coprofirst-AAAA-MM-JJ.json`, copié tel quel en `site/avis.json`). Il n'est
+  `avis-coprofirst-AAAA-MM-JJ.json`, installé en `site/avis.json`). Il n'est
   **pas versionné** (`.gitignore`) : un accord retiré ne doit pas survivre dans
-  l'historique public. `deploiement/deployer.sh` l'envoie avec le commit, après
-  `scripts/verifier-avis.py`, et **refuse sans lui** (`--garder-avis` reprend celui
-  déjà en ligne, pour un déploiement d'un autre poste). À refaire **après chaque
+  l'historique public. `deploiement/deployer.sh` va chercher **seul** le plus
+  récent des `avis-coprofirst-*.json` des Téléchargements (`(1)` compris,
+  `scripts/recuperer-avis.py`), le vérifie dans un fichier temporaire, l'installe,
+  puis **efface les exports** des Téléchargements (copies de données
+  personnelles) ; `--export CHEMIN` impose un fichier. Il l'envoie avec le commit,
+  après `scripts/verifier-avis.py`, et **refuse sans lui** (`--garder-avis` reprend
+  celui déjà en ligne, pour un déploiement d'un autre poste). Depuis PowerShell ou
+  d'un double-clic : `.\deploiement\deployer.cmd` (mêmes options), qui cherche Git
+  Bash ; il est en CRLF (`.gitattributes`), ce que `verifier-depot.sh` exige. À refaire **après chaque
   export** : un auteur qui retire son accord ne sort du site qu'au redéploiement.
   `accueil.js` les rend ; sans avis valide, la section et son lien restent masqués,
   **jamais** d'exemple à la place. Durée maximale de publication : **deux ans**
@@ -131,6 +137,11 @@ Sortie 0 conforme, 1 écart, 2 INCONNU ; `--selftest`, `--fichier`. Le fichier n
 pas versionné, c'est `deployer.sh` qui le lance (avant l'envoi, puis sur ce que le
 serveur sert) ; la CI ne joue que le `--selftest`. Ses règles de forme et la durée
 sont aussi celles de `avisValide` dans `site/accueil.js`.
+
+`python3 scripts/recuperer-avis.py --selftest` — le choix de l'export par
+`deployer.sh` : le plus récent gagne, `(1)` compris ; identique, rien n'est
+installé ; refusé ou plus ancien, `site/avis.json` reste intact et l'export est
+gardé ; jamais d'autre fichier effacé. En CI.
 
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de

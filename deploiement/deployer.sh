@@ -5,16 +5,21 @@
 # deployer.sh — publie le site du commit courant sur l'instance Oracle, puis
 # vérifie que chaque fichier servi est octet pour octet celui du dépôt.
 #
-#   bash deploiement/deployer.sh               déployer HEAD (déjà poussé) et site/avis.json
-#   bash deploiement/deployer.sh --garder-avis déployer HEAD en gardant les avis déjà en ligne
-#   bash deploiement/deployer.sh --verifier    vérifier seulement, sans déployer
+#   bash deploiement/deployer.sh                 déployer HEAD (déjà poussé) et les avis
+#   bash deploiement/deployer.sh --export CHEMIN déployer avec cet export des avis
+#   bash deploiement/deployer.sh --garder-avis   déployer HEAD en gardant les avis déjà en ligne
+#   bash deploiement/deployer.sh --verifier      vérifier seulement, sans déployer
+#
+# Depuis PowerShell ou d'un double-clic : deploiement\deployer.cmd (mêmes options).
 #
 # Ne déploie que ce qui est committé ET poussé : la page en ligne est toujours
 # une version que l'on retrouve sur GitHub. Une exception, voulue : site/avis.json,
 # l'export des avis de l'application, n'est PAS versionné (un accord retiré ne doit
 # pas survivre dans l'historique public — coprofirst-site#6). Il part du poste,
 # après scripts/verifier-avis.py ; sans lui, le déploiement refuse, sauf
-# --garder-avis. Accès : la clé dédiée à l'instance, et elle seule (BatchMode,
+# --garder-avis. Le dernier export téléchargé (avis-coprofirst-*.json, dans les
+# Téléchargements) est installé d'office par scripts/recuperer-avis.py, qui efface
+# ensuite ces copies. Accès : la clé dédiée à l'instance, et elle seule (BatchMode,
 # IdentitiesOnly) — jamais d'autre clé ni identifiant.
 set -euo pipefail
 
@@ -36,11 +41,14 @@ deployer() {
   if ! git merge-base --is-ancestor "$commit" origin/main; then
     echo "REFUS : $commit n'est pas sur origin/main — pousser d'abord." >&2; exit 1
   fi
-  local garder="${1:-}"
+  local garder="${1:-}" export="${2:-}"
   if [ -z "$garder" ]; then
+    # Le dernier export téléchargé, s'il y en a un : vérifié, installé, puis effacé
+    # des Téléchargements. Un export refusé laisse site/avis.json intact.
+    python3 scripts/recuperer-avis.py ${export:+--export "$export"} || { echo "REFUS : rien n'est déployé." >&2; exit 1; }
     if [ ! -f "$AVIS" ]; then
       echo "REFUS : $AVIS absent. Dans l'application : Communauté → ⭐ Avis → « Exporter les avis" >&2
-      echo "  retenus pour coprofirst.fr », puis copier avis-coprofirst-AAAA-MM-JJ.json en $AVIS." >&2
+      echo "  retenus pour coprofirst.fr », puis relancer le déploiement." >&2
       echo "  Pour déployer sans toucher aux avis en ligne : --garder-avis." >&2
       exit 1
     fi
@@ -130,7 +138,8 @@ verifier() {
 case "${1:-}" in
   --verifier) ;;
   --garder-avis) deployer garder ;;
+  --export) [ -n "${2:-}" ] || { echo "Usage : --export CHEMIN" >&2; exit 1; }; deployer "" "$2" ;;
   "") deployer ;;
-  *) echo "Usage : bash deploiement/deployer.sh [--garder-avis | --verifier]" >&2; exit 1 ;;
+  *) echo "Usage : bash deploiement/deployer.sh [--export CHEMIN | --garder-avis | --verifier]" >&2; exit 1 ;;
 esac
 verifier

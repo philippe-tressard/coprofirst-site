@@ -4,6 +4,10 @@
 # LF dans le dépôt, quelle que soit la plateforme de travail (standards/10).
 * text=auto eol=lf
 
+# Les scripts cmd.exe en CRLF : en LF, cmd.exe lit mal certaines lignes (étiquettes,
+# blocs entre parenthèses). verifier-depot.sh exige CRLF pour eux, LF ailleurs.
+*.cmd text eol=crlf
+
 # Binaires : aucune conversion, jamais.
 *.png binary
 *.jpg binary
