@@ -51,22 +51,33 @@ addEventListener('DOMContentLoaded', () => {
 // ── Avis d'utilisateurs (coprofirst-site#6) ─────────────────────────────────────
 // avis.json est l'export de l'application, commité tel quel :
 //   { "genere_le": "AAAA-MM-JJ", "avis": [ { titre, texte, note, auteur, role, date } ] }
-// Un avis hors format est écarté ; sans aucun avis valide, la section reste masquée
-// (jamais d'exemple à la place). Les mêmes règles refusent le fichier au commit :
-// scripts/verifier-avis.py — les deux se tiennent, l'un ne change pas sans l'autre.
+// Un avis hors format, ou de plus de DUREE_MAX_ANS ans (la durée maximale annoncée
+// par confidentialite.html#t-avis), est écarté ; sans aucun avis valide, la section
+// reste masquée (jamais d'exemple à la place). Les mêmes règles refusent le fichier
+// au déploiement : scripts/verifier-avis.py — l'un ne change pas sans l'autre.
+// Le fichier n'est pas versionné : deploiement/deployer.sh l'envoie.
 const NOTE_PUBLIABLE = 4;
+const DUREE_MAX_ANS = 2;
 const NOTE_MAX = 5;
 const SECONDES_PAR_CARTE = 10;
 const TEINTES = 4;
 
 const rempli = (v) => typeof v === 'string' && v.trim() !== '';
 
+// Le serveur ne retire rien seul : c'est l'affichage qui tient la durée maximale,
+// même si le site n'a pas été redéployé depuis.
+function encorePublie(jour) {
+  const fin = new Date(jour);
+  fin.setUTCFullYear(fin.getUTCFullYear() + DUREE_MAX_ANS);
+  return Date.now() < fin.getTime();
+}
+
 function avisValide(a) {
   return a !== null && typeof a === 'object'
     && rempli(a.titre) && rempli(a.texte) && rempli(a.auteur)
     && (a.role === null || a.role === undefined || typeof a.role === 'string')
     && Number.isInteger(a.note) && a.note >= NOTE_PUBLIABLE && a.note <= NOTE_MAX
-    && typeof a.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(a.date) && !Number.isNaN(Date.parse(a.date));
+    && typeof a.date === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(a.date) && !Number.isNaN(Date.parse(a.date)) && encorePublie(a.date);
 }
 
 // Texte posé par textContent, jamais par innerHTML : un avis est saisi par un tiers.

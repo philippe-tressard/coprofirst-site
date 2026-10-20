@@ -97,6 +97,11 @@ def dimensions_png(chemin: Path):
     return struct.unpack(">II", entete[16:24])
 
 
+# Servis par le site sans être dans le dépôt : deploiement/deployer.sh les envoie.
+# avis.json : l'export des avis, jamais versionné (coprofirst-site#6).
+HORS_DEPOT = {"avis.json"}
+
+
 def fichier_du_site(site: Path, url: str):
     """Le fichier que sert une adresse de coprofirst.fr, ou None si elle sort du site."""
     if not url.startswith(ORIGINE):
@@ -190,6 +195,8 @@ def juger_site(site: Path):
             ecarts.append("LLMS     llms.txt ne commence pas par un titre « # »")
         for url in re.findall(r"\((https://coprofirst\.fr/[^)\s]*)\)", texte):
             f = fichier_du_site(site, url)
+            if f.relative_to(site).as_posix() in HORS_DEPOT:
+                continue
             if not f.is_file():
                 ecarts.append(f"LLMS     {url} : aucun fichier du site")
     return ecarts

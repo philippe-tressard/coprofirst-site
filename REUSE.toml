@@ -55,11 +55,3 @@ path = ".claude/settings.json"
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
-
-# Les avis d'utilisateurs : l'export de l'application, en JSON (pas d'en-tête
-# possible). Ils appartiennent à leurs auteurs, hors de l'AGPL.
-[[annotations]]
-path = "site/avis.json"
-precedence = "override"
-SPDX-FileCopyrightText = "2026 Les auteurs des avis"
-SPDX-License-Identifier = "LicenseRef-CoproFirst-Avis"

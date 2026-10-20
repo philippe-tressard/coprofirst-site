@@ -32,7 +32,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
   tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
   réservé à la démo. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
-  seulement, puis comparaison octet par octet de ce qui est servi ;
+  seulement, plus `site/avis.json` qui n'est pas versionné — voir Avis
+  d'utilisateurs —, puis comparaison octet par octet de ce qui est servi ;
   `--verifier` pour le seul contrôle). Jamais de geste à la main sur le serveur.
 - **Dépôt** : `philippe-tressard/coprofirst-site`, **public**, sous
   AGPL-3.0-or-later comme l'application (accord de l'utilisateur, 13/10/2026).
@@ -56,16 +57,23 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Avis d'utilisateurs** (coprofirst-site#6, depuis le 20/10/2026 ; les
   témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
   ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
-  `avis-coprofirst-AAAA-MM-JJ.json`), **commité tel quel**, puis
-  `deploiement/deployer.sh` — à refaire **après chaque export** : un auteur qui
-  retire son accord ne sort du site qu'au redéploiement. `accueil.js` les rend ;
-  sans avis valide, la section et son lien restent masqués, **jamais** d'exemple à
-  la place. La mention sous la section (L111-7-2, D111-17 du Code de la
-  consommation) et `confidentialite.html#t-avis` disent comment ils sont choisis :
-  les changer ensemble. Le fichier est sous `LicenseRef-CoproFirst-Avis` (les avis
-  appartiennent à leurs auteurs), hors de l'AGPL. Un nom de résidence ou de
-  personne dans le texte d'un avis ne se détecte pas : il se relit avant de retenir
-  l'avis dans l'application.
+  `avis-coprofirst-AAAA-MM-JJ.json`, copié tel quel en `site/avis.json`). Il n'est
+  **pas versionné** (`.gitignore`) : un accord retiré ne doit pas survivre dans
+  l'historique public. `deploiement/deployer.sh` l'envoie avec le commit, après
+  `scripts/verifier-avis.py`, et **refuse sans lui** (`--garder-avis` reprend celui
+  déjà en ligne, pour un déploiement d'un autre poste). À refaire **après chaque
+  export** : un auteur qui retire son accord ne sort du site qu'au redéploiement.
+  `accueil.js` les rend ; sans avis valide, la section et son lien restent masqués,
+  **jamais** d'exemple à la place. Durée maximale de publication : **deux ans**
+  après la date de l'avis, tenue à l'affichage et refusée au déploiement. Un nom de
+  résidence dans le texte est admis ; le nom complet d'une personne, non (il se
+  relit avant de retenir l'avis). La mention sous la section (L111-7-2, D111-17 du
+  Code de la consommation) et `confidentialite.html#t-avis` disent comment ils
+  sont choisis : les changer ensemble.
+- **Le mot du créateur** (section IA de l'accueil) : l'avis de l'éditeur, écrit en
+  dur dans `index.html`, **jamais** parmi les avis d'utilisateurs (pratique
+  commerciale trompeuse) — `verifier-avis.py` refuse un avis signé « Philippe T. »
+  dans l'export : ne pas le retenir dans l'application (choix du 20/10/2026).
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
   consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
 - **Référencement** : le site est ouvert à tous les robots, moteurs **et** assistants
@@ -117,10 +125,12 @@ tête recopiées d'une page voisine.
 
 `python3 scripts/verifier-avis.py` — `site/avis.json` a la forme de l'export
 (clés en **liste blanche** : une donnée ajoutée côté application ne part pas sans
-décision), des notes de 4 ou 5, des dates, des auteurs « Prénom N. », et aucun
-courriel ni téléphone dans un texte. Sortie 0 conforme, 1 écart, 2 INCONNU ;
-`--selftest`, `--fichier`. En `pre-commit` et en CI. Ses règles de forme sont aussi
-celles de `avisValide` dans `site/accueil.js`.
+décision), des notes de 4 ou 5, des dates de moins de deux ans, des auteurs
+« Prénom N. » autres que l'éditeur, et aucun courriel ni téléphone dans un texte.
+Sortie 0 conforme, 1 écart, 2 INCONNU ; `--selftest`, `--fichier`. Le fichier n'étant
+pas versionné, c'est `deployer.sh` qui le lance (avant l'envoi, puis sur ce que le
+serveur sert) ; la CI ne joue que le `--selftest`. Ses règles de forme et la durée
+sont aussi celles de `avisValide` dans `site/accueil.js`.
 
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de

@@ -4,3 +4,7 @@
 *.log
 .DS_Store
 Thumbs.db
+# Les avis d'utilisateurs : l'export de l'application, déposé sur le poste et envoyé
+# par deploiement/deployer.sh — jamais versionné, pour qu'un accord retiré ne survive
+# pas dans l'historique public (coprofirst-site#6).
+site/avis.json

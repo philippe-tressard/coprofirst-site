@@ -8,5 +8,3 @@ bash "$racine/scripts/verifier-depot.sh" || exit 1
 # Le référencement lit l'arbre de travail, pas l'index : un fichier modifié mais non
 # indexé est jugé tel qu'il est sur le disque. La CI, elle, juge ce qui est parti.
 python3 "$racine/scripts/verifier-referencement.py" || exit 1
-# Les avis publiés sur la page d'accueil : forme de l'export, aucune donnée de trop.
-python3 "$racine/scripts/verifier-avis.py" || exit 1

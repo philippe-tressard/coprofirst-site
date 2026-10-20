@@ -300,6 +300,15 @@ footer{scroll-snap-align:end}
 .barre-ia span:first-child{background:var(--violet);color:#fff}
 .garde-fous{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:20px 0 0;padding:0;list-style:none}
 .garde-fous li{border:1px solid rgba(226,180,90,.45);color:#f1d9a6;border-radius:99px;padding:5px 12px;font-size:.84rem}
+/* Le mot du créateur : une citation de l'éditeur, distincte des avis d'utilisateurs */
+.mot-createur{max-width:44em;margin:48px auto 0;padding:28px 30px;border-radius:28px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14)}
+.mot-createur .surtitre{margin-bottom:10px}
+.mot-createur blockquote{margin:0;font:1.08rem/1.6 var(--titres);color:#fff}
+.mot-createur blockquote p{margin:0}
+.mot-createur .titre-mot{font-weight:700;margin-bottom:8px}
+.signature-mot{margin:16px 0 0;font-size:.9rem;color:#c9d6e8}
+.signature-mot b{color:#fff}
+@media (max-width:560px){.mot-createur{padding:22px 20px;border-radius:22px}}
 
 /* Témoignages : cartes postales qui défilent */
 .defile{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);padding:6px 0}
@@ -540,7 +549,16 @@ footer{scroll-snap-align:end}
         <h3>Une description à reprendre</h3><p>Pour le conseil syndical, une proposition apparaît sous le champ. Appliquer, ou ignorer&nbsp;: c'est lui qui choisit.</p>
       </article>
     </div>
-    <div class="c"><ul class="garde-fous" aria-label="Garde-fous"><li>Désactivé par défaut</li><li>Plafonds d'appels, par mois et par heure</li><li>Texte assisté signalé ✨</li><li>Votre fournisseur, votre clé</li></ul></div>
+    <div class="c"><ul class="garde-fous" aria-label="Garde-fous"><li>Désactivé par défaut</li><li>Plafonds d'appels, par mois et par heure</li><li>Texte assisté signalé ✨</li><li>Votre fournisseur, votre clé</li></ul>
+      <!-- Le mot du créateur : l'éditeur parle de son propre produit. Il ne figure pas
+           parmi les avis d'utilisateurs (coprofirst-site#6, choix de Philippe du
+           20/10/2026) : scripts/verifier-avis.py refuse son avis dans avis.json. -->
+      <figure class="mot-createur revele">
+        <figcaption><span class="surtitre">Le mot du créateur</span></figcaption>
+        <blockquote><p class="titre-mot">Enfin autonome pour comprendre mon règlement de copropriété&nbsp;!</p><p>Grâce à l'IA, j'identifie instantanément les articles pertinents du règlement de copropriété. L'assistant juridique analyse les dispositions concernées et me propose un premier avis clair et argumenté, ce qui me fait gagner un temps précieux.</p></blockquote>
+        <p class="signature-mot"><b>Philippe Tressard</b>, créateur et éditeur de CoproFirst, membre du conseil syndical de sa résidence</p>
+      </figure>
+    </div>
   </section>
 
   <section id="demo" aria-labelledby="titre-demo">
