@@ -75,7 +75,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   résidence dans le texte est admis ; le nom complet d'une personne, non (il se
   relit avant de retenir l'avis). La mention sous la section (L111-7-2, D111-17 du
   Code de la consommation) et `confidentialite.html#t-avis` disent comment ils
-  sont choisis : les changer ensemble.
+  sont choisis : les changer ensemble. Un texte long est coupé à cinq lignes avec
+  « Lire la suite » (choix de Philippe, 20/10/2026) : le bouton ne paraît que si
+  le texte déborde, jamais dans les copies `inert` de la boucle, et une carte
+  dépliée met le défilement en pause.
 - **Le mot du créateur** (section IA de l'accueil) : l'avis de l'éditeur, écrit en
   dur dans `index.html`, **jamais** parmi les avis d'utilisateurs (pratique
   commerciale trompeuse) — `verifier-avis.py` refuse un avis signé « Philippe T. »
@@ -142,6 +145,15 @@ sont aussi celles de `avisValide` dans `site/accueil.js`.
 `deployer.sh` : le plus récent gagne, `(1)` compris ; identique, rien n'est
 installé ; refusé ou plus ancien, `site/avis.json` reste intact et l'export est
 gardé ; jamais d'autre fichier effacé. En CI.
+
+`python3 scripts/empreintes.py` — chaque `href="…css"` et `src="…js"` des pages
+porte `?v=` + les 8 premiers caractères du sha256 du fichier : Cloudflare fait
+garder CSS et JS **4 h** par le navigateur (le HTML 5 min), et sans empreinte un
+déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
+20/10/2026). **Après toute modification d'un CSS ou d'un JS :**
+`python3 scripts/empreintes.py --ecrire`. En `pre-commit` et en CI, avec
+`--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
+celui du commit.
 
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de

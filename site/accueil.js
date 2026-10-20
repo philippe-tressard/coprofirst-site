@@ -99,7 +99,7 @@ const DATE_LONGUE = new Intl.DateTimeFormat('fr-FR', { day: 'numeric', month: 'l
 const dateLongue = (jour) => DATE_LONGUE.formatToParts(new Date(jour))
   .map((p) => (p.type === 'day' && p.value === '1' ? '1er' : p.value)).join('');
 
-function carteAvis(a, teinte) {
+function carteAvis(a, teinte, rang) {
   const carte = el('figure', 'postale');
   carte.dataset.teinte = teinte;
   const etoiles = el('p', 'etoiles', '★'.repeat(a.note));
@@ -107,7 +107,9 @@ function carteAvis(a, teinte) {
   etoiles.setAttribute('aria-label', `Note : ${a.note} sur ${NOTE_MAX}`);
   etoiles.append(el('span', '', '★'.repeat(NOTE_MAX - a.note)));
   const citation = el('blockquote');
-  citation.append(el('p', 'titre-avis', a.titre.trim()), el('p', '', `« ${a.texte.trim()} »`));
+  const texte = el('p', 'texte-avis', `« ${a.texte.trim()} »`);
+  texte.id = `avis-texte-${rang}`;
+  citation.append(el('p', 'titre-avis', a.titre.trim()), texte);
   const rond = el('span', 'rond', initiales(a.auteur));
   rond.setAttribute('aria-hidden', 'true');
   const qui = el('span');
@@ -120,6 +122,37 @@ function carteAvis(a, teinte) {
   legende.append(rond, qui);
   carte.append(etoiles, citation, legende);
   return carte;
+}
+
+// « Lire la suite » : le texte est coupé à quelques lignes (CSS), et le bouton ne
+// paraît que s'il déborde vraiment — mesuré une fois la carte affichée, puis à
+// chaque redimensionnement. Seules les cartes lues en reçoivent un, jamais les
+// copies de la boucle. Une carte dépliée met le défilement en pause (CSS :has).
+function lireLaSuite(cartes) {
+  for (const carte of cartes) {
+    const texte = carte.querySelector('.texte-avis');
+    let bouton = carte.querySelector('.lire-suite');
+    const deborde = carte.classList.contains('deplie') || texte.scrollHeight > texte.clientHeight + 1;
+    if (deborde && !bouton) {
+      bouton = el('button', 'lire-suite', 'Lire la suite');
+      bouton.type = 'button';
+      bouton.setAttribute('aria-expanded', 'false');
+      bouton.setAttribute('aria-controls', texte.id);
+      bouton.addEventListener('click', () => {
+        const deplie = carte.classList.toggle('deplie');
+        bouton.setAttribute('aria-expanded', deplie);
+        bouton.textContent = deplie ? 'Réduire' : 'Lire la suite';
+        // Repliée, la carte raccourcit : si son haut est passé au-dessus de
+        // l'écran, on le ramène en vue (verticalement seulement — la piste qui
+        // défile ne doit pas bouger).
+        const haut = carte.getBoundingClientRect().top;
+        if (!deplie && haut < 0) scrollBy(0, haut - 96);
+      });
+      carte.querySelector('blockquote').after(bouton);
+    } else if (!deborde && bouton) {
+      bouton.remove();
+    }
+  }
 }
 
 async function afficherAvis() {
@@ -139,9 +172,16 @@ async function afficherAvis() {
   avis.sort((x, y) => y.date.localeCompare(x.date));
   // Quatre teintes en rotation ; la dernière carte ne prend pas celle de la
   // première, qu'elle touche à la jonction de la boucle.
-  const cartes = avis.map((a, i) => carteAvis(a, (i === avis.length - 1 && i % TEINTES === 0 && i > 0) ? 1 : i % TEINTES));
+  const cartes = avis.map((a, i) => carteAvis(a, (i === avis.length - 1 && i % TEINTES === 0 && i > 0) ? 1 : i % TEINTES, i));
   // La boucle : une copie de chaque carte, cachée aux lecteurs d'écran.
-  const copies = cartes.map((c) => { const k = c.cloneNode(true); k.setAttribute('aria-hidden', 'true'); return k; });
+  // inert : rien de focalisable dans une copie ; et pas d'id en double.
+  const copies = cartes.map((c) => {
+    const k = c.cloneNode(true);
+    k.setAttribute('aria-hidden', 'true');
+    k.inert = true;
+    k.querySelectorAll('[id]').forEach((e) => e.removeAttribute('id'));
+    return k;
+  });
   const defile = section.querySelector('.defile');
   const piste = section.querySelector('.piste');
   piste.append(...cartes, ...copies);
@@ -159,7 +199,8 @@ async function afficherAvis() {
     defile.classList.toggle('fixe', fixe);
     if (fixe) defile.removeAttribute('tabindex'); else defile.tabIndex = 0;
   };
-  ajuster();
-  addEventListener('resize', ajuster);
+  const ajusterTout = () => { ajuster(); lireLaSuite(cartes); };
+  ajusterTout();
+  addEventListener('resize', ajusterTout);
   reduit.addEventListener('change', ajuster);
 }

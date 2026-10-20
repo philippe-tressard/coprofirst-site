@@ -8,3 +8,5 @@ bash "$racine/scripts/verifier-depot.sh" || exit 1
 # Le référencement lit l'arbre de travail, pas l'index : un fichier modifié mais non
 # indexé est jugé tel qu'il est sur le disque. La CI, elle, juge ce qui est parti.
 python3 "$racine/scripts/verifier-referencement.py" || exit 1
+# Chaque CSS et JS appelé avec l'empreinte de son contenu (cache de 4 h de Cloudflare).
+python3 "$racine/scripts/empreintes.py" || exit 1

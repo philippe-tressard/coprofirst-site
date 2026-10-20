@@ -9,7 +9,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>CoproFirst — l'application libre de gestion de copropriété</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="commun.css">
+<link rel="stylesheet" href="commun.css?v=22f4722d">
 <meta name="description" content="Application web libre et gratuite de gestion de copropriété : signalements suivis, documents, carnet d'entretien, badges. Pour les résidents, le conseil syndical et le syndic.">
 <link rel="canonical" href="https://coprofirst.fr/">
 <link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
@@ -112,7 +112,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
  ]
 }
 </script>
-<script src="accueil.js"></script>
+<script src="accueil.js?v=c838d4c2"></script>
 <style>
 @media (hover:hover) and (pointer:fine){
   .bulle:hover{transform:rotate(0deg) translateY(-3px)}
@@ -324,6 +324,15 @@ footer{scroll-snap-align:end}
 .postale blockquote{margin:0;font:1.04rem/1.55 var(--titres)}
 .postale blockquote p{margin:0;white-space:pre-line;overflow-wrap:anywhere}
 .postale .titre-avis{font-weight:700;color:var(--bleu);margin-bottom:6px}
+/* Lire la suite : cinq lignes, puis le bouton (accueil.js, seulement si le texte
+   déborde). Déplié sans animation : c'est un geste de lecture, souvent au clavier. */
+.postale .texte-avis{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:5;line-clamp:5;overflow:hidden}
+.postale.deplie .texte-avis{display:block;-webkit-line-clamp:unset;line-clamp:none}
+.lire-suite{align-self:flex-start;min-height:44px;margin:-10px 0 -6px;padding:0 2px;border:0;background:none;font:600 .9rem var(--sans);color:var(--bleu);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(30,58,95,.35);cursor:pointer;transition:transform 160ms var(--ease-out),text-decoration-color 200ms ease}
+.lire-suite:active{transform:scale(0.97)}
+@media (hover:hover) and (pointer:fine){.lire-suite:hover{text-decoration-color:currentColor}}
+.piste:has(.deplie){align-items:flex-start}
+.defile:has(.deplie) .piste{animation-play-state:paused}
 .postale figcaption{margin-top:auto;display:flex;gap:12px;align-items:center;font-size:.88rem;color:var(--doux)}
 .postale figcaption b,.postale figcaption time{display:block}
 .postale figcaption b{color:var(--encre)}
@@ -384,6 +393,7 @@ footer{scroll-snap-align:end}
   .js .panneau:not([hidden]){animation:fondu 150ms ease}
   .onglets.copie{transition:none}
   .role:active,.role:hover{transform:none}
+  .lire-suite:active{transform:none}
   .jauge i{transition:none}
   html{scroll-snap-type:none}
   @keyframes fondu{from{opacity:0}to{opacity:1}}

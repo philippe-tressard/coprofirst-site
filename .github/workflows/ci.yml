@@ -33,6 +33,10 @@ jobs:
         run: python3 scripts/verifier-avis.py --selftest
       - name: Récupération de l'export des avis (selftest)
         run: python3 scripts/recuperer-avis.py --selftest
+      - name: Empreintes des CSS et JS (selftest)
+        run: python3 scripts/empreintes.py --selftest
+      - name: Empreintes des CSS et JS — chaque adresse porte l'empreinte de son contenu
+        run: python3 scripts/empreintes.py
       - name: Licences (REUSE)
         run: |
           python -m pip install reuse==6.2.0
