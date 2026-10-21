@@ -18,7 +18,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
   `site/mentions-legales.html`, `site/confidentialite.html`, `site/404.html` (servie
   par le Caddyfile sur toute adresse inconnue, avec le code 404 et les mêmes en-têtes
-  de sécurité — `noindex`, hors du sitemap, ressources de l'en-tête en absolu) ; styles partagés dans
+  de sécurité — `noindex`, hors du sitemap, adresses en absolu — le pied de toutes les pages aussi,
+  pour qu'il tienne sur /a/b/x) ; styles partagés dans
   `site/commun.css` (jetons de couleur : thème **sombre par défaut**, clair au
   choix du visiteur par l'interrupteur de l'en-tête, sans égard pour le thème de son
   système — demande du 21/10/2026 ; `site/theme.js`, chargé dans `<head>` avant la

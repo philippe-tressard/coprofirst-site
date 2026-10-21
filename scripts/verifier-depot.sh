@@ -52,8 +52,8 @@ juger_fichier() {
 juger_page() {
   local f="$1"
   grep -q 'href="#"' "$f" && echo "LIEN     $f (href=\"#\" : lien qui ne mène nulle part)"
-  grep -q 'href="mentions-legales.html"' "$f" || echo "MENTIONS $f (pas de lien vers mentions-legales.html)"
-  grep -q 'href="confidentialite.html"' "$f" || echo "CONFID   $f (pas de lien vers confidentialite.html)"
+  grep -q 'href="/\?mentions-legales.html"' "$f" || echo "MENTIONS $f (pas de lien vers mentions-legales.html)"
+  grep -q 'href="/\?confidentialite.html"' "$f" || echo "CONFID   $f (pas de lien vers confidentialite.html)"
   # Le thème sombre par défaut vit dans theme.js (chargé avant la feuille de style, sans
   # quoi la page clignote) et dans l'interrupteur de l'en-tête : sans l'un ou l'autre,
   # un visiteur reste coincé dans un thème qu'il n'a pas choisi.
@@ -151,6 +151,8 @@ selftest() {
   printf '%s
 ' '<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a><script src="/theme.js?v=1"></script><button data-bascule-theme></button>' > "$t/theme-absolu.html"
   page "" theme-absolu.html
+  printf '%s\n' '<footer><a href="/mentions-legales.html">M</a><a href="/confidentialite.html">C</a></footer><script src="/theme.js?v=1"></script><button data-bascule-theme></button>' > "$t/pied-absolu.html"
+  page "" pied-absolu.html
   page "" canonique.html
   page "TIERS " canonique-et-police.html
   rm -rf "$t"

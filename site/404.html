@@ -6,8 +6,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 La page des adresses inconnues, servie avec le code 404 par le Caddyfile
 (handle_errors, coprofirst-site#4). Fermée aux moteurs (noindex), hors du sitemap
 — verifier-referencement.py la connaît par son nom. Elle peut répondre à une
-adresse profonde (/a/b/x) : l'en-tête et ses ressources s'écrivent en absolu. Le
-pied reste celui de toutes les pages (verifier-depot.sh les veut identiques).
+adresse profonde (/a/b/x) : ses adresses s'écrivent en absolu, et le pied, le même
+sur toutes les pages (verifier-depot.sh les veut identiques), l'est partout.
 -->
 <html lang="fr">
 <head>
@@ -42,8 +42,8 @@ pied reste celui de toutes les pages (verifier-depot.sh les veut identiques).
 
 <footer>
   <div class="c">
-    <p class="pied-marque"><img src="logo.svg" alt="" width="32" height="32"><span><b>CoproFirst</b><span class="sr"> — </span><small>Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
-    <nav aria-label="Liens de pied de page"><a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
+    <p class="pied-marque"><img src="/logo.svg" alt="" width="32" height="32"><span><b>CoproFirst</b><span class="sr"> — </span><small>Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+    <nav aria-label="Liens de pied de page"><a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="/mentions-legales.html">Mentions légales</a><a href="/confidentialite.html">Confidentialité</a></nav>
   </div>
 </footer>
 </body>
