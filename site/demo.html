@@ -9,8 +9,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Démonstration — CoproFirst</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
-<link rel="stylesheet" href="commun.css?v=22f4722d">
-<link rel="stylesheet" href="document.css?v=2cee242e">
+<link rel="stylesheet" href="commun.css?v=067df72e">
+<link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="document.css?v=5560598c">
 <meta name="description" content="Essayez CoproFirst en ligne sur une résidence fictive : trois comptes publics, sans inscription.">
 <link rel="canonical" href="https://coprofirst.fr/demo.html">
 <link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
@@ -52,7 +53,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 /* Les comptes de la démonstration (identifiants repris de app/demo/personnages.py
    de CoproFirst — jamais inventés ici). */
 .comptes{margin:16px 0 0;padding:0;list-style:none;display:grid;gap:14px}
-.compte{background:#fff;border:1px solid var(--bord);border-radius:24px;padding:22px;scroll-margin-top:24px;transition:border-color 200ms ease,box-shadow 200ms ease}
+.compte{background:var(--carte);border:1px solid var(--bord);border-radius:24px;padding:22px;scroll-margin-top:24px;transition:border-color 200ms ease,box-shadow 200ms ease}
 .compte:target{border-color:var(--or);box-shadow:0 0 0 3px rgba(201,152,58,.25)}
 .document .compte+.compte{margin-top:0}
 .compte-tete{display:flex;gap:14px;align-items:center}
@@ -66,10 +67,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 .identifiants dt{color:var(--doux);font-size:.9rem}
 .identifiants dd{margin:0;display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:44px;min-width:0}
 .document .identifiants code{background:none;border:0;padding:0;font-size:.95rem;color:var(--encre);overflow-wrap:anywhere;user-select:all;-webkit-user-select:all}
-.copier{flex:none;min-height:44px;min-width:5.5em;padding:0 16px;border-radius:99px;border:1px solid var(--bord);background:#fff;color:var(--bleu);font:600 .88rem var(--sans);cursor:pointer;
+.copier{flex:none;min-height:44px;min-width:5.5em;padding:0 16px;border-radius:99px;border:1px solid var(--bord);background:var(--carte);color:var(--lien);font:600 .88rem var(--sans);cursor:pointer;
   transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease,color 200ms ease}
 .copier:active{transform:scale(0.97)}
-.copier.fait{background:var(--menthe);border-color:#b7dcc6;color:#1f6b3d}
+.copier.fait{background:var(--menthe);border-color:var(--vert-bord);color:var(--vert)}
 @media (hover:hover) and (pointer:fine){.copier:not(.fait):hover{background:var(--ciel);border-color:var(--ciel)}}
 /* Téléphone : l'identifiant prend toute la largeur, le bouton monte à côté du libellé */
 @media (max-width:560px){

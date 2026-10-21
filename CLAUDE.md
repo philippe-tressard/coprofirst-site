@@ -17,9 +17,15 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
   `site/mentions-legales.html`, `site/confidentialite.html` ; styles partagés dans
-  `site/commun.css`, ceux des pages de texte dans `site/document.css`, les scripts
+  `site/commun.css` (jetons de couleur : thème clair et sombre selon
+  `prefers-color-scheme` — une surface s'écrit `var(--carte)`, un texte bleu
+  `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
+  `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
-  que `'self'`). Un site
+  que `'self'`). Le héros montre des **captures réelles** de la démo
+  (`site/captures/`, refaites par `node scripts/generer-captures.mjs` après chaque
+  version promue) et la **dernière version publiée** (`scripts/version-produit.py
+  --ecrire`, jamais à la main). Un site
   sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
   exige que les pieds soient identiques.
 - **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
@@ -84,7 +90,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   commerciale trompeuse) — `verifier-avis.py` refuse un avis signé « Philippe T. »
   dans l'export : ne pas le retenir dans l'application (choix du 20/10/2026).
 - **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
-  consentement (`standards/14` §4). Un ajout de ce type rouvre la question.
+  consentement (`standards/14` §4). Un ajout de ce type rouvre la question. La
+  police des titres, **Fraunces** (OFL-1.1), est servie par le site lui-même
+  (`site/polices/`, déclarée dans `REUSE.toml` et créditée aux mentions légales).
 - **Référencement** : le site est ouvert à tous les robots, moteurs **et** assistants
   IA, entraînement compris (`site/robots.txt`, demande du 15/10/2026). Les données
   structurées ne balisent **jamais** les avis (`Review`, `AggregateRating`) : ce
@@ -110,10 +118,6 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   adresse publiée (LCEN — choix de l'utilisateur, 13/10/2026 : l'adresse est
   connue de l'hébergeur). Si CoproFirst devient une activité commerciale, l'adresse
   doit y figurer. Contact : `contact@coprofirst.fr`, jamais l'adresse personnelle.
-
-### Ce qui reste
-
-- le **thème sombre** (`standards/11` §10) : la page n'a que le thème clair.
 
 ## Contrôles
 
@@ -146,11 +150,11 @@ sont aussi celles de `avisValide` dans `site/accueil.js`.
 installé ; refusé ou plus ancien, `site/avis.json` reste intact et l'export est
 gardé ; jamais d'autre fichier effacé. En CI.
 
-`python3 scripts/empreintes.py` — chaque `href="…css"` et `src="…js"` des pages
-porte `?v=` + les 8 premiers caractères du sha256 du fichier : Cloudflare fait
+`python3 scripts/empreintes.py` — chaque `href="…css"`, `src="…js"` et
+`src="…jpg"` (captures) des pages porte `?v=` + les 8 premiers caractères du sha256 du fichier : Cloudflare fait
 garder CSS et JS **4 h** par le navigateur (le HTML 5 min), et sans empreinte un
 déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
-20/10/2026). **Après toute modification d'un CSS ou d'un JS :**
+20/10/2026). **Après toute modification d'un CSS, d'un JS ou d'une capture :**
 `python3 scripts/empreintes.py --ecrire`. En `pre-commit` et en CI, avec
 `--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
 celui du commit.
@@ -165,3 +169,12 @@ chaque jour à 06:17 UTC), pas en pre-commit : la dérive naît dans l'autre dé
 le réseau ne doit pas conditionner un commit. Il compare la page au code de `main`,
 pas à la démo déployée. ⚠️ GitHub suspend un workflow planifié après 60 jours sans
 activité du dépôt.
+
+`python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
+héros affiche la dernière **release** de CoproFirst (la version promue, celle
+qu'une résidence installe — pas le dernier commit de `main`), datée à l'heure de
+Paris. Sortie 0 conforme, 1 écart, **2 INCONNU** ; `--ecrire`, `--selftest`,
+`--source`. Comme les comptes de la démo : **en CI seulement**, chaque jour
+(`comptes-demo.yml`, « Concordance avec CoproFirst »). Le site peut décrire une
+fonction de `main` pas encore promue : la version affichée reste celle qu'on
+installe. `scripts/lecture_distante.py` est la lecture commune des deux contrôles.

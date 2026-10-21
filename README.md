@@ -19,7 +19,9 @@ page `demo.html` en publie les trois comptes publics.
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
 | `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
-| `site/commun.css`, `site/document.css`, `site/accueil.js`, `site/demo.js` | styles partagés, styles des pages de texte, scripts de l'accueil et de la page Démo |
+| `site/commun.css`, `site/document.css`, `site/accueil.css`, `site/accueil.js`, `site/demo.js` | styles partagés (jetons de couleur, thèmes clair et sombre), styles des pages de texte et de l'accueil, scripts de l'accueil et de la page Démo |
+| `site/polices/` | Fraunces, la police des titres, servie par le site (SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`) |
+| `site/captures/` | les captures réelles de la démonstration montrées par l'accueil — refaites par `scripts/generer-captures.mjs` |
 | `site/logo.svg` | le logo de CoproFirst (licence propre, voir plus bas) |
 | `site/robots.txt`, `site/sitemap.xml`, `site/llms.txt` | ce que lisent les moteurs de recherche et les assistants IA : tout le site leur est ouvert |
 | `site/partage.png`, `site/apple-touch-icon.png` | l'image des aperçus de lien (Open Graph), l'icône des écrans d'accueil |
@@ -30,6 +32,9 @@ page `demo.html` en publie les trois comptes publics.
 | `scripts/generer-image-partage.sh` | refait `site/partage.png` à partir de `scripts/image-partage.html` |
 | `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main |
 | `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
+| `scripts/version-produit.py` | la version affichée par l'accueil est-elle la dernière release de CoproFirst ? `--ecrire` la met à jour (CI, chaque jour) |
+| `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright et Chrome ou Edge du poste |
+| `scripts/empreintes.py` | l'adresse de chaque CSS, JS et capture porte l'empreinte de son contenu (`--ecrire`) |
 
 Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
 
@@ -55,15 +60,18 @@ python3 scripts/verifier-referencement.py --selftest
 python3 scripts/verifier-referencement.py
 python3 scripts/verifier-comptes-demo.py --selftest
 python3 scripts/verifier-comptes-demo.py   # réseau : lit personnages.py sur GitHub
+python3 scripts/version-produit.py --selftest
+python3 scripts/version-produit.py         # réseau : lit la dernière release sur GitHub
 ```
 
-Le dernier contrôle ne tourne pas en pre-commit : il lit le dépôt de CoproFirst, où
-naît la dérive, et la CI le lance chaque jour. Il sort en **2 (INCONNU)** si la
+Les deux derniers contrôles ne tournent pas en pre-commit : ils lisent le dépôt de CoproFirst, où
+naît la dérive, et la CI les lance chaque jour. Ils sortent en **2 (INCONNU)** si la
 source est injoignable ou illisible — jamais en vert faute d'avoir comparé.
 
 ## Licences
 
 Le code est sous **AGPL-3.0-or-later**. Le **logo** n'est pas sous l'AGPL : il a sa
-licence propre (`LICENSES/LicenseRef-CoproFirst-Logo.txt`). « CoproFirst » fait
+licence propre (`LICENSES/LicenseRef-CoproFirst-Logo.txt`), et la police **Fraunces**
+la sienne (`LICENSES/OFL-1.1.txt`). « CoproFirst » fait
 l'objet de la demande de marque n° 5307183. Le détail par fichier se lit dans
 `REUSE.toml` et dans l'en-tête de chaque fichier.

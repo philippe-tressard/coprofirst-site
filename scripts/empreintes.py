@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 Philippe TRESSARD
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""empreintes.py — l'adresse de chaque feuille de style et script porte l'empreinte de son contenu.
+"""empreintes.py — l'adresse de chaque feuille de style, script et capture porte l'empreinte de son contenu.
 
 Cloudflare fait garder les .css et .js 4 h par le navigateur (Cache-Control
 max-age=14400), le HTML 5 min. Sans empreinte, un déploiement qui change le HTML
@@ -9,6 +9,8 @@ et le JS sert le nouveau HTML avec l'ancien script : le 20/10/2026, la section d
 avis restait masquée chez qui avait visité le site (coprofirst-site#6). Avec
 `accueil.js?v=<empreinte>`, l'adresse change quand le fichier change, et le
 navigateur charge la nouvelle version ; le serveur ignore la requête après « ? ».
+Les captures du héros (.jpg, scripts/generer-captures.mjs) suivent la même règle :
+une capture refaite garde son nom, son adresse change.
 
 L'empreinte : les 8 premiers caractères hexadécimaux du sha256 du fichier, écrite
 dans le dépôt (et non posée au déploiement) pour que le site servi reste octet
@@ -25,8 +27,8 @@ import tempfile
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parent.parent / "site"
-# href="x.css" ou src="x.js", locaux (ni schéma ni //), avec ou sans ?v=…
-REFERENCE = re.compile(r'(?P<attr>href|src)="(?P<fichier>[^"?#:/][^"?#:]*\.(?:css|js))(?:\?v=(?P<v>[^"]*))?"')
+# href="x.css", src="x.js" ou src="x.jpg", locaux (ni schéma ni //), avec ou sans ?v=…
+REFERENCE = re.compile(r'(?P<attr>href|src)="(?P<fichier>[^"?#:/][^"?#:]*\.(?:css|js|jpg))(?:\?v=(?P<v>[^"]*))?"')
 
 
 def empreinte(fichier: Path) -> str:
@@ -79,13 +81,17 @@ def selftest() -> int:
         site = Path(t)
         (site / "a.js").write_text("un", encoding="utf-8")
         (site / "b.css").write_text("deux", encoding="utf-8")
-        va, vb = empreinte(site / "a.js"), empreinte(site / "b.css")
+        (site / "d").mkdir()
+        (site / "d" / "c.jpg").write_bytes(b"trois")
+        va, vb, vc = empreinte(site / "a.js"), empreinte(site / "b.css"), empreinte(site / "d" / "c.jpg")
         cas = [
             ("à jour", f'<link href="b.css?v={vb}"><script src="a.js?v={va}"></script>', []),
             ("sans empreinte", '<script src="a.js"></script>', ["VERSION"]),
             ("empreinte périmée", '<link href="b.css?v=00000000">', ["VERSION"]),
             ("fichier absent", '<script src="c.js"></script>', ["ABSENT"]),
-            ("adresses externes et non CSS/JS ignorées",
+            ("capture dans un dossier, à jour", f'<img src="d/c.jpg?v={vc}">', []),
+            ("capture sans empreinte", '<img src="d/c.jpg">', ["VERSION"]),
+            ("adresses externes et autres types ignorés",
              '<a href="https://x.fr/a.js">x</a><img src="logo.svg"><a href="avis.json">j</a>', []),
         ]
         for nom, html, attendu in cas:

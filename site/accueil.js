@@ -15,10 +15,17 @@ addEventListener('DOMContentLoaded', () => {
 
   // Onglets accessibles (flèches, Début, Fin) dont la couleur glisse par clip-path.
   // mode : 'souris' anime ; 'clavier' et 'init' sont instantanés (un geste au clavier ne s'anime pas).
+  // Quand la rangée déborde (téléphone), le bord qui cache des onglets s'estompe, et
+  // l'onglet choisi revient au milieu de la rangée (coprofirst-site#17).
   function initOnglets(racine, montrer = (panneau, actif) => { panneau.hidden = !actif; }) {
     const onglets = [...racine.querySelectorAll('.onglets:not(.copie) .onglet')];
     const copie = racine.querySelector('.onglets.copie');
+    const cadre = racine.querySelector('.onglets-cadre');
     const decouper = (o) => { copie.style.clipPath = `inset(6px ${copie.offsetWidth - o.offsetLeft - o.offsetWidth}px 6px ${o.offsetLeft}px round 99px)`; };
+    const bords = () => {
+      cadre.toggleAttribute('data-debut', cadre.scrollLeft <= 1);
+      cadre.toggleAttribute('data-fin', cadre.scrollLeft + cadre.clientWidth >= cadre.scrollWidth - 1);
+    };
     function activer(onglet, mode) {
       racine.toggleAttribute('data-instant', mode !== 'souris');
       for (const o of onglets) {
@@ -28,8 +35,13 @@ addEventListener('DOMContentLoaded', () => {
         montrer(document.getElementById(o.getAttribute('aria-controls')), actif);
       }
       decouper(onglet);
-      if (mode === 'clavier') onglet.focus();
+      const anime = mode === 'souris' && !matchMedia('(prefers-reduced-motion: reduce)').matches;
+      cadre.scrollTo({ left: onglet.offsetLeft - (cadre.clientWidth - onglet.offsetWidth) / 2, behavior: anime ? 'smooth' : 'auto' });
+      if (mode === 'clavier') onglet.focus({ preventScroll: true });
     }
+    cadre.addEventListener('scroll', bords, { passive: true });
+    addEventListener('resize', bords);
+    bords();
     onglets.forEach((o, i) => {
       o.addEventListener('click', () => activer(o, 'souris'));
       o.addEventListener('keydown', (e) => {
@@ -45,8 +57,57 @@ addEventListener('DOMContentLoaded', () => {
   }
 
   initOnglets(document.getElementById('pour-qui'));
+  initSommaire();
+  initCarrousel(document.querySelector('.carrousel'), document.querySelector('.commandes-carrousel'));
+  allumerFenetre(document.querySelector('.scene'));
   afficherAvis();
 });
+
+// ── Sommaire (coprofirst-site#15) ───────────────────────────────────────────────
+// Sous 1080 px, il remplace les liens de l'en-tête. Échap le ferme et rend le focus
+// au bouton ; un clic ailleurs ou sur un lien le ferme.
+function initSommaire() {
+  const bouton = document.querySelector('.btn-sommaire');
+  const menu = document.getElementById('menu-sommaire');
+  if (!bouton || !menu) return;
+  const ouvrir = (ouvert) => { menu.toggleAttribute('data-ferme', !ouvert); bouton.setAttribute('aria-expanded', ouvert); };
+  const ouvert = () => !menu.hasAttribute('data-ferme');
+  bouton.addEventListener('click', () => ouvrir(!ouvert()));
+  menu.addEventListener('click', (e) => { if (e.target.closest('a')) ouvrir(false); });
+  addEventListener('keydown', (e) => { if (e.key === 'Escape' && ouvert()) { ouvrir(false); bouton.focus(); } });
+  addEventListener('click', (e) => { if (ouvert() && !e.target.closest('.sommaire')) ouvrir(false); });
+}
+
+// ── Carrousel de l'assistant IA (coprofirst-site#18) ────────────────────────────
+// Flèches (à la souris seulement, CSS) et compteur « n / total ». Le compteur est
+// caché aux lecteurs d'écran : le carrousel est une liste qu'ils parcourent déjà.
+function initCarrousel(carrousel, commandes) {
+  if (!carrousel || !commandes) return;
+  const cartes = [...carrousel.querySelectorAll('.carte-ia')];
+  const compteur = commandes.querySelector('.compteur');
+  const [precedent, suivant] = commandes.querySelectorAll('.fleche-c');
+  const pas = () => cartes[1].offsetLeft - cartes[0].offsetLeft;
+  let image = null;
+  const maj = () => {
+    image = null;
+    const rang = Math.min(cartes.length, Math.round(carrousel.scrollLeft / pas()) + 1);
+    compteur.textContent = `${rang} / ${cartes.length}`;
+    precedent.disabled = carrousel.scrollLeft <= 1;
+    suivant.disabled = carrousel.scrollLeft + carrousel.clientWidth >= carrousel.scrollWidth - 1;
+  };
+  carrousel.addEventListener('scroll', () => { image ??= requestAnimationFrame(maj); }, { passive: true });
+  addEventListener('resize', maj);
+  for (const b of [precedent, suivant]) b.addEventListener('click', () => carrousel.scrollBy({ left: Number(b.dataset.sens) * pas() }));
+  maj();
+}
+
+// ── La fenêtre qui s'allume (coprofirst-site#24) ────────────────────────────────
+// Une fois, l'entrée du héros jouée : l'affaire est réglée, l'immeuble s'éclaire.
+function allumerFenetre(scene) {
+  if (!scene) return;
+  const reduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  setTimeout(() => scene.classList.add('allumee'), reduit ? 0 : 750);
+}
 
 // ── Avis d'utilisateurs (coprofirst-site#6) ─────────────────────────────────────
 // avis.json est l'export de l'application, commité tel quel :

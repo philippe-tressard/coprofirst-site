@@ -31,10 +31,10 @@ import argparse
 import ast
 import sys
 import tempfile
-import urllib.error
-import urllib.request
 from html.parser import HTMLParser
 from pathlib import Path
+
+from lecture_distante import Illisible, lire
 
 URL_SOURCE = (
     "https://raw.githubusercontent.com/philippe-tressard/coprofirst/main/"
@@ -50,10 +50,6 @@ LIBELLES = {"Identifiant": "adresse", "Mot de passe": "mot_de_passe"}
 # La règle de formation de l'adresse dans la source. Si elle change, l'adresse
 # calculée ici ne serait plus celle de l'application : INCONNU plutôt qu'un faux vert.
 ADRESSE_ATTENDUE = ast.dump(ast.parse('f"{self.code}@{DOMAINE}"', mode="eval").body)
-
-
-class Illisible(Exception):
-    """Une entrée ne se lit pas : le verdict est INCONNU, jamais OK."""
 
 
 # ── La source : api/app/demo/personnages.py ─────────────────────────────────────
@@ -189,27 +185,6 @@ def comparer(source: dict[str, str], page: dict[str, str]) -> list[str]:
                 f"l'application attend « {source[adresse]} »"
             )
     return ecarts
-
-
-# ── Les entrées ─────────────────────────────────────────────────────────────────
-
-
-def lire(origine: str) -> str:
-    """Le texte d'un fichier local ou d'une URL https, sans jeton. Illisible sinon."""
-    try:
-        if origine.startswith("https://"):
-            requete = urllib.request.Request(origine, headers={"User-Agent": "coprofirst-site-ci"})
-            with urllib.request.urlopen(requete, timeout=30) as reponse:
-                if reponse.status != 200:
-                    raise Illisible(f"{origine} : HTTP {reponse.status}")
-                octets = reponse.read()
-        else:
-            octets = Path(origine).read_bytes()
-        return octets.decode("utf-8")
-    except Illisible:
-        raise
-    except (OSError, urllib.error.URLError, UnicodeDecodeError, ValueError) as e:
-        raise Illisible(f"{origine} : {e}")
 
 
 # ── Autotest ────────────────────────────────────────────────────────────────────

@@ -1,6 +1,6 @@
 # CoproFirst
 
-> CoproFirst est une application web libre (AGPL-3.0-or-later) de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins, et un assistant IA facultatif. Le logiciel est gratuit ; chaque résidence l'installe et l'héberge sur le serveur de son choix.
+> CoproFirst est une application web libre (AGPL-3.0-or-later) de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins, et un assistant IA facultatif. Le logiciel est gratuit ; une résidence l'installe sur le serveur de son choix, ou se fait héberger avec d'autres sur une installation commune.
 
 Ce site (coprofirst.fr) présente le logiciel ; son code, sa documentation et ses versions sont sur GitHub. Le site est en français, comme l'application.
 
@@ -11,7 +11,9 @@ Faits utiles :
 - Prix : logiciel gratuit, sans prix de licence (code, images et archives d'installation publics). Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.
 - Profils : copropriétaire occupant, copropriétaire bailleur, mandataire (agence ou gestionnaire), locataire, aidant d'un résident, conseil syndical, syndic. Chacun ne voit que ce qui le concerne.
 - Le syndic : il reçoit des demandes qualifiées par le conseil syndical et peut répondre par courriel ; sa réponse est versée au fil de l'affaire.
-- Installation : un serveur amd64 ou arm64 avec Docker et Docker Compose 2.24 ou plus récent, des images publiées pour chaque version, un accès HTTPS et une adresse d'envoi de courriels. Une installation sert aujourd'hui une copropriété.
+- Conseil syndical : suivi des affaires en cours (par catégorie et par bâtiment, export PDF) et point CS / Syndic, dont le compte rendu, pris en direct, est validé par les présents.
+- Conservation : si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie ; un compte inactif depuis deux ans est prévenu, puis supprimé.
+- Installation : un serveur amd64 ou arm64 avec Docker et Docker Compose 2.24 ou plus récent, des images publiées et signées pour chaque version, un accès HTTPS et une adresse d'envoi de courriels. Une installation sert une copropriété, ou plusieurs (installation commune : chacune dans sa base, avec ses fichiers et ses textes légaux).
 - Démonstration : une résidence fictive en ligne, trois comptes publics (conseil syndical, copropriétaire, locataire), données remises à zéro chaque nuit.
 - Éditeur : Philippe Tressard, particulier, à titre non professionnel. Contact : contact@coprofirst.fr.
 

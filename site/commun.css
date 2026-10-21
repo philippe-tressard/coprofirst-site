@@ -4,22 +4,44 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 Ce que toutes les pages du site partagent : couleurs, typographie, boutons,
 en-tête et pied de page. Les styles propres à une page restent dans la page.
+
+Les couleurs sont des JETONS, redéfinis pour le thème sombre (coprofirst-site#26) :
+une surface blanche s'écrit var(--carte), un titre var(--titre), un lien ou un
+texte bleu var(--lien) — jamais #fff ni --bleu en dur pour du texte. --bleu reste
+le FOND des boutons et des pastilles retenues, qui gardent un texte blanc.
 */
+/* Fraunces (OFL-1.1, LICENSES/OFL-1.1.txt), servie par le site : aucune police
+   d'un tiers, donc toujours pas de bandeau de consentement (coprofirst-site#23). */
+@font-face{font-family:"Fraunces";src:url("polices/fraunces-latin-opsz-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{
-  --creme:#fdf8f0; --creme-2:#fff8ee; --sable:#f5ead8; --peche:#f9dcc4; --ciel:#dbe8f5; --menthe:#d9efe3; --lilas:#e7e3f4;
-  --encre:#1d2a3a; --doux:#5b6676; --bleu:#1e3a5f; --bleu-nuit:#14294a; --or:#c9983a; --or-vif:#e2b45a; --or-texte:#7d5a14; --bord:#eadfcc; --violet:#4b3d8f;
+  --creme:#fdf8f0; --creme-2:#fff8ee; --carte:#fff; --sable:#f5ead8; --peche:#f9dcc4; --ciel:#dbe8f5; --menthe:#d9efe3; --lilas:#e7e3f4;
+  --encre:#1d2a3a; --doux:#5b6676; --texte-2:#3f4a5a; --titre:#1e3a5f; --lien:#1e3a5f; --bleu:#1e3a5f; --bleu-survol:#2a4c78; --bleu-nuit:#14294a;
+  --or:#c9983a; --or-vif:#e2b45a; --or-texte:#7d5a14; --bord:#eadfcc; --violet:#4b3d8f; --vert:#1f6b3d; --vert-bord:#b7dcc6;
+  --pa-c:#7a3d12; --pa-r:#1f6b3d; --pa-ia:#4b3d8f; --fenetre:rgba(30,58,95,.14); --ombre:rgba(29,42,58,.35); --voile:rgba(255,255,255,.7);
   --haut-entete:76px;
   --ease-out:cubic-bezier(0.23,1,0.32,1); --ease-in-out:cubic-bezier(0.77,0,0.175,1);
-  --titres:Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif;
+  --titres:Fraunces,Georgia,'Palatino Linotype','Book Antiqua',Palatino,serif;
+  --italique:Georgia,'Palatino Linotype',serif;
   --sans:system-ui,-apple-system,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;
   --mono:ui-monospace,SFMono-Regular,Consolas,monospace;
   --coche:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f6b3d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E");
+  color-scheme:light dark;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --creme:#0e1724; --creme-2:#111c2b; --carte:#172435; --sable:#2f281d; --peche:#38281d; --ciel:#1a2c42; --menthe:#173027; --lilas:#25223d;
+    --encre:#e4ebf3; --doux:#a3b3c6; --texte-2:#c3cfdc; --titre:#dce8f6; --lien:#9cc2ef; --bleu:#3d6aa3; --bleu-survol:#4a79b4; --bleu-nuit:#0a1220;
+    --or-texte:#e2b45a; --bord:#26364b; --violet:#c3b8f5; --vert:#8fd3ad; --vert-bord:#2c5a43;
+    --pa-c:#f3c9a6; --pa-r:#a9e3c2; --pa-ia:#cfc6f5; --fenetre:rgba(220,232,246,.10); --ombre:rgba(0,0,0,.55); --voile:rgba(255,255,255,.08);
+    --coche:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fd3ad' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E");
+  }
 }
 *,*::before,*::after{box-sizing:border-box}
 body{margin:0;background:var(--creme);color:var(--encre);font:400 1.0625rem/1.65 var(--sans);-webkit-font-smoothing:antialiased}
 a{color:inherit}
 svg{display:block;max-width:100%}
-h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;line-height:1.15;text-wrap:balance}
+h1,h2,h3{font-family:var(--titres);font-weight:640;color:var(--titre);margin:0;line-height:1.15;text-wrap:balance}
 .c{width:min(1140px,100% - 32px);margin-inline:auto}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .evitement{position:absolute;left:16px;top:-60px;background:var(--bleu);color:#fff;padding:10px 16px;border-radius:99px;z-index:10}
@@ -30,10 +52,10 @@ h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;li
   transition:transform 160ms var(--ease-out),background-color 200ms ease,border-color 200ms ease}
 .btn:active{transform:scale(0.97)}
 .btn-bleu{background:var(--bleu);color:#fff}
-.btn-contour{border-color:var(--bleu);color:var(--bleu)}
+.btn-contour{border-color:var(--bleu);color:var(--lien);background:var(--carte)}
 .btn-or{background:var(--or);color:#1b1407}
 @media (hover:hover) and (pointer:fine){
-  .btn-bleu:hover{background:#2a4c78}
+  .btn-bleu:hover{background:var(--bleu-survol)}
   .btn-contour:hover{background:var(--ciel)}
   .btn-or:hover{background:var(--or-vif)}
 }
@@ -41,29 +63,46 @@ h1,h2,h3{font-family:var(--titres);font-weight:700;color:var(--bleu);margin:0;li
 
 /* En-tête */
 header .c{display:flex;align-items:center;gap:20px;min-height:var(--haut-entete)}
-.marque{display:flex;align-items:center;gap:10px;font:700 1.3rem var(--titres);color:var(--bleu);text-decoration:none}
+.marque{display:flex;align-items:center;gap:10px;font:640 1.3rem var(--titres);color:var(--titre);text-decoration:none}
 .marque img{width:38px;height:38px;border-radius:12px;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}
 header nav{margin-left:auto;display:flex;gap:24px;align-items:center}
 header nav a:not(.btn){text-decoration:none;color:var(--doux);font-weight:500}
 @media (max-width:1080px){header nav a:not(.btn){display:none}}
 @media (max-width:640px){header .btn{min-height:44px;padding:0 16px;white-space:nowrap}.marque{font-size:1.15rem}}
 
+/* Sommaire : sous 1080 px, il remplace les liens de l'en-tête (coprofirst-site#15).
+   Le panneau part de son bouton (origine en haut à droite), entre en 180 ms et
+   sort en 120 ms ; Échap et un clic ailleurs le ferment (accueil.js). */
+.sommaire{display:none;position:relative}
+.btn-sommaire{min-height:44px;padding:0 16px;border-radius:99px;border:1px solid var(--bord);background:var(--carte);color:var(--lien);font:600 .92rem var(--sans);cursor:pointer;transition:transform 160ms var(--ease-out)}
+.btn-sommaire:active{transform:scale(0.97)}
+.menu-sommaire{position:absolute;top:calc(100% + 8px);right:0;z-index:20;min-width:220px;display:grid;padding:8px;border-radius:20px;background:var(--carte);border:1px solid var(--bord);box-shadow:0 24px 50px -24px var(--ombre);
+  transform-origin:top right;transition:opacity 180ms var(--ease-out),transform 180ms var(--ease-out),visibility 0s}
+.menu-sommaire[data-ferme]{opacity:0;transform:scale(0.97);visibility:hidden;pointer-events:none;transition:opacity 120ms var(--ease-out),transform 120ms var(--ease-out),visibility 0s 120ms}
+header .menu-sommaire a:not(.btn){display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;color:var(--encre)}
+@media (hover:hover) and (pointer:fine){header .menu-sommaire a:hover{background:var(--creme)}}
+@media (max-width:1080px){.sommaire{display:block}}
+/* Très petit écran : le héros porte déjà « Essayer la démo » (#14) — l'en-tête
+   garde la marque et le Sommaire, sans déborder à 360 px. */
+@media (max-width:440px){.btn-entete{display:none}}
+@media (prefers-reduced-motion:reduce){.menu-sommaire,.menu-sommaire[data-ferme]{transform:none}.btn-sommaire:active{transform:none}}
+
 /* Pied de page */
-/* Une carte blanche posée sur le fond crème (maquette 5 de maquettes/pied-de-page.html),
+/* Une carte posée sur le fond (maquette 5 de maquettes/pied-de-page.html),
    dans la famille des cartes de la page. */
 footer{padding:8px 0 32px;color:var(--doux);font-size:.9rem}
 /* Deux blocs centrés verticalement : la marque (logo, nom, mention sur deux lignes)
    et les liens. Le centrage ne dépend pas des marges intérieures des liens (cible
    tactile de 44 px), contrairement à l'alignement sur la ligne de base. */
 footer .c{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px 40px;
-  background:#fff;border:1px solid var(--bord);border-radius:20px;padding:16px 24px}
+  background:var(--carte);border:1px solid var(--bord);border-radius:20px;padding:16px 24px}
 .pied-marque{display:flex;align-items:center;gap:12px;margin:0;line-height:1.4}
 .pied-marque img{width:32px;height:32px;border-radius:10px;flex:none;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}
-.pied-marque b{display:block;font:700 1rem var(--titres);color:var(--bleu)}
+.pied-marque b{display:block;font:640 1rem var(--titres);color:var(--titre)}
 .pied-marque small{display:block;font-size:.82rem}
 .pied-marque small span{white-space:nowrap}
 footer nav{display:flex;flex-wrap:wrap;gap:0 20px}
 footer nav a{display:inline-block;padding:10px 0;text-underline-offset:3px;text-decoration-color:var(--bord);transition:color 200ms ease,text-decoration-color 200ms ease}
-footer nav a[aria-current="page"]{color:var(--bleu);font-weight:600;text-decoration:none}
-@media (hover:hover) and (pointer:fine){footer nav a:hover{color:var(--bleu);text-decoration-color:currentColor}}
+footer nav a[aria-current="page"]{color:var(--lien);font-weight:600;text-decoration:none}
+@media (hover:hover) and (pointer:fine){footer nav a:hover{color:var(--lien);text-decoration-color:currentColor}}
 @media (max-width:640px){footer .c{padding:16px 20px}}

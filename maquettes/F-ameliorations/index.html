@@ -1,0 +1,244 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+Maquette F (21/10/2026) : les propositions de la revue du site, avant tout code.
+Repères E = exactitude (le site face à CoproFirst v3.6.1), I = interface.
+Archive autonome, comme les maquettes A à E : elle ne lit pas site/commun.css,
+qui changera quand les propositions retenues seront codées.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CoproFirst — Maquette F · propositions du 21/10/2026</title>
+<link rel="icon" href="../../site/logo.svg" type="image/svg+xml">
+<link rel="stylesheet" href="maquette.css">
+<script src="maquette.js"></script>
+</head>
+<body>
+<p class="bandeau-maquette">Maquette F — propositions du 21/10/2026, à valider avant code. Les repères <b>E</b> corrigent l'exactitude, les repères <b>I</b> l'interface&nbsp;: <a href="#legende">tableau Avant / Après</a>.</p>
+
+<header class="entete">
+  <div class="c">
+    <a class="marque" href="#"><img src="../../site/logo.svg" alt="" width="38" height="38">CoproFirst</a>
+    <nav class="nav-large" aria-label="Navigation principale"><a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#questions">Questions</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a></nav>
+    <div class="sommaire">
+      <a class="repere" href="#r-I2">I2</a>
+      <button class="btn-sommaire" type="button" aria-expanded="false" aria-controls="menu-sommaire">Sommaire</button>
+      <div class="menu-sommaire" id="menu-sommaire" data-ferme>
+        <a href="#fonctions">Fonctionnalités</a><a href="#pour-qui">Pour qui</a><a href="#ia">Assistant IA</a><a href="#demo">Démonstration</a><a href="#questions">Questions</a><a href="https://github.com/philippe-tressard/coprofirst">GitHub</a>
+      </div>
+    </div>
+    <a class="btn btn-bleu btn-entete" href="#demo">Essayer la démo</a>
+  </div>
+</header>
+
+<main id="contenu">
+  <section class="heros entree">
+    <div class="c">
+      <a class="pastille-libre h-in" href="https://github.com/philippe-tressard/coprofirst">Logiciel libre · <b>AGPL-3.0 →</b></a>
+      <h1 class="h-in">La copropriété, <span class="souligne">enfin en ordre.</span><a class="repere" href="#r-I10">I10</a></h1>
+      <p class="chapo h-in">Signalements suivis, documents rangés, carnet d'entretien tenu, voisins informés. Une application libre de gestion de copropriété, installée par votre résidence ou hébergée pour elle<a class="repere" href="#r-E2">E2</a> — sur l'ordinateur comme sur le téléphone.</p>
+      <p class="actions h-in"><a class="btn btn-bleu" href="#demo">Essayer la démo →</a><a class="btn btn-contour" href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">Installer CoproFirst</a><a class="repere" href="#r-I1">I1</a></p>
+      <ul class="confiance h-in" aria-label="Repères de confiance">
+        <li><b>Version 3.6.1</b> · 21/10/2026</li><li>Images signées amd64 et arm64</li><li>Données sur le serveur choisi</li><li>IA éteinte par défaut</li><li>Conforme REUSE</li><li class="li-repere"><a class="repere" href="#r-I9">I9</a></li>
+      </ul>
+    </div>
+    <div class="c">
+      <div class="scene">
+        <div class="imm i1" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i></div>
+        <div class="imm i2" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="imm i3" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i><i></i><i></i></div>
+        <div class="imm i4" aria-hidden="true"><i class="on"></i><i></i><i></i><i></i><i class="allume"></i><i></i></div>
+        <div class="imm i5" aria-hidden="true"><i></i><i></i><i></i><i></i><i class="on"></i><i></i></div>
+        <div class="imm i6" aria-hidden="true"><i></i><i></i><i class="on"></i><i></i></div>
+        <div class="imm i7" aria-hidden="true"><i></i><i class="on"></i><i></i><i></i><i></i><i></i></div>
+        <div class="imm i8" aria-hidden="true"><i></i><i></i><i class="on"></i></div>
+        <div class="arbre a1" aria-hidden="true"></div><div class="arbre a2" aria-hidden="true"></div>
+        <div class="capture" role="img" aria-label="Emplacement d'une capture réelle de la démonstration">
+          <div class="fenetre-barre" aria-hidden="true"><i></i><i></i><i></i><span>demo.coprofirst.fr/tickets</span></div>
+          <div class="appli" aria-hidden="true">
+            <div class="menu"><span>Accueil</span><span>Résidence</span><span class="actif">Affaires</span><span>Mes lots &amp; accès</span><span>Annuaire</span><span>Communauté</span><span>FAQ</span></div>
+            <div class="liste">
+              <div class="ligne"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-r">Résolu</span><span class="pa pa-b">Bât. B · Ascenseur</span></div></div>
+              <div class="ligne"><div class="quand">09<small>oct.</small></div><div><b>Coupure d'eau jeudi de 9 h à 12 h</b><span class="pa pa-b">Actualité</span></div></div>
+              <div class="ligne"><div class="quand">02<small>oct.</small></div><div><b>Infiltration au niveau −1 du parking</b><span class="pa pa-c">Chez le syndic</span><span class="pa pa-b">Parking</span></div></div>
+              <div class="ligne"><div class="quand">28<small>sept.</small></div><div><b>Éclairage de l'allée des caves</b><span class="pa pa-r">Résolu</span><span class="pa pa-ia">🧾 Synthèse validée</span></div></div>
+            </div>
+          </div>
+          <p class="etiquette-capture"><a class="repere" href="#r-I8">I8</a>Ici, une capture réelle de la démo, refaite par script à chaque version</p>
+        </div>
+        <div class="telephone" role="img" aria-label="Aperçu de la liste des affaires sur un téléphone">
+          <div class="ecran" aria-hidden="true">
+            <div class="ecran-tete"><span class="ecran-logo"></span><small>Résidence des Tilleuls</small><span class="hamb"><i></i><i></i><i></i></span></div>
+            <b class="ecran-titre">Mes affaires</b>
+            <div class="filtres"><span class="retenu">Tous 4</span><span>Actualité</span><span>Calendrier</span><span>Affaire</span></div>
+            <div class="ecran-liste">
+              <div class="carte-m"><div class="quand">12<small>oct.</small></div><div><b>Ascenseur du bâtiment B à l'arrêt</b><span class="pa pa-r">Résolu</span></div></div>
+              <div class="carte-m"><div class="quand">09<small>oct.</small></div><div><b>Coupure d'eau jeudi de 9 h à 12 h</b><span class="pa pa-b">Actualité</span></div></div>
+              <div class="carte-m"><div class="quand">02<small>oct.</small></div><div><b>Infiltration au niveau −1 du parking</b><span class="pa pa-c">Chez le syndic</span></div></div>
+            </div>
+          </div>
+        </div>
+        <div class="bulle b1" aria-hidden="true"><b>Bât. B · 3ᵉ</b>L'ascenseur est réparé, merci&nbsp;!</div>
+        <div class="bulle b2" aria-hidden="true"><b>✨ Assistant</b>Synthèse de l'affaire prête à relire.</div>
+        <a class="repere repere-scene" href="#r-I11">I11</a><a class="repere repere-scene2" href="#r-I6">I6</a>
+        <div class="sol" aria-hidden="true"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="fonctions">
+    <div class="c">
+      <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i></i><i class="on"></i><i></i></span>Fonctionnalités</span><h2>Pensée pour la vraie vie d'un immeuble</h2><p>Chaque écran répond à une question que les résidents se posent déjà.<a class="repere" href="#r-I3">I3</a></p></div>
+      <div class="bento">
+        <article class="tuile large t-ciel revele">
+          <h3>« Où en est ma demande&nbsp;? »<a class="repere" href="#r-E6">E6</a></h3>
+          <p>Chaque affaire se lit en trois temps, qui se déplient l'un après l'autre.</p>
+          <div class="trois-temps" aria-hidden="true">
+            <div><b>La demande</b><small>Signalée par un résident · lundi</small></div>
+            <div class="courant"><b>La suite</b><small>Intervenant désigné, réponse du syndic versée au fil</small></div>
+            <div><b>La synthèse</b><small>🧾 Validée par le conseil, versée au carnet</small></div>
+          </div>
+        </article>
+        <article class="tuile t-blanc revele"><h3>Documents</h3><p>Chacun lit ce qui le concerne, selon son profil.</p><div class="chips" aria-hidden="true"><span>PV d'AG</span><span>Règlement</span><span>Diagnostics</span></div></article>
+        <article class="tuile large t-lilas revele">
+          <h3>Le point avec le syndic, compte rendu compris<a class="repere" href="#r-E3">E3</a></h3>
+          <p>Pendant la réunion, le conseil prend le compte rendu affaire par affaire. Les présents le valident d'un lien, puis il part à chacun en PDF et rejoint chaque affaire abordée.</p>
+          <div class="cr" aria-hidden="true">
+            <div><span>Infiltration au parking</span><span class="pa pa-c">Chez le syndic</span></div>
+            <div><span>Ascenseur du bâtiment B</span><span class="pa pa-r">Résolu</span></div>
+            <div class="valide">✓ Validé par 4 présents sur 4 · PDF envoyé</div>
+          </div>
+        </article>
+        <article class="tuile t-menthe revele"><h3>Bilan pour l'AG</h3><p>Durée moyenne par catégorie, relances au syndic, intervenants les plus lents.</p><div class="jauge" aria-hidden="true"><i></i></div></article>
+        <article class="tuile t-peche revele"><h3>Badges et accès</h3><p>Demander, déclarer, confier à son locataire pour la durée du bail.</p></article>
+        <article class="tuile t-sable revele"><h3>Carnet d'entretien</h3><p>Constitué à partir des contrats et des affaires closes, sans ressaisie.</p></article>
+        <article class="tuile t-blanc revele"><h3>Communauté</h3><p>Idées, sondages, petites annonces — entre résidents.</p></article>
+        <article class="tuile t-ciel revele"><h3>Affiches de hall</h3><p>Un PDF au format qui convient, prêt à punaiser.</p></article>
+        <article class="tuile large t-blanc revele"><h3>Un fil de courriels devient une affaire</h3><p>Un membre du conseil transfère le fil reçu&nbsp;: chaque message devient une suite de l'affaire, datée et signée de son auteur.</p><div class="chips" aria-hidden="true"><span>Daté</span><span>Signé</span><span>Jamais en double</span></div></article>
+        <article class="tuile moyenne t-sable revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
+        <article class="tuile moyenne t-menthe revele">
+          <h3>Ce qui est gardé, et combien de temps<a class="repere" href="#r-E5">E5</a></h3>
+          <p>Si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie, et garde son texte. Un compte inactif depuis deux ans est prévenu, puis supprimé.</p>
+        </article>
+        <article class="tuile pleine t-blanc revele multi">
+          <div><h3>Une installation, une ou plusieurs copropriétés<a class="repere" href="#r-E1">E1</a></h3><p>Chaque résidence peut avoir sa propre installation. Une installation commune en sert plusieurs, chacune dans sa base, avec ses fichiers et ses textes légaux, sans rien voir des autres.</p></div>
+          <div class="adresses" aria-hidden="true"><code>residence-des-chenes.fr</code><code>75015-les-tilleuls.exemple.fr</code><code>69003-le-parc.exemple.fr</code></div>
+        </article>
+      </div>
+    </div>
+  </section>
+
+  <section id="pour-qui" class="fond-2">
+    <div class="c">
+      <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i class="on"></i><i></i><i></i></span>Pour qui</span><h2>Chacun y trouve sa place</h2><p>L'application montre à chacun ce qui le concerne — et rien de plus.<a class="repere" href="#r-I4">I4</a></p></div>
+      <div class="onglets-cadre revele" data-debut data-fin>
+        <div class="onglets" role="tablist" aria-label="Profils">
+          <button class="onglet" role="tab" id="t-occ" aria-controls="p-occ" aria-selected="true">Copropriétaire</button>
+          <button class="onglet" role="tab" id="t-bail" aria-controls="p-bail" aria-selected="false" tabindex="-1">Copro-bailleur</button>
+          <button class="onglet" role="tab" id="t-mand" aria-controls="p-mand" aria-selected="false" tabindex="-1">Mandataire</button>
+          <button class="onglet" role="tab" id="t-loc" aria-controls="p-loc" aria-selected="false" tabindex="-1">Locataire</button>
+          <button class="onglet" role="tab" id="t-aid" aria-controls="p-aid" aria-selected="false" tabindex="-1">Aidant</button>
+          <button class="onglet" role="tab" id="t-cs" aria-controls="p-cs" aria-selected="false" tabindex="-1">Conseil syndical</button>
+          <button class="onglet" role="tab" id="t-syn" aria-controls="p-syn" aria-selected="false" tabindex="-1">Syndic</button>
+        </div>
+        <div class="onglets copie" aria-hidden="true"><span class="onglet">Copropriétaire</span><span class="onglet">Copro-bailleur</span><span class="onglet">Mandataire</span><span class="onglet">Locataire</span><span class="onglet">Aidant</span><span class="onglet">Conseil syndical</span><span class="onglet">Syndic</span></div>
+      </div>
+      <div class="panneau" role="tabpanel" id="p-occ" aria-labelledby="t-occ"><div><h3>Votre bien, vos documents, vos voisins</h3><p class="qui">Copropriétaire occupant</p><ul><li>Signaler un problème et suivre sa résolution</li><li>Procès-verbaux, règlement et diagnostics de votre résidence</li><li>Badges et télécommandes de parking</li></ul></div><div class="vignette t-ciel" aria-hidden="true"><div><b>Mes lots</b><br><small>Appartement · Cave · Parking</small></div><div><b>AG du 14 novembre</b><br><small>Convocation disponible</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-bail" aria-labelledby="t-bail" hidden><div><h3>Louer sans courir après les clés</h3><p class="qui">Copropriétaire bailleur</p><ul><li>Baux, locataires, inventaire de remise et documents</li><li>Confier les badges au locataire pour la durée du bail</li><li>Les informations de la copropriété, comme un occupant</li></ul></div><div class="vignette t-sable" aria-hidden="true"><div><b>Bail en cours</b><br><small>Appartement 24 · jusqu'au 30/06</small></div><div><b>2 badges confiés</b><br><small>Rendus à la sortie</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-mand" aria-labelledby="t-mand" hidden><div><h3>L'agence a enfin le bon interlocuteur</h3><p class="qui">Agence ou gestionnaire qui loue pour un copropriétaire</p><ul><li>Recevoir ce que le conseil syndical adresse aux bailleurs</li><li>Consulter, sans agir au nom du propriétaire</li><li>Un compte à son nom, distinct de celui du propriétaire</li></ul></div><div class="vignette t-peche" aria-hidden="true"><div><b>Message aux bailleurs</b><br><small>Ravalement : accès aux balcons</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-loc" aria-labelledby="t-loc" hidden><div><h3>Informé comme un voisin</h3><p class="qui">Locataire</p><ul><li>Coupures, pannes et travaux de votre bâtiment</li><li>Les badges que votre bailleur vous confie</li><li>Idées, sondages et petites annonces</li></ul></div><div class="vignette t-menthe" aria-hidden="true"><div><b>Coupure d'eau jeudi</b><br><small>Bâtiment B · 9 h à 12 h</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-aid" aria-labelledby="t-aid" hidden><div><h3>Veiller sur un proche, sans parler à sa place</h3><p class="qui">Aidant d'un résident</p><ul><li>Lire ce qui est adressé à la personne aidée, tant qu'elle le souhaite</li><li>Le conseil syndical ouvre la délégation à sa demande</li><li>L'aidant lit, il n'agit pas à sa place</li></ul></div><div class="vignette t-lilas" aria-hidden="true"><div><b>Délégation active</b><br><small>Ouverte à la demande de votre mère</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-cs" aria-labelledby="t-cs" hidden><div><h3>Moins de relances, plus de décisions<a class="repere" href="#r-E3">E3</a></h3><p class="qui">Conseil syndical</p><ul><li>Le suivi des affaires en cours, par catégorie et par bâtiment, en PDF</li><li>Le point avec le syndic&nbsp;: compte rendu en direct, validé par les présents</li><li>Un bilan chiffré de l'exercice pour l'assemblée</li></ul></div><div class="vignette t-menthe" aria-hidden="true"><div><b>12 affaires en cours</b><br><small>3 de plus de 90 jours</small></div><div><b>Point CS / Syndic du 17/10</b><br><small>Validé · PDF envoyé aux présents</small></div></div></div>
+      <div class="panneau" role="tabpanel" id="p-syn" aria-labelledby="t-syn" hidden><div><h3>Des demandes claires, au bon endroit<a class="repere" href="#r-E3">E3</a></h3><p class="qui">Syndic</p><ul><li>Des affaires qualifiées par le conseil syndical</li><li>Vos réponses par courriel versées au fil de l'affaire</li><li>Le compte rendu du point CS / Syndic, à valider d'un lien</li></ul></div><div class="vignette t-sable" aria-hidden="true"><div><b>Compte rendu à valider</b><br><small>« Je valide » ou un commentaire</small></div></div></div>
+    </div>
+  </section>
+
+  <section class="ia" id="ia" aria-labelledby="titre-ia">
+    <div class="c"><div class="tete revele"><span class="surtitre surtitre-or">✨ Assistant IA — facultatif</span><h2 id="titre-ia">L'assistant qui lit les textes que personne ne lit</h2><p>Règlement, contrats, fils de courriels&nbsp;: il propose, une personne relit et décide. Éteint tant que la résidence ne l'active pas.</p></div></div>
+    <div class="c commandes-carrousel"><span class="compteur" aria-live="polite">1 / 7</span><a class="repere" href="#r-I5">I5</a><a class="repere" href="#r-E4">E4</a><button class="fleche-c" type="button" data-sens="-1" aria-label="Carte précédente">‹</button><button class="fleche-c" type="button" data-sens="1" aria-label="Carte suivante">›</button></div>
+    <div class="carrousel" tabindex="0" aria-label="Usages de l'assistant IA, à faire défiler">
+      <article class="carte-ia"><div class="illu illu-q" aria-hidden="true"><div class="bulle-q">Ai-je le droit d'installer une pergola&nbsp;?</div><div class="citation">« …sans l'autorisation de l'assemblée… »</div><div class="ok">✓ Extrait retrouvé dans le règlement</div></div><h3>Questions au règlement</h3><p>Une réponse argumentée, chaque extrait cité recherché dans le texte. Un avis indicatif, pas un acte.</p></article>
+      <article class="carte-ia nouveau"><div class="illu illu-r" aria-hidden="true"><div class="ligne-r"><b>TK-0142</b> Infiltration au parking — le syndic attend le devis de l'étancheur.</div><div class="ligne-r"><b>TK-0139</b> Portail en panne — pièce commandée, pose prévue.</div></div><h3>Résumé des affaires en cours</h3><p>Une ou deux phrases par affaire, sans aucun nom, pour le suivi du conseil et la relance du syndic.</p></article>
+      <article class="carte-ia nouveau"><div class="illu illu-f" aria-hidden="true"><div class="pile"><span>Fuite cave 12</span><span>Humidité cave 14</span></div><div class="fleche">↓</div><div class="suite">Infiltrations dans les caves du bâtiment B</div></div><h3>Fusion d'affaires liées</h3><p>Titre et description proposés&nbsp;; la plus ancienne absorbe les autres et reste ouverte.</p></article>
+      <article class="carte-ia"><div class="illu illu-g" aria-hidden="true"><i style="height:40%"></i><i style="height:65%"></i><i style="height:30%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i></div><h3>Synthèse d'une affaire close</h3><p>Graphiques en jours ouvrés, récit, difficultés, piste d'amélioration. Le conseil la valide.</p></article>
+      <article class="carte-ia"><div class="illu illu-c" aria-hidden="true"><div class="page"><i></i><i></i><i></i></div><div class="page"><i></i><i></i></div><div class="page"><i></i><i></i><i></i><i></i></div></div><h3>Synthèse de contrat</h3><p>Contrat, avenants, conditions générales&nbsp;: tout est lu, et les fichiers non lus sont nommés.</p></article>
+      <article class="carte-ia"><div class="illu illu-m" aria-hidden="true"><div class="mail">&gt; Bonjour, suite à votre msg du 3/10…</div><div class="fleche">↓</div><div class="suite">Le syndic confirme le passage du plombier.</div></div><h3>Réponses du syndic</h3><p>Le courriel reçu devient une suite lisible du fil — l'original reste consultable.</p></article>
+      <article class="carte-ia"><div class="illu illu-d" aria-hidden="true"><div class="bulle-q">la porte du garage reste ouverte depuis hier…</div><div class="barre-ia"><span>Appliquer</span><span>Ignorer</span></div></div><h3>Une description à reprendre</h3><p>Une proposition apparaît sous le champ. Appliquer, ou ignorer&nbsp;: le conseil choisit.</p></article>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="c"><div class="demo revele"><div><span class="surtitre surtitre-vert">Démonstration en ligne</span><h2>Essayez-la sans rien installer</h2><p>Une résidence fictive, trois comptes publics, aucun compte à créer. <i>(Section inchangée.)</i></p></div><div class="roles"><a class="role" href="#"><b>Conseil syndical</b></a><a class="role" href="#"><b>Copropriétaire</b></a><a class="role" href="#"><b>Locataire</b></a></div></div></div>
+  </section>
+
+  <section id="avis" class="sans-haut"><div class="c"><p class="inchange">Avis d'utilisateurs&nbsp;: inchangés, rendus depuis <code>avis.json</code> — jamais recopiés dans une maquette (données personnelles).</p></div></section>
+
+  <section id="questions" class="sans-haut">
+    <div class="c">
+      <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i></i><i></i><i class="on"></i></span>Questions</span><h2>Questions fréquentes</h2><p>Seules les réponses corrigées sont montrées ; les autres ne changent pas.</p></div>
+      <div class="faq">
+        <article class="question revele"><h3>Comment l'installer&nbsp;?<a class="repere" href="#r-E1">E1</a></h3><p>Sur un serveur <code>amd64</code> ou <code>arm64</code> équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels.</p><p><s>Une installation sert aujourd'hui une copropriété.</s> <ins>Une installation sert une copropriété, ou plusieurs&nbsp;: l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux.</ins></p></article>
+        <article class="question revele"><h3>Où sont les données de la résidence&nbsp;?<a class="repere" href="#r-E2">E2</a></h3><p>Sur le serveur choisi pour elle&nbsp;: <ins>celui de la résidence, ou celui d'un hébergeur qui sert plusieurs copropriétés, chacune dans sa propre base.</ins> Le guide d'installation explique comment en garder une sauvegarde copiée hors de la machine.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="sans-haut">
+    <div class="c">
+      <div class="final revele">
+        <h2>Votre résidence mérite mieux qu'un fil de courriels.<a class="repere" href="#r-I7">I7</a></h2>
+        <p>Libre, gratuit à installer, à votre nom et à vos couleurs.</p>
+        <p class="actions"><a class="btn btn-bleu" href="#demo">Essayer la démo →</a><a class="btn btn-contour" href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">Lire le guide d'installation</a></p>
+        <p class="dev">Développeur&nbsp;? <a href="https://github.com/philippe-tressard/coprofirst">Le dépôt GitHub</a> · <code>git clone https://github.com/philippe-tressard/coprofirst.git</code></p>
+      </div>
+    </div>
+  </section>
+
+  <section id="legende" class="legende">
+    <div class="c">
+      <h2>Avant / Après</h2>
+      <p>Chaque ligne est un point à valider séparément. Les lignes <b>E</b> sont des corrections de contenu : le site décrit CoproFirst v2.161, le produit est en v3.6.1.</p>
+      <div class="tableau" tabindex="0"><table>
+        <thead><tr><th>N°</th><th>Avant</th><th>Après</th><th>Pourquoi</th></tr></thead>
+        <tbody>
+          <tr id="r-E1"><td>E1</td><td>FAQ et <code>llms.txt</code>&nbsp;: « Une installation sert aujourd'hui une copropriété. »</td><td>Réponse corrigée et une tuile « une ou plusieurs copropriétés »</td><td>Faux depuis la v3.0.0 (18/10) : installation commune multi-copropriété</td></tr>
+          <tr id="r-E2"><td>E2</td><td>« installée et hébergée par votre résidence »</td><td>« installée par votre résidence ou hébergée pour elle », et FAQ des données</td><td>Une copropriété peut être servie par un hébergeur commun</td></tr>
+          <tr id="r-E3"><td>E3</td><td>Rien sur le Reporting CS</td><td>Tuile « point avec le syndic » et profils Conseil syndical et Syndic réécrits</td><td>v2.170 → v3.6 : la fonction la plus forte pour le conseil et le syndic</td></tr>
+          <tr id="r-E4"><td>E4</td><td>5 cartes IA</td><td>7 : résumé des affaires en cours, fusion d'affaires liées</td><td>Usages livrés depuis le 16/10</td></tr>
+          <tr id="r-E5"><td>E5</td><td>Rien sur la durée de conservation</td><td>Tuile « Ce qui est gardé, et combien de temps »</td><td>Argument de confiance (v2.178, v3.5) ; le service est facultatif, c'est dit</td></tr>
+          <tr id="r-E6"><td>E6</td><td>Fil en quatre points jusqu'à « Résolue »</td><td>« La demande · La suite · La synthèse »</td><td>C'est ainsi que l'application montre une affaire depuis la v2.169</td></tr>
+          <tr id="r-E7"><td>E7</td><td>Données structurées et <code>llms.txt</code> au 16/10</td><td>Même mise à jour (non visible) et <code>lastmod</code> avancé</td><td>Moteurs et assistants lisent ce qu'on dit au visiteur</td></tr>
+          <tr id="r-I1"><td>I1</td><td>Héros sans bouton</td><td>« Essayer la démo » et « Installer CoproFirst »</td><td>Le premier écran porte l'action principale</td></tr>
+          <tr id="r-I2"><td>I2</td><td>Navigation masquée sous 1080 px, sans remplacement</td><td>Bouton « Sommaire » : panneau <code>scale(.97)</code> + opacité, origine en haut à droite, 180 ms entrée, 120 ms sortie, Échap ferme</td><td>Sur téléphone, aucun accès aux sections</td></tr>
+          <tr id="r-I3"><td>I3</td><td><code>.tuile:hover{translateY(-3px)}</code> sur des tuiles non cliquables</td><td>Aucun effet de survol</td><td>Un survol promet un lien qui n'existe pas</td></tr>
+          <tr id="r-I4"><td>I4</td><td>7 onglets qui débordent, barre masquée</td><td>Fondu sur le bord qui déborde, onglet choisi ramené en vue</td><td>« Conseil syndical » et « Syndic » restaient invisibles sur téléphone</td></tr>
+          <tr id="r-I5"><td>I5</td><td>Carrousel IA sans commande</td><td>‹ › et « 1 / 7 », à la souris seulement</td><td>Sans pavé tactile, on ne devine pas le défilement horizontal</td></tr>
+          <tr id="r-I6"><td>I6</td><td>Entrée 700–760 ms, décalages jusqu'à 820 ms</td><td>450 ms, décalages ≤ 380 ms (bouton « Comparer » en bas)</td><td>Plus court paraît plus soigné et plus rapide</td></tr>
+          <tr id="r-I7"><td>I7</td><td>Appel final : GitHub et <code>git clone</code></td><td>Démo et guide en boutons, <code>git clone</code> en petit</td><td>Le public est d'abord un conseil syndical, pas un développeur</td></tr>
+          <tr id="r-I8"><td>I8</td><td>Aperçu dessiné à la main</td><td>Capture réelle de la démo, refaite par script à chaque version</td><td>« Ce que vous voyez est le produit », sans dérive ; à confirmer : script dans le dépôt du site</td></tr>
+          <tr id="r-I9"><td>I9</td><td>Aucun repère de maturité</td><td>Bande : version, images signées, données, IA éteinte, REUSE</td><td>Confiance par des faits vérifiables ; la version serait lue dans les notes de version, jamais écrite à la main</td></tr>
+          <tr id="r-I10"><td>I10</td><td>Georgia (police du système)</td><td>Une police libre (OFL) dans <code>site/</code> — <b>non rendue ici</b> : le fichier est à télécharger avec ton accord</td><td>Typographie plus haut de gamme sans tiers, donc toujours sans bandeau de consentement</td></tr>
+          <tr id="r-I11"><td>I11</td><td>Fenêtre allumée en or, simple décor</td><td>Une fenêtre s'allume quand l'ascenseur passe « Résolu » (une fois) ; motif repris dans les surtitres</td><td>Un signe propre à CoproFirst : l'affaire réglée éclaire l'immeuble</td></tr>
+          <tr id="r-I12"><td>I12</td><td>Défilement aimanté sur toute la page</td><td>Retiré (interrupteur en bas pour comparer)</td><td>Sensation de défilement repris en main ; ton choix du 14/10, à trancher</td></tr>
+          <tr id="r-I13"><td>I13</td><td>Thème clair seul</td><td>Thème sombre par jetons de couleur (interrupteur en bas)</td><td>Reste à faire noté dans CLAUDE.md (standards/11 §10)</td></tr>
+        </tbody>
+      </table></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="c"><p class="pied-marque"><img src="../../site/logo.svg" alt="" width="32" height="32"><span><b>CoproFirst</b><small>Demande de marque n° 5307183 · Licence AGPL-3.0-or-later</small></span></p><nav aria-label="Liens de pied de page"><a href="#">contact@coprofirst.fr</a><a href="#">Code source</a><a href="#">Mentions légales</a><a href="#">Confidentialité</a></nav></div></footer>
+
+<div class="reglages" role="group" aria-label="Réglages de la maquette">
+  <button type="button" data-reglage="reperes" aria-pressed="true">Repères</button>
+  <button type="button" data-reglage="sombre" aria-pressed="false">Thème sombre</button>
+  <button type="button" data-reglage="avant" aria-pressed="false">Entrée d'avant</button>
+  <button type="button" data-reglage="aimant" aria-pressed="false">Aimantation</button>
+  <button type="button" data-reglage="rejouer">Rejouer l'entrée</button>
+</div>
+</body>
+</html>
