@@ -1,0 +1,12 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Où signaler une faille de coprofirst.fr ou de CoproFirst (RFC 9116).
+# Expires se renouvelle par `python3 scripts/verifier-security-txt.py --renouveler`,
+# jamais à la main ; le contrôle quotidien prévient un mois avant l'échéance.
+Contact: https://github.com/philippe-tressard/coprofirst/security/advisories/new
+Contact: mailto:contact@coprofirst.fr
+Expires: 2027-10-22T00:00:00Z
+Policy: https://github.com/philippe-tressard/coprofirst/security/policy
+Preferred-Languages: fr, en
+Canonical: https://coprofirst.fr/.well-known/security.txt

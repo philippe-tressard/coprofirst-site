@@ -181,6 +181,12 @@ le réseau ne doit pas conditionner un commit. Il compare la page au code de `ma
 pas à la démo déployée. ⚠️ GitHub suspend un workflow planifié après 60 jours sans
 activité du dépôt.
 
+`python3 scripts/verifier-security-txt.py` — `site/.well-known/security.txt` (RFC 9116 :
+où signaler une faille, renvoie aux avis de sécurité privés de coprofirst) a un Contact,
+un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jours** :
+**`--renouveler`** le repousse d'un an (jamais à la main). En `pre-commit`, en CI avec
+`--selftest`, et **chaque jour** dans `comptes-demo.yml` — l'échéance arrive sans commit.
+
 `python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
 héros affiche la dernière **release** de CoproFirst (la version promue, celle
 qu'une résidence installe — pas le dernier commit de `main`), datée à l'heure de

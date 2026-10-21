@@ -5,7 +5,8 @@
 # site/demo.html, et la version affichée par l'accueil (dernière release).
 # Hors du pre-commit : la source vit dans le dépôt de CoproFirst, et la lire
 # demande le réseau. Le passage QUOTIDIEN attrape un compte changé ou une version
-# promue côté application, même quand ce site ne bouge pas ; son échec part par
+# promue côté application, même quand ce site ne bouge pas — et l'échéance de
+# site/.well-known/security.txt, qui expire sans qu'aucun commit ne le dise ; son échec part par
 # courriel (notifications GitHub des workflows planifiés).
 # ⚠️ GitHub suspend un workflow planifié après 60 jours sans activité du dépôt.
 name: Concordance avec CoproFirst
@@ -32,3 +33,6 @@ jobs:
         run: python3 scripts/version-produit.py --selftest
       - name: index.html contre la dernière release de coprofirst
         run: python3 scripts/version-produit.py
+      # Pas une concordance : une date qui passe. Sa place est dans le passage quotidien.
+      - name: L'échéance de security.txt (un mois de préavis)
+        run: python3 scripts/verifier-security-txt.py
