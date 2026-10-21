@@ -116,6 +116,18 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   la périphérie, quoi que dise le fichier du dépôt : cela se règle dans son tableau
   de bord, pas ici.
 
+- **Analyse de sécurité Cloudflare** (*Security Insights*, 22/10/2026) — réglé dans le
+  tableau de bord de la zone : double authentification du compte, **TLS 1.2 minimum**,
+  **Toujours utiliser HTTPS** (la démo servait sa connexion en `http://`), DMARC
+  `p=none` par *DMARC Management* (rapports chez Cloudflare) ; `security.txt` dans le
+  dépôt. **Refusé, à ne pas réactiver** au prochain scan : *Bot Fight Mode* (il
+  mettrait au défi les instances qui s'inscrivent sur `registre.coprofirst.fr`, de
+  serveur à serveur, ainsi que `deployer.sh --verifier` et `generer-captures.mjs`),
+  *Labyrinthe IA* (contraire à l'ouverture aux robots), *Turnstile* (aucun formulaire),
+  **HSTS de Cloudflare** (Caddy et la démo envoient le leur). DKIM s'active chez OVH,
+  à faire avant de passer DMARC en `quarantine`. Le HSTS de `registre.` relève de
+  CoproFirst.
+
 - **La démo** est ouverte depuis le 14/10/2026. On y entre **par le formulaire de
   connexion** de `demo.coprofirst.fr`, avec trois comptes publics (CS,
   copropriétaire, locataire) que publie `site/demo.html` ; l'administrateur n'en est
