@@ -54,6 +54,11 @@ juger_page() {
   grep -q 'href="#"' "$f" && echo "LIEN     $f (href=\"#\" : lien qui ne mène nulle part)"
   grep -q 'href="mentions-legales.html"' "$f" || echo "MENTIONS $f (pas de lien vers mentions-legales.html)"
   grep -q 'href="confidentialite.html"' "$f" || echo "CONFID   $f (pas de lien vers confidentialite.html)"
+  # Le thème sombre par défaut vit dans theme.js (chargé avant la feuille de style, sans
+  # quoi la page clignote) et dans l'interrupteur de l'en-tête : sans l'un ou l'autre,
+  # un visiteur reste coincé dans un thème qu'il n'a pas choisi.
+  grep -q '<script src="theme.js' "$f" || echo "THEME    $f (theme.js non chargé)"
+  grep -q 'data-bascule-theme' "$f" || echo "THEME    $f (pas d'interrupteur de thème)"
   # Ressource tierce : <script src>, <link href>, <img src>, url() ou @import vers http(s).
   # Un <link rel="canonical"> ou « alternate » désigne une adresse, il ne charge rien :
   # il est écarté (une balise par ligne, comme dans les pages du site).
@@ -110,7 +115,8 @@ selftest() {
   verifie "" outil.py 100755
   verifie "MODE " outil.py 100644
   # Règles d'une page publiée
-  local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'
+  local theme='<script src="theme.js?v=1"></script><button data-bascule-theme></button>'
+  local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'"$theme"
   printf '%s
 ' "<footer>$liens</footer>" > "$t/bonne.html"
   printf '%s
@@ -124,6 +130,8 @@ selftest() {
   printf '%s
 ' "$liens" '<a href="https://github.com/x">code</a>' > "$t/lien-sortant.html"
   printf '%s
+' '<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>' > "$t/sans-theme.html"
+  printf '%s
 ' "$liens" '<link rel="canonical" href="https://coprofirst.fr/">' > "$t/canonique.html"
   printf '%s
 ' "$liens" '<link rel="canonical" href="https://coprofirst.fr/">' '<link rel="stylesheet" href="https://fonts.example/f.css">' > "$t/canonique-et-police.html"
@@ -134,10 +142,11 @@ selftest() {
   }
   page "" bonne.html
   page "LIEN " morte.html
-  page "CONFID " sans-confid.html
+  page "CONFID THEME THEME " sans-confid.html
   page "TIERS " police.html
   page "TIERS " traceur.html
   page "" lien-sortant.html
+  page "THEME THEME " sans-theme.html
   page "" canonique.html
   page "TIERS " canonique-et-police.html
   rm -rf "$t"

@@ -44,8 +44,7 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .i8{left:90%;width:10%;height:54%;background:var(--menthe);--col:1}
 .arbre{position:absolute;bottom:6px;width:52px;height:96px;z-index:1}
 .arbre::before{content:"";position:absolute;left:50%;bottom:0;width:6px;height:40px;translate:-50% 0;border-radius:3px;background:#8a6a3f}
-.arbre::after{content:"";position:absolute;left:0;top:0;width:52px;height:60px;border-radius:50%;background:#9fd3b4}
-@media (prefers-color-scheme:dark){.arbre::after{background:#3f7a5a}}
+.arbre::after{content:"";position:absolute;left:0;top:0;width:52px;height:60px;border-radius:50%;background:var(--feuillage)}
 .a1{left:1.5%}.a2{left:94%;scale:.8;transform-origin:bottom}
 .sol{position:absolute;left:0;right:0;bottom:0;height:8px;border-radius:99px;background:var(--or);z-index:5}
 /* La fenêtre qui s'allume quand l'affaire est réglée (#24) : une fois, après l'entrée */

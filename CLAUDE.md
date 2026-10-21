@@ -17,9 +17,13 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
   `site/mentions-legales.html`, `site/confidentialite.html` ; styles partagés dans
-  `site/commun.css` (jetons de couleur : thème clair et sombre selon
-  `prefers-color-scheme` — une surface s'écrit `var(--carte)`, un texte bleu
-  `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
+  `site/commun.css` (jetons de couleur : thème **sombre par défaut**, clair au
+  choix du visiteur par l'interrupteur de l'en-tête, sans égard pour le thème de son
+  système — demande du 21/10/2026 ; `site/theme.js`, chargé dans `<head>` avant la
+  feuille, pose `data-theme` et mémorise le choix dans `localStorage`
+  `coprofirst-theme`, ce que dit `confidentialite.html` ; `verifier-depot.sh` exige
+  script et interrupteur dans chaque page. Une surface s'écrit `var(--carte)`, un
+  texte bleu `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
   `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
   que `'self'`). Le héros montre des **captures réelles** de la démo
