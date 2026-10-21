@@ -27,8 +27,9 @@ import tempfile
 from pathlib import Path
 
 SITE = Path(__file__).resolve().parent.parent / "site"
-# href="x.css", src="x.js" ou src="x.jpg", locaux (ni schéma ni //), avec ou sans ?v=…
-REFERENCE = re.compile(r'(?P<attr>href|src)="(?P<fichier>[^"?#:/][^"?#:]*\.(?:css|js|jpg))(?:\?v=(?P<v>[^"]*))?"')
+# href="x.css", src="x.js" ou src="x.jpg", locaux (ni schéma ni //), relatifs ou absolus
+# (« /x.css », dans 404.html qui répond aussi aux adresses profondes), avec ou sans ?v=…
+REFERENCE = re.compile(r'(?P<attr>href|src)="(?P<fichier>/?[^"?#:/][^"?#:]*\.(?:css|js|jpg))(?:\?v=(?P<v>[^"]*))?"')
 
 
 def empreinte(fichier: Path) -> str:
@@ -42,7 +43,7 @@ def juger(site: Path) -> tuple[list[str], dict[Path, str]]:
         texte = page.read_text(encoding="utf-8")
 
         def remplacer(m):
-            cible = site / m["fichier"]
+            cible = site / m["fichier"].lstrip("/")
             if not cible.is_file():
                 ecarts.append(f"ABSENT   {page.name} : {m['fichier']} n'existe pas")
                 return m[0]
@@ -91,6 +92,9 @@ def selftest() -> int:
             ("fichier absent", '<script src="c.js"></script>', ["ABSENT"]),
             ("capture dans un dossier, à jour", f'<img src="d/c.jpg?v={vc}">', []),
             ("capture sans empreinte", '<img src="d/c.jpg">', ["VERSION"]),
+            ("adresse absolue, à jour", f'<link href="/b.css?v={vb}">', []),
+            ("adresse absolue sans empreinte", '<script src="/a.js"></script>', ["VERSION"]),
+            ("adresse protocolaire ignorée", '<script src="//x.fr/a.js"></script>', []),
             ("adresses externes et autres types ignorés",
              '<a href="https://x.fr/a.js">x</a><img src="logo.svg"><a href="avis.json">j</a>', []),
         ]

@@ -57,7 +57,8 @@ juger_page() {
   # Le thème sombre par défaut vit dans theme.js (chargé avant la feuille de style, sans
   # quoi la page clignote) et dans l'interrupteur de l'en-tête : sans l'un ou l'autre,
   # un visiteur reste coincé dans un thème qu'il n'a pas choisi.
-  grep -q '<script src="theme.js' "$f" || echo "THEME    $f (theme.js non chargé)"
+  # (en absolu « /theme.js » dans 404.html, qui répond aussi aux adresses profondes)
+  grep -q '<script src="/\?theme.js' "$f" || echo "THEME    $f (theme.js non chargé)"
   grep -q 'data-bascule-theme' "$f" || echo "THEME    $f (pas d'interrupteur de thème)"
   # Ressource tierce : <script src>, <link href>, <img src>, url() ou @import vers http(s).
   # Un <link rel="canonical"> ou « alternate » désigne une adresse, il ne charge rien :
@@ -147,6 +148,9 @@ selftest() {
   page "TIERS " traceur.html
   page "" lien-sortant.html
   page "THEME THEME " sans-theme.html
+  printf '%s
+' '<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a><script src="/theme.js?v=1"></script><button data-bascule-theme></button>' > "$t/theme-absolu.html"
+  page "" theme-absolu.html
   page "" canonique.html
   page "TIERS " canonique-et-police.html
   rm -rf "$t"

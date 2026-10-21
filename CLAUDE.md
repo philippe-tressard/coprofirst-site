@@ -16,7 +16,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
-  `site/mentions-legales.html`, `site/confidentialite.html` ; styles partagés dans
+  `site/mentions-legales.html`, `site/confidentialite.html`, `site/404.html` (servie
+  par le Caddyfile sur toute adresse inconnue, avec le code 404 et les mêmes en-têtes
+  de sécurité — `noindex`, hors du sitemap, ressources de l'en-tête en absolu) ; styles partagés dans
   `site/commun.css` (jetons de couleur : thème **sombre par défaut**, clair au
   choix du visiteur par l'interrupteur de l'en-tête, sans égard pour le thème de son
   système — demande du 21/10/2026 ; `site/theme.js`, chargé dans `<head>` avant la
@@ -43,7 +45,8 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Hébergement** : Oracle Cloud (instance `coprofirst-demo`, Paris), comme la démo.
   En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
   tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
-  réservé à la démo. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
+  réservé à la démo. Le Caddyfile est validé à la construction de l'image (un
+  Caddyfile invalide laisse l'ancien conteneur servir) et en CI. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
   seulement, plus `site/avis.json` qui n'est pas versionné — voir Avis
   d'utilisateurs —, puis comparaison octet par octet de ce qui est servi ;
   `--verifier` pour le seul contrôle). Jamais de geste à la main sur le serveur.
@@ -138,7 +141,8 @@ ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages,
 chaque `lastmod` est au moins la date du dernier commit de sa page (**l'avancer**
 quand on modifie une page) ;
 `robots.txt` désigne le sitemap et ne ferme aucun robot ; les liens de `llms.txt`
-mènent à des fichiers du site. En `pre-commit` et en CI, avec `--selftest`. **Une page
+mènent à des fichiers du site. Les pages d'erreur (`PAGES_D_ERREUR` : `404.html`) sont
+nommées, et suivent la règle inverse : `noindex` obligatoire, ni canonique ni sitemap. En `pre-commit` et en CI, avec `--selftest`. **Une page
 ajoutée** se déclare donc dans le sitemap (et dans `llms.txt`), avec ses balises de
 tête recopiées d'une page voisine.
 

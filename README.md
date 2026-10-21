@@ -19,6 +19,7 @@ page `demo.html` en publie les trois comptes publics.
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
 | `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
+| `site/404.html` | la page des adresses inconnues, servie avec le code 404 par le Caddyfile (`noindex`, hors du sitemap) |
 | `site/commun.css`, `site/document.css`, `site/accueil.css`, `site/accueil.js`, `site/demo.js` | styles partagés (jetons de couleur, thèmes clair et sombre), styles des pages de texte et de l'accueil, scripts de l'accueil et de la page Démo |
 | `site/polices/` | Fraunces, la police des titres, servie par le site (SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`) |
 | `site/captures/` | les captures réelles de la démonstration montrées par l'accueil — refaites par `scripts/generer-captures.mjs` |

@@ -16,6 +16,10 @@
 #   - og:title, og:description, og:image (fichier présent, PNG 1200 × 630), twitter:card ;
 #   - aucun `noindex` ;
 #   - chaque bloc application/ld+json est du JSON valide, avec un @context schema.org.
+# Les pages d'ERREUR (PAGES_D_ERREUR : 404.html, servie par le Caddyfile) suivent la
+# règle inverse : `noindex` obligatoire, ni canonique, ni Open Graph, ni sitemap.
+# Elles sont nommées, jamais déduites de leur `noindex` : un `noindex` oublié sur une
+# vraie page doit rester un écart, pas une exemption.
 # Puis, pour le site :
 #   - sitemap.xml liste exactement les adresses canoniques des pages, et le lastmod
 #     de chacune n'est pas plus ancien que le dernier commit de la page (git) ;
@@ -42,6 +46,8 @@ from pathlib import Path
 
 ORIGINE = "https://coprofirst.fr/"
 IMAGE_PARTAGE = (1200, 630)
+# Servies sur une erreur (deploiement/Caddyfile, handle_errors) : jamais indexées.
+PAGES_D_ERREUR = {"404.html"}
 
 
 class Tete(HTMLParser):
@@ -124,6 +130,13 @@ def juger_page(site: Path, page: Path) -> list[str]:
         ecarts.append(f"H1       {nom} ({t.h1} <h1>, attendu 1)")
     if not un("description"):
         ecarts.append(f"DESCR    {nom} (meta description absente ou vide)")
+    ferme = any("noindex" in c.lower() for c in t.meta.get("robots", []) + t.meta.get("googlebot", []))
+    if nom in PAGES_D_ERREUR:
+        if not ferme:
+            ecarts.append(f"OUVERTE  {nom} (page d'erreur sans noindex : les moteurs l'indexeraient)")
+        if t.liens.get("canonical"):
+            ecarts.append(f"CANON    {nom} (une page d'erreur n'a pas d'adresse canonique)")
+        return ecarts
     attendue = adresse_canonique(page)
     canon = t.liens.get("canonical", [])
     if canon != [attendue]:
@@ -140,7 +153,7 @@ def juger_page(site: Path, page: Path) -> list[str]:
             ecarts.append(f"IMAGE    {nom} (og:image {image!r} ne mène à aucun fichier du site)")
         elif dimensions_png(f) != IMAGE_PARTAGE:
             ecarts.append(f"IMAGE    {nom} ({f.name} : {dimensions_png(f)}, attendu PNG {IMAGE_PARTAGE})")
-    if any("noindex" in c.lower() for c in t.meta.get("robots", []) + t.meta.get("googlebot", [])):
+    if ferme:
         ecarts.append(f"NOINDEX  {nom} (la page se ferme aux moteurs)")
     for i, bloc in enumerate(t.ld, 1):
         try:
@@ -168,7 +181,7 @@ def juger_site(site: Path):
         try:
             ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9"}
             listees = {e.text.strip() for e in ET.parse(sitemap).getroot().findall("s:url/s:loc", ns)}
-            attendues = {adresse_canonique(p) for p in pages}
+            attendues = {adresse_canonique(p) for p in pages if p.name not in PAGES_D_ERREUR}
             for u in sorted(attendues - listees):
                 ecarts.append(f"SITEMAP  {u} manque à sitemap.xml")
             for u in sorted(listees - attendues):
@@ -225,6 +238,8 @@ def derniers_commits(site: Path):
     daterait chaque page du dernier commit."""
     dates = {}
     for page in sorted(site.glob("*.html")):
+        if page.name in PAGES_D_ERREUR:  # hors du sitemap : pas de lastmod à tenir
+            continue
         try:
             sortie = subprocess.run(["git", "log", "-1", "--format=%cs", "--", page.name], cwd=site,
                                     capture_output=True, text=True, check=True).stdout.strip()
@@ -277,6 +292,22 @@ def selftest() -> int:
         (site / "autre.html").write_text(tete(ORIGINE, '<meta name="robots" content="noindex">'), encoding="utf-8")
         cas("canonique fausse et noindex", ["CANON", "NOINDEX", "OG", "SITEMAP"])
         (site / "autre.html").unlink()
+        erreur = lambda extra: (  # noqa: E731
+            f'<html lang="fr"><head><title>Introuvable</title><meta name="description" content="D">{extra}'
+            f'</head><body><h1>Introuvable</h1></body></html>')
+        (site / "404.html").write_text(erreur('<meta name="robots" content="noindex">'), encoding="utf-8")
+        cas("page d'erreur fermée, hors sitemap", [])
+        (site / "404.html").write_text(erreur(""), encoding="utf-8")
+        cas("page d'erreur sans noindex", ["OUVERTE"])
+        (site / "404.html").write_text(erreur(f'<meta name="robots" content="noindex"><link rel="canonical" href="{ORIGINE}404.html">'), encoding="utf-8")
+        cas("page d'erreur avec canonique", ["CANON"])
+        (site / "sitemap.xml").write_text(
+            f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{ORIGINE}</loc></url><url><loc>{ORIGINE}404.html</loc></url></urlset>', encoding="utf-8")
+        (site / "404.html").write_text(erreur('<meta name="robots" content="noindex">'), encoding="utf-8")
+        cas("page d'erreur listée au sitemap", ["SITEMAP"])
+        (site / "sitemap.xml").write_text(
+            f'<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>{ORIGINE}</loc></url></urlset>', encoding="utf-8")
+        (site / "404.html").unlink()
         (site / "index.html").write_text(tete(ORIGINE, '<script type="application/ld+json">{"@context":</script>'), encoding="utf-8")
         cas("JSON-LD illisible", ["JSON-LD"])
         (site / "index.html").write_text(tete(ORIGINE), encoding="utf-8")

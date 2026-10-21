@@ -1,0 +1,50 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+
+La page des adresses inconnues, servie avec le code 404 par le Caddyfile
+(handle_errors, coprofirst-site#4). Fermée aux moteurs (noindex), hors du sitemap
+— verifier-referencement.py la connaît par son nom. Elle peut répondre à une
+adresse profonde (/a/b/x) : l'en-tête et ses ressources s'écrivent en absolu. Le
+pied reste celui de toutes les pages (verifier-depot.sh les veut identiques).
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page introuvable — CoproFirst</title>
+<meta name="robots" content="noindex">
+<meta name="description" content="Cette adresse ne mène à aucune page du site de CoproFirst.">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<script src="/theme.js?v=79a9ab54"></script>
+<link rel="stylesheet" href="/commun.css?v=f599661a">
+<link rel="preload" href="/polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/document.css?v=0c706ac0">
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header>
+  <div class="c">
+    <a class="marque" href="/" aria-label="CoproFirst, accueil">
+      <img src="/logo.svg" alt="" width="38" height="38">
+      CoproFirst
+    </a>
+    <nav aria-label="Navigation principale"><button class="btn-theme" type="button" data-bascule-theme aria-pressed="true" aria-label="Thème sombre" title="Thème sombre"><svg class="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><a class="btn btn-contour" href="/">← Accueil</a></nav>
+  </div>
+</header>
+
+<main id="contenu" class="document">
+  <h1>Cette page n'existe pas</h1>
+  <p class="chapo">L'adresse a peut-être changé, ou contient une faute de frappe. Tout le site part de sa page d'accueil.</p>
+  <p class="actions-404"><a class="btn btn-bleu" href="/">Retour à l'accueil</a><a class="btn btn-contour" href="/demo.html">Essayer la démo</a></p>
+</main>
+
+<footer>
+  <div class="c">
+    <p class="pied-marque"><img src="logo.svg" alt="" width="32" height="32"><span><b>CoproFirst</b><span class="sr"> — </span><small>Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+    <nav aria-label="Liens de pied de page"><a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="mentions-legales.html">Mentions légales</a><a href="confidentialite.html">Confidentialité</a></nav>
+  </div>
+</footer>
+</body>
+</html>

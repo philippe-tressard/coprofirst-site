@@ -37,6 +37,9 @@ jobs:
         run: python3 scripts/empreintes.py --selftest
       - name: Empreintes des CSS et JS — chaque adresse porte l'empreinte de son contenu
         run: python3 scripts/empreintes.py
+      # Le même Caddy que l'image (Dockerfile) : un Caddyfile invalide ne part pas.
+      - name: Caddyfile valide
+        run: docker run --rm -v "$PWD/deploiement/Caddyfile:/etc/caddy/Caddyfile:ro" caddy:2.11.7-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
       - name: Licences (REUSE)
         run: |
           python -m pip install reuse==6.2.0

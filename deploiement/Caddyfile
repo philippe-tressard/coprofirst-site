@@ -9,17 +9,8 @@
 	auto_https off
 }
 
-:8080 {
-	# www.coprofirst.fr → coprofirst.fr, et http → https (Cloudflare transmet le
-	# protocole d'origine du visiteur dans X-Forwarded-Proto).
-	@www host www.coprofirst.fr
-	redir @www https://coprofirst.fr{uri} permanent
-	@http header X-Forwarded-Proto http
-	redir @http https://{host}{uri} permanent
-
-	root * /srv
-	file_server
-
+# Les en-têtes de toute réponse, page ou erreur.
+(entetes) {
 	header {
 		# Seuls les fichiers du site : ni script, ni police, ni image d'ailleurs.
 		# 'unsafe-inline' pour les styles seulement (<style> et style="" de la page).
@@ -32,5 +23,34 @@
 		# de courriel, minification) — ce qui est servi est ce qui est dans le dépôt.
 		Cache-Control "public, max-age=300, no-transform"
 		-Server
+	}
+}
+
+:8080 {
+	# www.coprofirst.fr → coprofirst.fr, et http → https (Cloudflare transmet le
+	# protocole d'origine du visiteur dans X-Forwarded-Proto).
+	@www host www.coprofirst.fr
+	redir @www https://coprofirst.fr{uri} permanent
+	@http header X-Forwarded-Proto http
+	redir @http https://{host}{uri} permanent
+
+	root * /srv
+	file_server
+
+	import entetes
+
+	# Une adresse inconnue : 404.html, avec les MÊMES en-têtes que le reste du site.
+	# Le bloc des en-têtes ne s'applique pas aux réponses d'erreur, d'où l'import
+	# répété ici (coprofirst-site#4). file_server garde le code 404 de l'erreur.
+	handle_errors {
+		import entetes
+		@introuvable expression {err.status_code} == 404
+		handle @introuvable {
+			rewrite * /404.html
+			file_server
+		}
+		handle {
+			respond "{err.status_code} {err.status_text}"
+		}
 	}
 }

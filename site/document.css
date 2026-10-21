@@ -18,6 +18,9 @@ lecture, des fiches pour les coordonnées. S'ajoute à commun.css.
 .document li+li{margin-top:6px}
 .document a{color:var(--lien);text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);transition:text-decoration-color 200ms ease}
 @media (hover:hover) and (pointer:fine){.document a:hover{text-decoration-color:currentColor}}
+/* Un bouton n'est pas un lien de texte : ni soulignement, ni couleur de lien */
+.document .btn{text-decoration:none}.document .btn-bleu{color:#fff}
+.document .actions-404{display:flex;flex-wrap:wrap;gap:12px;margin-top:28px}
 .document code{font:500 .9em var(--mono);background:var(--carte);border:1px solid var(--bord);border-radius:6px;padding:1px 6px}
 
 /* Une fiche de coordonnées : qui, où, comment le joindre */
