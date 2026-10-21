@@ -61,7 +61,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
    "description": "Application web libre de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis, documents classés par profil, carnet d'entretien, badges d'accès, suivi des affaires et point avec le syndic, communauté entre voisins, assistant IA facultatif. Une installation sert une copropriété, ou plusieurs.",
    "applicationCategory": "BusinessApplication",
    "applicationSubCategory": "Gestion de copropriété",
-   "operatingSystem": "Serveur Docker (amd64 ou arm64) ; navigateur web, installable sur téléphone",
+   "operatingSystem": "Serveur Linux avec Docker (amd64 ou arm64) ; navigateur web, installable sur téléphone",
    "softwareRequirements": "Docker et Docker Compose 2.24 ou plus récent, accès HTTPS, adresse d'envoi de courriels (SMTP)",
    "featureList": [
     "Signalements suivis jusqu'à leur résolution, kanban du conseil syndical",
@@ -116,7 +116,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
  ]
 }
 </script>
-<link rel="stylesheet" href="accueil.css?v=8177fd1b">
+<link rel="stylesheet" href="accueil.css?v=6cf16421">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script src="accueil.js?v=5aa90ae7"></script>
 </head>
@@ -142,6 +142,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <h1 class="h-in">La copropriété, <span class="souligne">enfin en ordre.</span></h1>
       <p class="chapo h-in">Signalements suivis, documents rangés, carnet d'entretien tenu, voisins informés. Une application libre de gestion de copropriété, installée par votre résidence ou hébergée pour elle — sur l'ordinateur comme sur le téléphone.</p>
       <p class="actions h-in"><a class="btn btn-bleu" href="demo.html">Essayer la démo →</a><a class="btn btn-contour" href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">Installer CoproFirst</a></p>
+      <p class="precision h-in"><span>L'installation demande un serveur Linux avec Docker.</span> <span>Une offre hébergée, payante, est à l'étude.</span></p>
       <!-- La version : celle de la dernière version publiée de CoproFirst, écrite par
            scripts/version-produit.py --ecrire, jamais à la main (coprofirst-site#22). -->
       <ul class="confiance h-in" aria-label="Repères de confiance">
@@ -353,15 +354,15 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         </article>
         <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Combien coûte CoproFirst&nbsp;?</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Le logiciel est gratuit, sans prix de licence&nbsp;: son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.</p></div></div>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Le logiciel est gratuit, sans prix de licence&nbsp;: son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.</p><p>Pour une copropriété qui ne veut pas tenir de serveur, une offre hébergée, payante, est à l'étude&nbsp;: rien n'est encore proposé à la vente.</p></div></div>
         </article>
         <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Comment l'installer&nbsp;?</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur un serveur <code>amd64</code> ou <code>arm64</code> équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">installer CoproFirst</a>.</p><p>Une installation sert une copropriété, ou plusieurs&nbsp;: l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux, sans rien voir des autres.</p></div></div>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur un serveur Linux (<code>amd64</code> ou <code>arm64</code>) équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">installer CoproFirst</a>.</p><p>Une installation sert une copropriété, ou plusieurs&nbsp;: l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux, sans rien voir des autres.</p></div></div>
         </article>
         <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Faut-il des compétences techniques&nbsp;?</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: savoir lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur.</p></div></div>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur.</p></div></div>
         </article>
         <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Où sont les données de la résidence&nbsp;?</h3>

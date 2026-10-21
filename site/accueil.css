@@ -19,6 +19,8 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .souligne{background:linear-gradient(transparent 62%,var(--peche) 62%)}
 .heros .chapo{font-size:1.18rem;color:var(--doux);margin:20px auto 0;max-width:34em}
 .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:28px 0 0}
+.precision{margin:14px auto 0;font-size:.86rem;line-height:1.5;color:var(--doux)}
+.precision span{display:block}
 .confiance{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 18px;margin:22px auto 0;padding:0;list-style:none;font-size:.86rem;color:var(--doux)}
 .confiance li{display:flex;align-items:center;gap:7px}
 .confiance li::before{content:"";flex:none;width:6px;height:6px;border-radius:50%;background:var(--or)}
@@ -27,7 +29,7 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 
 /* Entrée, une seule fois (#19) : 450 ms, décalages ≤ 380 ms — immeubles, ordinateur, téléphone, bulles */
 .js .h-in{opacity:0;transform:translateY(8px);animation:in 450ms var(--ease-out) forwards}
-.js .h-in:nth-child(2){animation-delay:40ms}.js .h-in:nth-child(3){animation-delay:80ms}.js .h-in:nth-child(4){animation-delay:120ms}.js .h-in:nth-child(5){animation-delay:160ms}
+.js .h-in:nth-child(2){animation-delay:40ms}.js .h-in:nth-child(3){animation-delay:80ms}.js .h-in:nth-child(4){animation-delay:120ms}.js .h-in:nth-child(5){animation-delay:160ms}.js .h-in:nth-child(6){animation-delay:200ms}
 @keyframes in{to{opacity:1;transform:none}}
 
 .scene{position:relative;height:660px;margin-top:44px;overflow:hidden;text-align:left}

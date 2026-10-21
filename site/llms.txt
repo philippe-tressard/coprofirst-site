@@ -8,12 +8,12 @@ Faits utiles :
 
 - Nom : CoproFirst (demande de marque n° 5307183 à l'INPI ; ce n'est pas une marque enregistrée).
 - Licence : GNU Affero General Public License, version 3 ou ultérieure (AGPL-3.0-or-later). Le logo a sa propre licence, hors AGPL.
-- Prix : logiciel gratuit, sans prix de licence (code, images et archives d'installation publics). Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.
+- Prix : logiciel gratuit, sans prix de licence (code, images et archives d'installation publics). Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé. Une offre hébergée, payante, est à l'étude ; rien n'est encore proposé à la vente.
 - Profils : copropriétaire occupant, copropriétaire bailleur, mandataire (agence ou gestionnaire), locataire, aidant d'un résident, conseil syndical, syndic. Chacun ne voit que ce qui le concerne.
 - Le syndic : il reçoit des demandes qualifiées par le conseil syndical et peut répondre par courriel ; sa réponse est versée au fil de l'affaire.
 - Conseil syndical : suivi des affaires en cours (par catégorie et par bâtiment, export PDF) et point CS / Syndic, dont le compte rendu, pris en direct, est validé par les présents.
 - Conservation : si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie ; un compte inactif depuis deux ans est prévenu, puis supprimé.
-- Installation : un serveur amd64 ou arm64 avec Docker et Docker Compose 2.24 ou plus récent, des images publiées et signées pour chaque version, un accès HTTPS et une adresse d'envoi de courriels. Une installation sert une copropriété, ou plusieurs (installation commune : chacune dans sa base, avec ses fichiers et ses textes légaux).
+- Installation : un serveur Linux amd64 ou arm64 avec Docker et Docker Compose 2.24 ou plus récent, des images publiées et signées pour chaque version, un accès HTTPS et une adresse d'envoi de courriels. Une installation sert une copropriété, ou plusieurs (installation commune : chacune dans sa base, avec ses fichiers et ses textes légaux).
 - Démonstration : une résidence fictive en ligne, trois comptes publics (conseil syndical, copropriétaire, locataire), données remises à zéro chaque nuit.
 - Éditeur : Philippe Tressard, particulier, à titre non professionnel. Contact : contact@coprofirst.fr.
 
