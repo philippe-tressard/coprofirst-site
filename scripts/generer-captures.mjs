@@ -66,6 +66,7 @@ const compte = compteDeLaPage();
 const { chromium } = chargerPlaywright();
 const navigateur = await lancer(chromium);
 const images = [];
+let version = null;
 try {
   for (const prise of PRISES) {
     const contexte = await navigateur.newContext({
@@ -80,6 +81,10 @@ try {
     await page.goto(`${DEMO}/tickets`, { waitUntil: 'networkidle' });
     if (new URL(page.url()).pathname.startsWith('/auth/')) inconnu('connexion refusée par la démo');
     await page.waitForTimeout(800); // les polices et les pastilles finissent de se poser
+    // La version photographiée : le pied de l'application renvoie au code de la
+    // version en service (…/coprofirst/tree/vX.Y.Z). La démo se met à jour la nuit :
+    // juste après une promotion, elle peut encore servir la précédente.
+    version ??= await page.evaluate(() => document.querySelector('a[href*="/coprofirst/tree/"]')?.href.split('/tree/')[1] ?? null);
     images.push([prise.fichier, await page.screenshot({ type: 'jpeg', quality: 74 })]);
     await contexte.close();
   }
@@ -92,3 +97,4 @@ await navigateur.close();
 mkdirSync(SORTIE, { recursive: true });
 for (const [fichier, octets] of images) writeFileSync(join(SORTIE, fichier), octets);
 console.log(`generer-captures : ${images.map(([f, o]) => `${f} (${Math.round(o.length / 1024)} Ko)`).join(', ')}`);
+console.log(`version de la démo photographiée : ${version ?? 'INCONNUE (lien du pied introuvable)'}`);

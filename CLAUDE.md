@@ -28,7 +28,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
   que `'self'`). Le héros montre des **captures réelles** de la démo
   (`site/captures/`, refaites par `node scripts/generer-captures.mjs` après chaque
-  version promue) et la **dernière version publiée** (`scripts/version-produit.py
+  version promue — le script affiche la version photographiée, lue au pied de
+  l'application : la démo se met à jour la nuit, et peut encore servir la
+  précédente juste après une promotion) et la **dernière version publiée** (`scripts/version-produit.py
   --ecrire`, jamais à la main). Un site
   sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
   exige que les pieds soient identiques.
