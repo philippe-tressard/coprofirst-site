@@ -15,7 +15,8 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .heros{padding:40px 0 0;text-align:center}
 .pastille-libre{display:inline-flex;gap:8px;align-items:center;padding:6px 14px;border-radius:99px;background:var(--carte);border:1px solid var(--bord);font-size:.88rem;color:var(--doux);text-decoration:none;margin-bottom:18px}
 .pastille-libre b{color:var(--or-texte)}
-.heros h1{font-size:clamp(2.3rem,6vw,4.2rem);max-width:14ch;margin-inline:auto}
+/* Le plus grand titre du site : interligne serré, approche plus resserrée encore. */
+.heros h1{font-size:clamp(2.3rem,6vw,4.2rem);max-width:14ch;margin-inline:auto;line-height:1.05;letter-spacing:-0.02em}
 .souligne{background:linear-gradient(transparent 62%,var(--peche) 62%)}
 .heros .chapo{font-size:1.18rem;color:var(--doux);margin:20px auto 0;max-width:34em}
 .actions{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin:28px 0 0}
@@ -271,7 +272,7 @@ section{padding:88px 0}
 .demo-texte p{color:var(--texte-2);margin:14px 0 0}
 .demo-mention{display:flex;gap:10px;align-items:flex-start;background:var(--voile);border-radius:16px;padding:12px 14px;font-size:.92rem}
 .roles ul{margin:0;padding:0;list-style:none;display:grid;gap:10px}
-.role{display:flex;gap:14px;align-items:center;min-height:68px;padding:12px 18px;background:var(--carte);border-radius:20px;text-decoration:none;box-shadow:0 12px 26px -20px var(--ombre);transition:transform 160ms var(--ease-out),box-shadow 200ms ease}
+.role{display:flex;gap:14px;align-items:center;min-height:68px;padding:12px 18px;background:var(--carte);border-radius:20px;text-decoration:none;box-shadow:0 12px 26px -20px var(--ombre);transition:transform 160ms var(--ease-out),box-shadow 200ms ease;-webkit-tap-highlight-color:transparent}
 .role::after{content:"→";margin-left:auto;padding-left:8px;color:var(--lien);font-weight:700}
 .role:active{transform:scale(0.98)}
 .role-ico{font-size:1.5rem;line-height:1}
