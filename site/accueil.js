@@ -28,6 +28,10 @@ addEventListener('DOMContentLoaded', () => {
     };
     function activer(onglet, mode) {
       racine.toggleAttribute('data-instant', mode !== 'souris');
+      // Le panneau entre du côté de l'onglet choisi : +1 à droite du précédent, -1 à
+      // gauche (coprofirst-site#35) — le même sens que la couleur qui glisse.
+      const avant = onglets.findIndex((o) => o.getAttribute('aria-selected') === 'true');
+      racine.style.setProperty('--sens', Math.sign(onglets.indexOf(onglet) - avant));
       for (const o of onglets) {
         const actif = o === onglet;
         o.setAttribute('aria-selected', actif);
@@ -264,4 +268,82 @@ async function afficherAvis() {
   ajusterTout();
   addEventListener('resize', ajusterTout);
   reduit.addEventListener('change', ajuster);
+  saisirLaBande(defile, piste);
+}
+
+// ── La bande d'avis se saisit (coprofirst-site#34) ──────────────────────────────
+// Le défilement reste l'animation CSS « defile » ; le doigt (ou la souris) la mène
+// 1:1 en réglant son currentTime, ce qui boucle sans fin des deux côtés. Au
+// relâcher, l'élan continue (décroissance exponentielle, celle du défilement
+// d'iOS), puis l'animation reprend d'où elle est. .saisie la met en pause (CSS) :
+// la pause du survol et du focus reste à la feuille de style. touch-action: pan-y
+// laisse le défilement vertical au navigateur.
+const SEUIL_SAISIE = 10;    // px avant de prendre le geste : un appui reste un clic
+const DECELERATION = 0.998; // par milliseconde, comme le défilement du système
+const VITESSE_FIN = 20;     // px/s : en dessous, l'élan rend la main à l'animation
+const VITESSE_MAX = 4000;   // px/s : un balayage vif ; au-delà, une mesure aberrante
+
+function saisirLaBande(defile, piste) {
+  const animation = () => piste.getAnimations().find((a) => a.animationName === 'defile');
+  let geste = null;
+  let elan = 0;
+
+  // Un déplacement de dx px (vers la droite > 0) recule l'animation d'autant.
+  const deplacer = (a, dx) => {
+    const duree = a.effect.getComputedTiming().duration;
+    const boucle = piste.offsetWidth / 2 + parseFloat(getComputedStyle(piste).columnGap || 0) / 2;
+    a.currentTime = (((a.currentTime - (dx / boucle) * duree) % duree) + duree) % duree;
+  };
+
+  defile.addEventListener('pointerdown', (e) => {
+    const a = animation();
+    if (!a || defile.classList.contains('fixe') || e.button !== 0) return;
+    cancelAnimationFrame(elan);
+    geste = { a, id: e.pointerId, x: e.clientX, depart: e.clientX, pris: false, points: [[e.timeStamp, e.clientX]] };
+  });
+
+  defile.addEventListener('pointermove', (e) => {
+    if (!geste || e.pointerId !== geste.id) return;
+    if (!geste.pris) {
+      if (Math.abs(e.clientX - geste.depart) < SEUIL_SAISIE) return;
+      geste.pris = true;
+      geste.x = e.clientX;
+      defile.classList.add('saisie');
+      try { defile.setPointerCapture(e.pointerId); } catch { /* pointeur déjà relâché */ }
+    }
+    deplacer(geste.a, e.clientX - geste.x);
+    geste.x = e.clientX;
+    geste.points.push([e.timeStamp, e.clientX]);
+    while (geste.points.length > 2 && e.timeStamp - geste.points[0][0] > 100) geste.points.shift();
+  });
+
+  const lacher = (e) => {
+    if (!geste || e.pointerId !== geste.id) return;
+    const { a, pris, points } = geste;
+    geste = null;
+    // Un simple appui saisit la bande en plein élan, l'arrête et rend la main.
+    if (!pris) { defile.classList.remove('saisie'); return; }
+    // Après un glissé, le clic que la souris envoie au relâcher n'ouvre pas « Lire la
+    // suite ». Il part dans la même tâche que pointerup : le bloqueur est retiré
+    // juste après, sinon il avalerait le prochain vrai clic (au doigt, aucun ne suit).
+    const bloquer = (c) => { c.preventDefault(); c.stopPropagation(); };
+    defile.addEventListener('click', bloquer, { capture: true, once: true });
+    setTimeout(() => defile.removeEventListener('click', bloquer, { capture: true }), 0);
+    const [t0, x0] = points[0];
+    const [t1, x1] = points[points.length - 1];
+    const mesuree = e.type === 'pointercancel' || t1 === t0 ? 0 : ((x1 - x0) / (t1 - t0)) * 1000;
+    let vitesse = Math.max(-VITESSE_MAX, Math.min(VITESSE_MAX, mesuree));
+    let avant = performance.now();
+    const glisser = (maintenant) => {
+      const dt = maintenant - avant;
+      avant = maintenant;
+      vitesse *= DECELERATION ** dt;
+      if (Math.abs(vitesse) < VITESSE_FIN) { defile.classList.remove('saisie'); return; }
+      deplacer(a, (vitesse * dt) / 1000);
+      elan = requestAnimationFrame(glisser);
+    };
+    elan = requestAnimationFrame(glisser);
+  };
+  defile.addEventListener('pointerup', lacher);
+  defile.addEventListener('pointercancel', lacher);
 }

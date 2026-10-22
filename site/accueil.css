@@ -157,7 +157,8 @@ section{padding:88px 0}
 .vignette div{background:var(--carte);border-radius:14px;padding:12px 14px}
 .vignette small{color:var(--doux)}
 .js .panneau:not([hidden]){animation:panneau 220ms var(--ease-out)}
-@keyframes panneau{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+/* Il entre du côté de l'onglet choisi (--sens, accueil.js), comme la couleur glisse (#35). */
+@keyframes panneau{from{opacity:0;transform:translateX(calc(var(--sens,0) * 12px))}to{opacity:1;transform:none}}
 @media (max-width:760px){.panneau{grid-template-columns:1fr;padding:24px}.onglets-cadre{border-radius:28px}}
 
 /* IA : un carrousel de cartes, avec flèches et compteur à la souris (#18) */
@@ -213,7 +214,11 @@ section{padding:88px 0}
 /* Avis d'utilisateurs : cartes postales qui défilent */
 .defile{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);padding:6px 0}
 .piste{display:flex;gap:18px;width:max-content;animation:defile var(--duree,60s) linear infinite}
-.defile:hover .piste,.defile:focus-within .piste{animation-play-state:paused}
+.defile:hover .piste,.defile:focus-within .piste,.defile.saisie .piste{animation-play-state:paused}
+/* La bande se saisit au doigt et à la souris (accueil.js, #34) ; le défilement
+   vertical de la page reste au navigateur. */
+.defile:not(.fixe){touch-action:pan-y;cursor:grab}
+.defile.saisie{cursor:grabbing;user-select:none;-webkit-user-select:none}
 @keyframes defile{to{transform:translateX(calc(-50% - 9px))}}
 /* La teinte vient de accueil.js (data-teinte), pas de :nth-child : la copie de la
    boucle garde celle de sa carte, et la jonction ne change pas de couleur. */
