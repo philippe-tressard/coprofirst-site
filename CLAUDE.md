@@ -126,8 +126,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   *Labyrinthe IA* (contraire à l'ouverture aux robots), *Turnstile* (aucun formulaire),
   **HSTS de Cloudflare** (Caddy et la démo envoient le leur). DKIM s'active chez OVH,
   à faire avant de passer DMARC en `quarantine`. `registre.coprofirst.fr` : son API
-  porte HSTS ; seul le 404 de la règle fourre-tout du **tunnel** n'en a pas — cela se
-  règle dans la route publique du tunnel, ni ici ni dans CoproFirst.
+  porte HSTS, pas le 404 de la règle fourre-tout du **tunnel** : une règle de
+  transformation d'en-tête de réponse de la zone (« registre — en-têtes de sécurité »,
+  `http.host eq "registre.coprofirst.fr"`) pose HSTS et `nosniff` sur tout l'hôte.
 
 - **La démo** est ouverte depuis le 14/10/2026. On y entre **par le formulaire de
   connexion** de `demo.coprofirst.fr`, avec trois comptes publics (CS,
