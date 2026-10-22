@@ -62,7 +62,7 @@ h1,h2,h3{font-family:var(--titres);font-weight:640;color:var(--titre);margin:0;l
 h1,h2{letter-spacing:-0.01em}
 .c{width:min(1140px,100% - 32px);margin-inline:auto}
 .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.evitement{position:absolute;left:16px;top:-60px;background:var(--bleu);color:#fff;padding:10px 16px;border-radius:99px;z-index:10}
+.evitement{position:absolute;left:16px;top:-60px;background:var(--bleu);color:#fff;padding:10px 16px;border-radius:99px;z-index:40}
 .evitement:focus{top:12px}
 :focus-visible{outline:3px solid var(--or);outline-offset:3px;border-radius:12px}
 
@@ -82,7 +82,18 @@ button,.btn{-webkit-tap-highlight-color:transparent}
 }
 @media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 
-/* En-tête */
+/* En-tête : il reste en vue au défilement (#32), en matériau translucide — le
+   contenu passe dessous, flouté. Son ombre ne paraît qu'une fois la page défilée,
+   menée par le défilement lui-même (sans script ; un navigateur qui ne connaît pas
+   animation-timeline garde la barre sans ombre). Transparence réduite ou contraste
+   élevé demandés : fond plein. Les ancres s'arrêtent sous lui (scroll-padding). */
+html{scroll-padding-top:calc(var(--haut-entete) + 8px)}
+header{position:sticky;top:0;z-index:30;background:color-mix(in srgb,var(--creme) 78%,transparent);-webkit-backdrop-filter:blur(20px) saturate(180%);backdrop-filter:blur(20px) saturate(180%)}
+@supports (animation-timeline:scroll()){
+  header{animation:entete-ombre linear both;animation-timeline:scroll();animation-range:0 64px}
+  @keyframes entete-ombre{from{box-shadow:0 1px 0 transparent,0 12px 24px -20px transparent}to{box-shadow:0 1px 0 var(--bord),0 12px 24px -20px var(--ombre)}}
+}
+@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){header{background:var(--creme);-webkit-backdrop-filter:none;backdrop-filter:none}}
 header .c{display:flex;align-items:center;gap:20px;min-height:var(--haut-entete)}
 .marque{display:flex;align-items:center;gap:10px;font:640 1.3rem var(--titres);color:var(--titre);text-decoration:none}
 .marque img{width:38px;height:38px;border-radius:12px;box-shadow:0 4px 12px -6px rgba(30,58,95,.4)}

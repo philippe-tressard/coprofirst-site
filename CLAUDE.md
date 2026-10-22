@@ -212,7 +212,8 @@ un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jou
 dans les **quatre modes** (sombre, clair, chacun en contraste élevé —
 `prefers-contrast: more`, coprofirst-site#37) : chaque jeton de texte à 4,5:1 sur
 chaque fond, `--bord` à 3:1 en contraste élevé ; et un élément déplacé au survol et à
-l'appui a sa règle `:hover:active` qui compose les deux (#36). **Une couleur qui
+l'appui a sa règle `:hover:active` qui compose les deux (#36) ; un `backdrop-filter`
+(l'en-tête translucide, #32) a son fond plein sous `prefers-reduced-transparency`. **Une couleur qui
 change se mesure là.** En `pre-commit` et en CI, avec `--selftest`.
 
 `python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du

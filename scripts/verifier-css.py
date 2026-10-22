@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # SPDX-FileCopyrightText: 2026 Philippe TRESSARD
 # SPDX-License-Identifier: AGPL-3.0-or-later
-"""verifier-css.py — deux règles des feuilles de style que l'œil laisse passer.
+"""verifier-css.py — trois règles des feuilles de style que l'œil laisse passer.
 
 1. CONTRASTES (coprofirst-site#37). Les couleurs sont des jetons de commun.css,
    redéfinis par le thème clair et par « contraste élevé » (prefers-contrast:
@@ -16,6 +16,9 @@
    (transform) et s'enfonce à l'appui (transform) : la seconde règle REMPLACE la
    première, et l'élément retombe en même temps qu'il s'enfonce. Il lui faut une
    règle `:hover:active` qui compose les deux.
+
+3. FLOU (coprofirst-site#32). Un matériau translucide (backdrop-filter) a son
+   repli plein sous « transparence réduite » (prefers-reduced-transparency).
 
   python3 scripts/verifier-css.py            0 conforme, 1 écart, 2 INCONNU
   python3 scripts/verifier-css.py --selftest
@@ -37,22 +40,25 @@ RE_REGLE = re.compile(r"([^{}]+)\{([^{}]*)\}")
 RE_TRANSFORM = re.compile(r"(?<![-\w])transform\s*:\s*(?!none)")
 RACINE, CLAIR = ":root", ':root[data-theme="clair"]'
 MEDIA_CONTRASTE = re.compile(r"@media\s*\(\s*prefers-contrast\s*:\s*more\s*\)\s*\{")
+#  Un bloc dont la condition cite la transparence réduite (seule ou avec une autre).
+MEDIA_TRANSPARENCE = re.compile(r"@media[^{]*prefers-reduced-transparency\s*:\s*reduce[^{]*\{")
+RE_FLOU = re.compile(r"(?<![-\w])backdrop-filter\s*:\s*(?!none)")
 
 
 class Inconnu(Exception):
     pass
 
 
-def bloc_media(css: str):
+def bloc_media(css: str, motif=MEDIA_CONTRASTE):
     """(css hors des blocs, contenu des blocs mis bout à bout) — accolades appariées."""
     dedans = []
-    while (m := MEDIA_CONTRASTE.search(css)):
+    while (m := motif.search(css)):
         profondeur, i = 1, m.end()
         while profondeur and i < len(css):
             profondeur += {"{": 1, "}": -1}.get(css[i], 0)
             i += 1
         if profondeur:
-            raise Inconnu("bloc prefers-contrast non refermé")
+            raise Inconnu("bloc @media non refermé")
         dedans.append(css[m.end():i - 1])
         css = css[:m.start()] + css[i:]
     return css, "".join(dedans)
@@ -135,6 +141,18 @@ def ecarts_survol_appui(css: str, nom: str) -> list:
             f"{b}:hover:active — l'appui annule le survol" for b in sorted((survol & appui) - compose)]
 
 
+def ecarts_transparence(css: str, nom: str) -> list:
+    """Un matériau flouté (backdrop-filter) sans fond plein sous « transparence
+    réduite » : le visiteur qui l'a demandé lit encore à travers (#32)."""
+    hors, media = bloc_media(RE_COMMENTAIRE.sub("", css), MEDIA_TRANSPARENCE)
+    floutes = {s.strip() for sels, corps in RE_REGLE.findall(hors) if RE_FLOU.search(corps)
+               for s in sels.split(",")}
+    replis = {s.strip() for sels, corps in RE_REGLE.findall(media)
+              if re.search(r"backdrop-filter\s*:\s*none", corps) for s in sels.split(",")}
+    return [f"FLOU       {nom} : {s} est flouté sans repli @media (prefers-reduced-transparency: "
+            "reduce) qui pose backdrop-filter:none" for s in sorted(floutes - replis)]
+
+
 def feuilles(site: Path):
     """(nom, texte) de chaque feuille du site, et des <style> des pages."""
     for f in sorted(site.glob("*.css")):
@@ -150,7 +168,7 @@ def juger(site: Path) -> list:
         raise Inconnu(f"{commun} introuvable")
     ecarts = ecarts_contrastes(commun.read_text(encoding="utf-8"))
     for nom, texte in feuilles(site):
-        ecarts += ecarts_survol_appui(texte, nom)
+        ecarts += ecarts_survol_appui(texte, nom) + ecarts_transparence(texte, nom)
     return ecarts
 
 
@@ -185,6 +203,12 @@ def selftest() -> list:
         echecs.append("appui : un survol sans transform est refusé à tort")
     if ecarts_survol_appui(fautif.replace("scale(.98)", "none"), "t"):
         echecs.append("appui : transform:none (mouvement réduit) est compté à tort")
+    flou = "header{backdrop-filter:blur(20px)}"
+    if not ecarts_transparence(flou, "t"):
+        echecs.append("flou : un backdrop-filter sans repli n'est pas refusé")
+    repli = "@media (prefers-reduced-transparency:reduce),(prefers-contrast:more){header{backdrop-filter:none}}"
+    if ecarts_transparence(flou + repli, "t"):
+        echecs.append("flou : le repli (condition double) est refusé à tort")
     return echecs
 
 
