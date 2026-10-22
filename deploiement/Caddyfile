@@ -9,9 +9,17 @@
 	auto_https off
 }
 
-# Les en-têtes de toute réponse, page ou erreur.
-(entetes) {
+# Ce que porte toute réponse, page ou erreur : la compression et les en-têtes.
+(reponse) {
+	# Compression (coprofirst-site#28) : zstd ou gzip selon le navigateur, rien sans
+	# Accept-Encoding — deployer.sh --verifier, qui n'en envoie pas, reçoit les octets
+	# du dépôt tels quels.
+	encode zstd gzip
 	header {
+		# Posés APRÈS la décision de compresser (defer) : encode ne compresse pas une
+		# réponse qui porte déjà no-transform. Vérifié sur l'image par
+		# scripts/verifier-service.sh (CI).
+		defer
 		# Seuls les fichiers du site : ni script, ni police, ni image d'ailleurs.
 		# 'unsafe-inline' pour les styles seulement (<style> et style="" de la page).
 		Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; form-action 'none'; frame-ancestors 'none'; object-src 'none'"
@@ -37,13 +45,13 @@
 	root * /srv
 	file_server
 
-	import entetes
+	import reponse
 
 	# Une adresse inconnue : 404.html, avec les MÊMES en-têtes que le reste du site.
-	# Le bloc des en-têtes ne s'applique pas aux réponses d'erreur, d'où l'import
+	# Ce qui s'applique au site ne s'applique pas aux réponses d'erreur, d'où l'import
 	# répété ici (coprofirst-site#4). file_server garde le code 404 de l'erreur.
 	handle_errors {
-		import entetes
+		import reponse
 		@introuvable expression {err.status_code} == 404
 		handle @introuvable {
 			rewrite * /404.html

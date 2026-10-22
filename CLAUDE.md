@@ -149,6 +149,13 @@ d'exécution et syntaxe des scripts. Il tourne en `pre-commit`
 (`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
 `reuse lint`.
 
+`bash scripts/verifier-service.sh` — construit l'image, la démarre et l'interroge :
+en-têtes de sécurité sur la page et la 404, corps octet pour octet ceux du dépôt,
+compression gzip/zstd quand le navigateur l'accepte (jamais sans `Accept-Encoding` :
+`deployer.sh --verifier` compare les octets bruts), redirection de `www`. Le
+Caddyfile pose ses en-têtes en `defer` : `encode` ne compresse pas une réponse qui
+porte déjà `no-transform`. **En CI seulement** (Docker) ; sur le poste, INCONNU.
+
 `python3 scripts/verifier-referencement.py` — chaque page a son adresse canonique
 (`https://coprofirst.fr/…`), ses balises Open Graph, un `<h1>` et aucun `noindex` ;
 ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages, et

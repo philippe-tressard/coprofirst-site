@@ -29,6 +29,7 @@ page `demo.html` en publie les trois comptes publics.
 | `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
 | `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |
 | `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
+| `scripts/verifier-service.sh` | construit l'image du site, la démarre et l'interroge : en-têtes de sécurité, 404, compression, octets identiques au dépôt (CI : Docker) |
 | `scripts/verifier-referencement.py` | balises de tête (canonique, Open Graph, JSON-LD), sitemap, robots.txt, llms.txt — complets et cohérents |
 | `scripts/generer-image-partage.sh` | refait `site/partage.png` à partir de `scripts/image-partage.html` |
 | `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main |
