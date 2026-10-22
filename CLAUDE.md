@@ -208,6 +208,13 @@ un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jou
 **`--renouveler`** le repousse d'un an (jamais à la main). En `pre-commit`, en CI avec
 `--selftest`, et **chaque jour** dans `comptes-demo.yml` — l'échéance arrive sans commit.
 
+`python3 scripts/verifier-css.py` — les jetons de couleur de `commun.css` se lisent
+dans les **quatre modes** (sombre, clair, chacun en contraste élevé —
+`prefers-contrast: more`, coprofirst-site#37) : chaque jeton de texte à 4,5:1 sur
+chaque fond, `--bord` à 3:1 en contraste élevé ; et un élément déplacé au survol et à
+l'appui a sa règle `:hover:active` qui compose les deux (#36). **Une couleur qui
+change se mesure là.** En `pre-commit` et en CI, avec `--selftest`.
+
 `python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
 héros affiche la dernière **release** de CoproFirst (la version promue, celle
 qu'une résidence installe — pas le dernier commit de `main`), datée à l'heure de

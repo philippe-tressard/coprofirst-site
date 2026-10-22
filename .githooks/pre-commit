@@ -10,5 +10,7 @@ bash "$racine/scripts/verifier-depot.sh" || exit 1
 python3 "$racine/scripts/verifier-referencement.py" || exit 1
 # Chaque CSS et JS appelé avec l'empreinte de son contenu (cache de 4 h de Cloudflare).
 python3 "$racine/scripts/empreintes.py" || exit 1
+# Contrastes des jetons (quatre modes), survol et appui composés.
+python3 "$racine/scripts/verifier-css.py" || exit 1
 # security.txt : champs exigés et échéance (le passage quotidien est en CI).
 python3 "$racine/scripts/verifier-security-txt.py" || exit 1

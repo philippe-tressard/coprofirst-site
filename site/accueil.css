@@ -9,6 +9,8 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 /* Survol : seulement ce qui se clique. Une tuile ou une bulle ne bouge plus (#16). */
 @media (hover:hover) and (pointer:fine){
   .role:hover{transform:translateY(-2px);box-shadow:0 16px 30px -20px var(--ombre)}
+  /* Levée au survol, elle s'enfonce sur place à l'appui, sans retomber (#36). */
+  .role:hover:active{transform:translateY(-2px) scale(0.98)}
 }
 
 /* Héros : le texte, deux boutons (#14), la bande de confiance (#22), puis la résidence */
@@ -291,7 +293,7 @@ section{padding:88px 0}
   .illu-g i{transition:none;transform:none}
   .js .panneau:not([hidden]){animation:fondu 150ms ease}
   .onglets.copie,.imm i.allume,.jauge i{transition:none}
-  .role:active,.role:hover,.lire-suite:active,.fleche-c:active{transform:none}
+  .role:active,.role:hover,.role:hover:active,.lire-suite:active,.fleche-c:active{transform:none}
   .carrousel{scroll-behavior:auto}
   @keyframes fondu{from{opacity:0}to{opacity:1}}
 }

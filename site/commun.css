@@ -33,12 +33,20 @@ le FOND des boutons et des pastilles retenues, qui gardent un texte blanc.
 /* Le thème clair : choisi par l'interrupteur de l'en-tête (theme.js), jamais imposé. */
 :root[data-theme="clair"]{
   --creme:#fdf8f0; --creme-2:#fff8ee; --carte:#fff; --sable:#f5ead8; --peche:#f9dcc4; --ciel:#dbe8f5; --menthe:#d9efe3; --lilas:#e7e3f4;
-  --encre:#1d2a3a; --doux:#5b6676; --texte-2:#3f4a5a; --titre:#1e3a5f; --lien:#1e3a5f; --bleu:#1e3a5f; --bleu-survol:#2a4c78; --bleu-nuit:#14294a;
+  --encre:#1d2a3a; --doux:#57626f; --texte-2:#3f4a5a; --titre:#1e3a5f; --lien:#1e3a5f; --bleu:#1e3a5f; --bleu-survol:#2a4c78; --bleu-nuit:#14294a;
   --or-texte:#7d5a14; --bord:#eadfcc; --violet:#4b3d8f; --vert:#1f6b3d; --vert-bord:#b7dcc6;
   --pa-c:#7a3d12; --pa-r:#1f6b3d; --pa-ia:#4b3d8f; --fenetre:rgba(30,58,95,.14); --ombre:rgba(29,42,58,.35); --voile:rgba(255,255,255,.7);
   --feuillage:#9fd3b4;
   --coche:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f6b3d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E");
   color-scheme:light;
+}
+/* Contraste élevé demandé au système (coprofirst-site#37) : les bords se voient
+   (3:1 sur les surfaces) et le texte secondaire se renforce. Le thème clair est
+   redit ici : hors de ce bloc, :root[data-theme="clair"] l'emporterait sur :root.
+   scripts/verifier-css.py mesure les quatre modes. */
+@media (prefers-contrast:more){
+  :root{--bord:#61799a; --doux:#c3cfdc}
+  :root[data-theme="clair"]{--bord:#8a7a5e; --doux:#3f4a5a}
 }
 /* Bascule de thème (theme.js) : le temps du fondu, aucun élément ne joue sa propre
    transition — tout change sur la même image. Seule l'icône de l'interrupteur garde
