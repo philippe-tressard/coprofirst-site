@@ -30,10 +30,13 @@
   // propres des boutons et des cartes sont coupées (data-bascule, commun.css), sinon
   // le fond change d'un coup et les contrôles 200 ms plus tard. Le passage du sombre
   // au clair se fait par un fondu de la page entière (View Transitions) ; sans elle,
-  // d'un coup, mais d'un seul. data-bascule est retiré sur tous les chemins.
+  // d'un coup, mais d'un seul. data-bascule est retiré sur tous les chemins, une fois
+  // la dernière bascule finie (deux clics rapprochés en lancent deux).
+  let enCours = 0;
   const basculer = (theme) => {
+    enCours++;
     racine.setAttribute('data-bascule', '');
-    const fin = () => racine.removeAttribute('data-bascule');
+    const fin = () => { if (--enCours === 0) racine.removeAttribute('data-bascule'); };
     try {
       if (document.startViewTransition) {
         document.startViewTransition(() => appliquer(theme)).finished.finally(fin);
@@ -47,16 +50,19 @@
     requestAnimationFrame(() => requestAnimationFrame(fin));
   };
 
-  appliquer(lire() || 'sombre');
+  // Le thème voulu, distinct de celui de la page : le fondu n'applique le nouveau
+  // thème qu'à l'image suivante, et un second clic d'ici là doit repartir du voulu.
+  let voulu = lire() || 'sombre';
+  appliquer(voulu);
   addEventListener('DOMContentLoaded', () => appliquer(racine.dataset.theme));
   // Délégué au document : le bouton n'existe pas encore quand ce script s'exécute.
   document.addEventListener('click', (e) => {
     if (!e.target.closest('[data-bascule-theme]')) return;
-    const suivant = racine.dataset.theme === 'clair' ? 'sombre' : 'clair';
-    basculer(suivant);
-    try { localStorage.setItem(CLE, suivant); } catch { /* le choix vaut pour cette page */ }
+    voulu = voulu === 'clair' ? 'sombre' : 'clair';
+    basculer(voulu);
+    try { localStorage.setItem(CLE, voulu); } catch { /* le choix vaut pour cette page */ }
   });
-  addEventListener('storage', (e) => { if (e.key === CLE) appliquer(lire() || 'sombre'); });
+  addEventListener('storage', (e) => { if (e.key === CLE) { voulu = lire() || 'sombre'; appliquer(voulu); } });
 
   // Safari sur iOS n'applique :active (l'enfoncement des boutons, commun.css) que si
   // un écouteur de toucher existe : celui-ci, vide et passif, ne retient rien.
