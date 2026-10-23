@@ -11,7 +11,7 @@
 
 # Ce que porte toute réponse, page ou erreur : la compression et les en-têtes.
 (reponse) {
-	# Compression (coprofirst-site#28) : zstd ou gzip selon le navigateur, rien sans
+	# Compression : zstd ou gzip selon le navigateur, rien sans
 	# Accept-Encoding — deployer.sh --verifier, qui n'en envoie pas, reçoit les octets
 	# du dépôt tels quels.
 	encode zstd gzip
@@ -49,7 +49,7 @@
 
 	# Une adresse inconnue : 404.html, avec les MÊMES en-têtes que le reste du site.
 	# Ce qui s'applique au site ne s'applique pas aux réponses d'erreur, d'où l'import
-	# répété ici (coprofirst-site#4). file_server garde le code 404 de l'erreur.
+	# répété ici. file_server garde le code 404 de l'erreur.
 	handle_errors {
 		import reponse
 		@introuvable expression {err.status_code} == 404

@@ -6,13 +6,13 @@ Ce que toutes les pages du site partagent : couleurs, typographie, boutons,
 en-tête et pied de page. Les styles propres à une page restent dans la page.
 
 Les couleurs sont des JETONS. Le thème SOMBRE est celui par défaut (demande du
-21/10/2026) ; le clair les redéfinit sous :root[data-theme="clair"] (coprofirst-site#26) :
+21/10/2026) ; le clair les redéfinit sous :root[data-theme="clair"] :
 une surface blanche s'écrit var(--carte), un titre var(--titre), un lien ou un
 texte bleu var(--lien) — jamais #fff ni --bleu en dur pour du texte. --bleu reste
 le FOND des boutons et des pastilles retenues, qui gardent un texte blanc.
 */
 /* Fraunces (OFL-1.1, LICENSES/OFL-1.1.txt), servie par le site : aucune police
-   d'un tiers, donc toujours pas de bandeau de consentement (coprofirst-site#23). */
+   d'un tiers, donc toujours pas de bandeau de consentement. */
 @font-face{font-family:"Fraunces";src:url("polices/fraunces-latin-opsz-normal.woff2") format("woff2");font-weight:100 900;font-style:normal;font-display:swap;
   unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD}
 :root{
@@ -40,7 +40,7 @@ le FOND des boutons et des pastilles retenues, qui gardent un texte blanc.
   --coche:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%231f6b3d' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 12l4 4 8-8'/%3E%3C/svg%3E");
   color-scheme:light;
 }
-/* Contraste élevé demandé au système (coprofirst-site#37) : les bords se voient
+/* Contraste élevé demandé au système : les bords se voient
    (3:1 sur les surfaces) et le texte secondaire se renforce. Le thème clair est
    redit ici : hors de ce bloc, :root[data-theme="clair"] l'emporterait sur :root.
    scripts/verifier-css.py mesure les quatre modes. */
@@ -82,7 +82,7 @@ button,.btn{-webkit-tap-highlight-color:transparent}
 }
 @media (prefers-reduced-motion:reduce){.btn:active{transform:none}}
 
-/* En-tête : il reste en vue au défilement (#32), en matériau translucide — le
+/* En-tête : il reste en vue au défilement, en matériau translucide — le
    contenu passe dessous, flouté. Son ombre ne paraît qu'une fois la page défilée,
    menée par le défilement lui-même (sans script ; un navigateur qui ne connaît pas
    animation-timeline garde la barre sans ombre). Transparence réduite ou contraste
@@ -114,7 +114,7 @@ header nav a:not(.btn){text-decoration:none;color:var(--doux);font-weight:500}
 @media (hover:hover) and (pointer:fine){.btn-theme:hover{background:var(--ciel)}}
 @media (prefers-reduced-motion:reduce){.btn-theme:active{transform:none}.btn-theme svg,:root[data-theme="clair"] .btn-theme svg{transform:none;filter:none}}
 
-/* Sommaire : sous 1080 px, il remplace les liens de l'en-tête (coprofirst-site#15).
+/* Sommaire : sous 1080 px, il remplace les liens de l'en-tête.
    Le panneau part de son bouton (origine en haut à droite), entre en 180 ms et
    sort en 120 ms ; Échap et un clic ailleurs le ferment (accueil.js). */
 .sommaire{display:none;position:relative}
@@ -126,7 +126,7 @@ header nav a:not(.btn){text-decoration:none;color:var(--doux);font-weight:500}
 header .menu-sommaire a:not(.btn){display:flex;align-items:center;min-height:44px;padding:0 14px;border-radius:12px;color:var(--encre)}
 @media (hover:hover) and (pointer:fine){header .menu-sommaire a:hover{background:var(--creme)}}
 @media (max-width:1080px){.sommaire{display:block}}
-/* Très petit écran : le héros porte déjà « Essayer la démo » (#14) — l'en-tête
+/* Très petit écran : le héros porte déjà « Essayer la démo » — l'en-tête
    garde la marque et le Sommaire, sans déborder à 360 px. */
 @media (max-width:440px){.btn-entete{display:none}}
 @media (prefers-reduced-motion:reduce){.menu-sommaire,.menu-sommaire[data-ferme]{transform:none}.btn-sommaire:active{transform:none}}

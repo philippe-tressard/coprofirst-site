@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """verifier-css.py — trois règles des feuilles de style que l'œil laisse passer.
 
-1. CONTRASTES (coprofirst-site#37). Les couleurs sont des jetons de commun.css,
+1. CONTRASTES. Les couleurs sont des jetons de commun.css,
    redéfinis par le thème clair et par « contraste élevé » (prefers-contrast:
    more). Dans les quatre modes, chaque jeton de texte se lit sur chaque fond où
    il est posé (4,5:1, WCAG 1.4.3) ; en contraste élevé, le bord se voit sur les
@@ -12,12 +12,12 @@
    La cascade est rejouée : `:root[data-theme="clair"]` l'emporte sur `:root`,
    même dans le bloc de contraste.
 
-2. SURVOL ET APPUI (coprofirst-site#36). Un élément qui se déplace au survol
+2. SURVOL ET APPUI. Un élément qui se déplace au survol
    (transform) et s'enfonce à l'appui (transform) : la seconde règle REMPLACE la
    première, et l'élément retombe en même temps qu'il s'enfonce. Il lui faut une
    règle `:hover:active` qui compose les deux.
 
-3. FLOU (coprofirst-site#32). Un matériau translucide (backdrop-filter) a son
+3. FLOU. Un matériau translucide (backdrop-filter) a son
    repli plein sous « transparence réduite » (prefers-reduced-transparency).
 
   python3 scripts/verifier-css.py            0 conforme, 1 écart, 2 INCONNU
@@ -143,7 +143,7 @@ def ecarts_survol_appui(css: str, nom: str) -> list:
 
 def ecarts_transparence(css: str, nom: str) -> list:
     """Un matériau flouté (backdrop-filter) sans fond plein sous « transparence
-    réduite » : le visiteur qui l'a demandé lit encore à travers (#32)."""
+    réduite » : le visiteur qui l'a demandé lit encore à travers."""
     hors, media = bloc_media(RE_COMMENTAIRE.sub("", css), MEDIA_TRANSPARENCE)
     floutes = {s.strip() for sels, corps in RE_REGLE.findall(hors) if RE_FLOU.search(corps)
                for s in sels.split(",")}
