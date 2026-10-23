@@ -6,14 +6,14 @@ Styles de la page d'accueil, sortis de index.html le 21/10/2026 (la page
 dépassait 500 lignes). Couleurs par jetons de commun.css, thème sombre compris.
 Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorations).
 */
-/* Survol : seulement ce qui se clique. Une tuile ou une bulle ne bouge plus (#16). */
+/* Survol : seulement ce qui se clique. Une tuile ou une bulle ne bouge plus. */
 @media (hover:hover) and (pointer:fine){
   .role:hover{transform:translateY(-2px);box-shadow:0 16px 30px -20px var(--ombre)}
-  /* Levée au survol, elle s'enfonce sur place à l'appui, sans retomber (#36). */
+  /* Levée au survol, elle s'enfonce sur place à l'appui, sans retomber. */
   .role:hover:active{transform:translateY(-2px) scale(0.98)}
 }
 
-/* Héros : le texte, deux boutons (#14), la bande de confiance (#22), puis la résidence */
+/* Héros : le texte, deux boutons, la bande de confiance, puis la résidence */
 .heros{padding:40px 0 0;text-align:center}
 .pastille-libre{display:inline-flex;gap:8px;align-items:center;padding:6px 14px;border-radius:99px;background:var(--carte);border:1px solid var(--bord);font-size:.88rem;color:var(--doux);text-decoration:none;margin-bottom:18px}
 .pastille-libre b{color:var(--or-texte)}
@@ -30,7 +30,7 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .confiance b{color:var(--encre);font-weight:600}
 .confiance a{color:inherit;text-underline-offset:3px;text-decoration-color:var(--bord)}
 
-/* Entrée, une seule fois (#19) : 450 ms, décalages ≤ 380 ms — immeubles, ordinateur, téléphone, bulles */
+/* Entrée, une seule fois : 450 ms, décalages ≤ 380 ms — immeubles, ordinateur, téléphone, bulles */
 .js .h-in{opacity:0;transform:translateY(8px);animation:in 450ms var(--ease-out) forwards}
 .js .h-in:nth-child(2){animation-delay:40ms}.js .h-in:nth-child(3){animation-delay:80ms}.js .h-in:nth-child(4){animation-delay:120ms}.js .h-in:nth-child(5){animation-delay:160ms}.js .h-in:nth-child(6){animation-delay:200ms}
 @keyframes in{to{opacity:1;transform:none}}
@@ -52,11 +52,11 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .arbre::after{content:"";position:absolute;left:0;top:0;width:52px;height:60px;border-radius:50%;background:var(--feuillage)}
 .a1{left:1.5%}.a2{left:94%;scale:.8;transform-origin:bottom}
 .sol{position:absolute;left:0;right:0;bottom:0;height:8px;border-radius:99px;background:var(--or);z-index:5}
-/* La fenêtre qui s'allume quand l'affaire est réglée (#24) : une fois, après l'entrée */
+/* La fenêtre qui s'allume quand l'affaire est réglée : une fois, après l'entrée */
 .imm i.allume{transition:background-color 600ms var(--ease-out),box-shadow 600ms var(--ease-out)}
 .allumee .imm i.allume{background:var(--or-vif);box-shadow:0 0 18px 4px rgba(226,180,90,.55)}
 
-/* Les captures réelles de la démonstration (#21, scripts/generer-captures.mjs) */
+/* Les captures réelles de la démonstration (scripts/generer-captures.mjs) */
 .capture{border-radius:22px;border:1px solid var(--bord);background:var(--carte);box-shadow:0 40px 80px -40px var(--ombre);overflow:hidden}
 .fenetre-barre{display:flex;align-items:center;gap:6px;padding:11px 16px;border-bottom:1px solid var(--bord);background:var(--creme-2)}
 .fenetre-barre i{width:10px;height:10px;border-radius:50%;background:var(--bord)}
@@ -90,14 +90,14 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 @keyframes monte{to{opacity:1;translate:0 0}}
 @keyframes bulle{from{opacity:0;translate:0 10px;scale:.96}to{opacity:1;translate:0 0;scale:1}}
 
-/* Sections. Plus de défilement aimanté (#25) : il donnait l'impression d'un
+/* Sections. Plus de défilement aimanté : il donnait l'impression d'un
    défilement repris en main ; le carrousel garde le sien, qui est horizontal. */
 section{padding:88px 0}
 .tete{text-align:center;max-width:660px;margin:0 auto 44px}
 .tete h2{font-size:clamp(1.9rem,4vw,2.7rem)}
 .tete p{color:var(--doux);margin:14px 0 0;font-size:1.08rem}
 .surtitre{display:block;font:600 .82rem var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--or-texte);margin-bottom:12px}
-/* Le motif de la marque : trois fenêtres, une allumée (#24) */
+/* Le motif de la marque : trois fenêtres, une allumée */
 .motif{display:inline-grid;grid-template-columns:repeat(3,7px);gap:3px;margin-right:10px;vertical-align:1px}
 .motif i{height:9px;border-radius:2px;background:var(--fenetre)}
 .motif i.on{background:var(--or)}
@@ -109,13 +109,13 @@ section{padding:88px 0}
 .t-ciel{background:var(--ciel)}.t-lilas{background:var(--lilas)}.t-peche{background:var(--peche)}.t-menthe{background:var(--menthe)}.t-sable{background:var(--sable)}.t-blanc{background:var(--carte);border:1px solid var(--bord)}
 .tuile h3{font-size:1.2rem;margin-bottom:6px}
 .tuile p{margin:0;color:var(--texte-2);font-size:.97rem}
-/* Une affaire en trois temps (#12) */
+/* Une affaire en trois temps */
 .trois-temps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:18px;font-size:.84rem}
 .trois-temps div{background:var(--carte);border-radius:14px;padding:10px 12px;border:1px solid transparent}
 .trois-temps .courant{border-color:var(--bleu)}
 .trois-temps b{display:block;color:var(--titre)}
 .trois-temps small{color:var(--doux)}
-/* Le compte rendu du point CS / Syndic (#9) */
+/* Le compte rendu du point CS / Syndic */
 .cr{display:grid;gap:6px;margin-top:16px;font-size:.84rem}
 .cr div{display:flex;justify-content:space-between;align-items:center;gap:8px;background:var(--carte);border-radius:12px;padding:8px 12px}
 .cr .valide{justify-content:flex-start;background:none;padding-left:2px;color:var(--vert);font-weight:600}
@@ -127,7 +127,7 @@ section{padding:88px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
 .chips span{background:var(--voile);border-radius:99px;padding:4px 11px;font-size:.8rem;color:var(--doux)}
 .t-blanc .chips span{background:var(--creme)}
-/* Une installation, une ou plusieurs copropriétés (#7) */
+/* Une installation, une ou plusieurs copropriétés */
 .multi{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center}
 .adresses{display:grid;gap:8px;margin:0;padding:0;list-style:none}
 .adresses li{font:500 .86rem var(--mono);background:var(--creme);padding:8px 12px;border-radius:12px;overflow-wrap:anywhere}
@@ -135,7 +135,7 @@ section{padding:88px 0}
 
 /* Profils : onglets dont la couleur glisse par clip-path. Sur téléphone, le bord qui
    déborde s'estompe (data-debut / data-fin, accueil.js) et l'onglet choisi revient
-   en vue (#17). */
+   en vue. */
 .onglets-cadre{position:relative;width:max-content;max-width:100%;margin:0 auto 32px;overflow-x:auto;border-radius:99px;scrollbar-width:none;
   --f-g:0px;--f-d:0px;-webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--f-g),#000 calc(100% - var(--f-d)),transparent);mask-image:linear-gradient(90deg,transparent,#000 var(--f-g),#000 calc(100% - var(--f-d)),transparent)}
 .onglets-cadre::-webkit-scrollbar{display:none}
@@ -157,11 +157,11 @@ section{padding:88px 0}
 .vignette div{background:var(--carte);border-radius:14px;padding:12px 14px}
 .vignette small{color:var(--doux)}
 .js .panneau:not([hidden]){animation:panneau 220ms var(--ease-out)}
-/* Il entre du côté de l'onglet choisi (--sens, accueil.js), comme la couleur glisse (#35). */
+/* Il entre du côté de l'onglet choisi (--sens, accueil.js), comme la couleur glisse. */
 @keyframes panneau{from{opacity:0;transform:translateX(calc(var(--sens,0) * 12px))}to{opacity:1;transform:none}}
 @media (max-width:760px){.panneau{grid-template-columns:1fr;padding:24px}.onglets-cadre{border-radius:28px}}
 
-/* IA : un carrousel de cartes, avec flèches et compteur à la souris (#18) */
+/* IA : un carrousel de cartes, avec flèches et compteur à la souris */
 .ia{background:radial-gradient(120% 120% at 100% 0%,#2b4f7d 0%,#1e3a5f 40%,#14294a 100%);color:#e8eef6;padding:88px 0}
 .ia .tete h2{color:#fff}
 .ia .tete p{color:#c9d6e8}
@@ -215,7 +215,7 @@ section{padding:88px 0}
 .defile{overflow:hidden;-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);padding:6px 0}
 .piste{display:flex;gap:18px;width:max-content;animation:defile var(--duree,60s) linear infinite}
 .defile:hover .piste,.defile:focus-within .piste,.defile.saisie .piste{animation-play-state:paused}
-/* La bande se saisit au doigt et à la souris (accueil.js, #34) ; le défilement
+/* La bande se saisit au doigt et à la souris (accueil.js) ; le défilement
    vertical de la page reste au navigateur. */
 .defile:not(.fixe){touch-action:pan-y;cursor:grab}
 .defile.saisie{cursor:grabbing;user-select:none;-webkit-user-select:none}
@@ -262,7 +262,7 @@ section{padding:88px 0}
 .question code{font:500 .88em var(--mono);background:var(--creme);border-radius:6px;padding:1px 6px}
 @media (max-width:760px){.faq{grid-template-columns:1fr}.question{padding:20px}}
 
-/* Appel final : la démo et le guide d'abord, le dépôt pour les développeurs (#20) */
+/* Appel final : la démo et le guide d'abord, le dépôt pour les développeurs */
 .final{background:var(--carte);border:1px solid var(--bord);border-radius:32px;padding:56px 40px;text-align:center}
 .final h2{font-size:clamp(1.8rem,3.8vw,2.6rem)}
 .final>p{color:var(--doux);max-width:36em;margin:14px auto 0}

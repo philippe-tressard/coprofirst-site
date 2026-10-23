@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 #
 # version-produit.py — la version de CoproFirst affichée par l'accueil est-elle la
-# dernière version publiée ? (coprofirst-site#22)
+# dernière version publiée ?
 #
 # Le héros porte « Version X · JJ/MM/AAAA » : la dernière RELEASE GitHub de
 # CoproFirst, c'est-à-dire la dernière version promue — celle qu'une résidence

@@ -6,7 +6,7 @@
 Cloudflare fait garder les .css et .js 4 h par le navigateur (Cache-Control
 max-age=14400), le HTML 5 min. Sans empreinte, un déploiement qui change le HTML
 et le JS sert le nouveau HTML avec l'ancien script : le 20/10/2026, la section des
-avis restait masquée chez qui avait visité le site (coprofirst-site#6). Avec
+avis restait masquée chez qui avait visité le site. Avec
 `accueil.js?v=<empreinte>`, l'adresse change quand le fichier change, et le
 navigateur charge la nouvelle version ; le serveur ignore la requête après « ? ».
 Les captures du héros (.jpg, scripts/generer-captures.mjs) suivent la même règle :

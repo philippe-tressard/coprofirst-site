@@ -104,7 +104,7 @@ def dimensions_png(chemin: Path):
 
 
 # Servis par le site sans être dans le dépôt : deploiement/deployer.sh les envoie.
-# avis.json : l'export des avis, jamais versionné (coprofirst-site#6).
+# avis.json : l'export des avis, jamais versionné.
 HORS_DEPOT = {"avis.json"}
 
 

@@ -16,7 +16,7 @@ addEventListener('DOMContentLoaded', () => {
   // Onglets accessibles (flèches, Début, Fin) dont la couleur glisse par clip-path.
   // mode : 'souris' anime ; 'clavier' et 'init' sont instantanés (un geste au clavier ne s'anime pas).
   // Quand la rangée déborde (téléphone), le bord qui cache des onglets s'estompe, et
-  // l'onglet choisi revient au milieu de la rangée (coprofirst-site#17).
+  // l'onglet choisi revient au milieu de la rangée.
   function initOnglets(racine, montrer = (panneau, actif) => { panneau.hidden = !actif; }) {
     const onglets = [...racine.querySelectorAll('.onglets:not(.copie) .onglet')];
     const copie = racine.querySelector('.onglets.copie');
@@ -29,7 +29,7 @@ addEventListener('DOMContentLoaded', () => {
     function activer(onglet, mode) {
       racine.toggleAttribute('data-instant', mode !== 'souris');
       // Le panneau entre du côté de l'onglet choisi : +1 à droite du précédent, -1 à
-      // gauche (coprofirst-site#35) — le même sens que la couleur qui glisse.
+      // gauche — le même sens que la couleur qui glisse.
       const avant = onglets.findIndex((o) => o.getAttribute('aria-selected') === 'true');
       racine.style.setProperty('--sens', Math.sign(onglets.indexOf(onglet) - avant));
       for (const o of onglets) {
@@ -67,7 +67,7 @@ addEventListener('DOMContentLoaded', () => {
   afficherAvis();
 });
 
-// ── Sommaire (coprofirst-site#15) ───────────────────────────────────────────────
+// ── Sommaire ────────────────────────────────────────────────────────────────────
 // Sous 1080 px, il remplace les liens de l'en-tête. Échap le ferme et rend le focus
 // au bouton ; un clic ailleurs ou sur un lien le ferme.
 function initSommaire() {
@@ -82,7 +82,7 @@ function initSommaire() {
   addEventListener('click', (e) => { if (ouvert() && !e.target.closest('.sommaire')) ouvrir(false); });
 }
 
-// ── Carrousel de l'assistant IA (coprofirst-site#18) ────────────────────────────
+// ── Carrousel de l'assistant IA ─────────────────────────────────────────────────
 // Flèches (à la souris seulement, CSS) et compteur « n / total ». Le compteur est
 // caché aux lecteurs d'écran : le carrousel est une liste qu'ils parcourent déjà.
 function initCarrousel(carrousel, commandes) {
@@ -105,7 +105,7 @@ function initCarrousel(carrousel, commandes) {
   maj();
 }
 
-// ── La fenêtre qui s'allume (coprofirst-site#24) ────────────────────────────────
+// ── La fenêtre qui s'allume ─────────────────────────────────────────────────────
 // Une fois, l'entrée du héros jouée : l'affaire est réglée, l'immeuble s'éclaire.
 function allumerFenetre(scene) {
   if (!scene) return;
@@ -113,7 +113,7 @@ function allumerFenetre(scene) {
   setTimeout(() => scene.classList.add('allumee'), reduit ? 0 : 750);
 }
 
-// ── Avis d'utilisateurs (coprofirst-site#6) ─────────────────────────────────────
+// ── Avis d'utilisateurs ─────────────────────────────────────────────────────────
 // avis.json est l'export de l'application, commité tel quel :
 //   { "genere_le": "AAAA-MM-JJ", "avis": [ { titre, texte, note, auteur, role, date } ] }
 // Un avis hors format, ou de plus de DUREE_MAX_ANS ans (la durée maximale annoncée
@@ -271,7 +271,7 @@ async function afficherAvis() {
   saisirLaBande(defile, piste);
 }
 
-// ── La bande d'avis se saisit (coprofirst-site#34) ──────────────────────────────
+// ── La bande d'avis se saisit ───────────────────────────────────────────────────
 // Le défilement reste l'animation CSS « defile » ; le doigt (ou la souris) la mène
 // 1:1 en réglant son currentTime, ce qui boucle sans fin des deux côtés. Au
 // relâcher, l'élan continue (décroissance exponentielle, celle du défilement

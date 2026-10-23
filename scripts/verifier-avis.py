@@ -5,7 +5,7 @@
 
 Le fichier n'est PAS versionné : c'est l'export de l'application, déposé sur le poste
 et envoyé par deploiement/deployer.sh, qui lance ce contrôle avant d'envoyer et sur ce
-que le serveur sert (coprofirst-site#6). Il publie le prénom et l'initiale de
+que le serveur sert. Il publie le prénom et l'initiale de
 personnes réelles. Ce contrôle refuse ce qui ne doit pas paraître :
   - un JSON illisible, ou une forme qui n'est pas { "genere_le", "avis": [...] } ;
   - une clé que l'export ne produit pas — liste BLANCHE (standards/03 §2) : une

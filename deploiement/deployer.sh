@@ -15,7 +15,7 @@
 # Ne déploie que ce qui est committé ET poussé : la page en ligne est toujours
 # une version que l'on retrouve sur GitHub. Une exception, voulue : site/avis.json,
 # l'export des avis de l'application, n'est PAS versionné (un accord retiré ne doit
-# pas survivre dans l'historique public — coprofirst-site#6). Il part du poste,
+# pas survivre dans l'historique public). Il part du poste,
 # après scripts/verifier-avis.py ; sans lui, le déploiement refuse, sauf
 # --garder-avis. Le dernier export téléchargé (avis-coprofirst-*.json, dans les
 # Téléchargements) est installé d'office par scripts/recuperer-avis.py, qui efface
