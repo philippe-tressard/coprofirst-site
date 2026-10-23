@@ -8,3 +8,6 @@ Thumbs.db
 # par deploiement/deployer.sh — jamais versionné, pour qu'un accord retiré ne survive
 # pas dans l'historique public.
 site/avis.json
+# Le bytecode de Python : un contrôle qui importe lecture_distante.py le crée avant
+# reuse lint, en CI.
+__pycache__/
