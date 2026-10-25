@@ -70,7 +70,7 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   qu'elle n'est pas enregistrée (`MARQUE.md` de coprofirst). Le logo est sous
   `LicenseRef-CoproFirst-Logo`, hors de l'AGPL : il reste dans son fichier, jamais
   recopié en ligne dans le HTML.
-- **Avis d'utilisateurs** (coprofirst-site#6, depuis le 20/10/2026 ; les
+- **Avis d'utilisateurs** (depuis le 20/10/2026 ; les
   témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
   ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
   `avis-coprofirst-AAAA-MM-JJ.json`, installé en `site/avis.json`). Il n'est
@@ -108,7 +108,7 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   structurées ne balisent **jamais** les avis (`Review`, `AggregateRating`) : ce
   sont des avis sur son propre produit, choisis par l'éditeur parmi les 4 et 5
   étoiles — une note moyenne tirée d'eux tromperait, et Google écarte ces avis
-  « auto-publiés » (décision du 20/10/2026, coprofirst-site#6).
+  « auto-publiés » (décision du 20/10/2026).
   La FAQ de l'accueil porte son balisage schema.org en microdonnées, sur le texte
   visible : aucune copie à tenir à jour. L'image de partage se refait par
   `bash scripts/generer-image-partage.sh`. ⚠️ Cloudflare sert aussi son propre
@@ -210,10 +210,10 @@ un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jou
 
 `python3 scripts/verifier-css.py` — les jetons de couleur de `commun.css` se lisent
 dans les **quatre modes** (sombre, clair, chacun en contraste élevé —
-`prefers-contrast: more`, coprofirst-site#37) : chaque jeton de texte à 4,5:1 sur
+`prefers-contrast: more`) : chaque jeton de texte à 4,5:1 sur
 chaque fond, `--bord` à 3:1 en contraste élevé ; et un élément déplacé au survol et à
-l'appui a sa règle `:hover:active` qui compose les deux (#36) ; un `backdrop-filter`
-(l'en-tête translucide, #32) a son fond plein sous `prefers-reduced-transparency`. **Une couleur qui
+l'appui a sa règle `:hover:active` qui compose les deux ; un `backdrop-filter`
+(l'en-tête translucide) a son fond plein sous `prefers-reduced-transparency`. **Une couleur qui
 change se mesure là.** En `pre-commit` et en CI, avec `--selftest`.
 
 `python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
@@ -223,4 +223,13 @@ Paris. Sortie 0 conforme, 1 écart, **2 INCONNU** ; `--ecrire`, `--selftest`,
 `--source`. Comme les comptes de la démo : **en CI seulement**, chaque jour
 (`comptes-demo.yml`, « Concordance avec CoproFirst »). Le site peut décrire une
 fonction de `main` pas encore promue : la version affichée reste celle qu'on
-installe. `scripts/lecture_distante.py` est la lecture commune des deux contrôles.
+installe. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne.
+
+`python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
+**`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé
+(`maquettes/` exceptées). `--en-ligne` vérifie sur l'API de GitHub que chaque ticket
+cité existe encore (410 supprimé, 404 inconnu : écart ; limite de débit : INCONNU).
+Les tickets terminés sont **supprimés** de GitHub, pas seulement fermés (choix de
+Philippe, 24/10/2026) : une décision se justifie donc dans le commentaire et le
+message de commit, pas par un renvoi à un ticket fermé. Hors ligne en `pre-commit` et
+en CI ; `--en-ligne` à chaque poussée et chaque jour (`comptes-demo.yml`).

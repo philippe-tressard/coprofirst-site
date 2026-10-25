@@ -3,7 +3,7 @@
 //
 // generer-captures.mjs — photographie l'écran Affaires de la démonstration
 // (demo.coprofirst.fr), sur ordinateur et sur téléphone, pour le héros de
-// l'accueil (coprofirst-site#21). Ce que montre la page est alors le produit lui-même,
+// l'accueil. Ce que montre la page est alors le produit lui-même,
 // pas un dessin qui dérive de lui.
 //
 //   node scripts/generer-captures.mjs

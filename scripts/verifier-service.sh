@@ -6,7 +6,7 @@
 # promet ? Construit l'image (deploiement/Dockerfile), la démarre, et l'interroge :
 #   - page et 404 : code, en-têtes de sécurité, Cache-Control no-transform, pas de
 #     Server, et le corps octet pour octet celui du dépôt (index.html, 404.html) ;
-#   - compression (coprofirst-site#28) : gzip quand le navigateur l'accepte — page,
+#   - compression : gzip quand le navigateur l'accepte — page,
 #     feuille de style, 404 —, jamais sur une image JPEG, et rien sans
 #     Accept-Encoding (c'est ce que reçoit deployer.sh --verifier) ;
 #   - www.coprofirst.fr redirige vers coprofirst.fr.

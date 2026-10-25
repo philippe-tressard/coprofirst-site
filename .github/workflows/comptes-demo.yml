@@ -19,6 +19,7 @@ on:
 
 permissions:
   contents: read
+  issues: read
 
 jobs:
   comptes:
@@ -36,3 +37,9 @@ jobs:
       # Pas une concordance : une date qui passe. Sa place est dans le passage quotidien.
       - name: L'échéance de security.txt (un mois de préavis)
         run: python3 scripts/verifier-security-txt.py
+      # Un ticket supprimé sur GitHub ne laisse aucun commit : le passage quotidien
+      # attrape le renvoi qui ne mène plus nulle part. Jeton : la limite de débit.
+      - name: Chaque ticket cité existe encore (coprofirst-site#N)
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/verifier-renvois.py --en-ligne

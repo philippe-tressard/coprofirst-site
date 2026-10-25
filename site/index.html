@@ -10,7 +10,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <title>CoproFirst — l'application libre de gestion de copropriété</title>
 <link rel="icon" href="logo.svg" type="image/svg+xml">
 <script src="theme.js?v=fbbef372"></script>
-<link rel="stylesheet" href="commun.css?v=47604a84">
+<link rel="stylesheet" href="commun.css?v=3c1adb99">
 <meta name="description" content="Application web libre et gratuite de gestion de copropriété : signalements suivis, documents, carnet d'entretien, badges. Pour les résidents, le conseil syndical et le syndic.">
 <link rel="canonical" href="https://coprofirst.fr/">
 <link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
@@ -116,9 +116,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
  ]
 }
 </script>
-<link rel="stylesheet" href="accueil.css?v=b72fb83b">
+<link rel="stylesheet" href="accueil.css?v=11b9d5a6">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<script src="accueil.js?v=747803ff"></script>
+<script src="accueil.js?v=06310979"></script>
 </head>
 <body>
 <a class="evitement" href="#contenu">Aller au contenu</a>
@@ -144,7 +144,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <p class="actions h-in"><a class="btn btn-bleu" href="demo.html">Essayer la démo →</a><a class="btn btn-contour" href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md" aria-describedby="precision-installation"><span>Installer CoproFirst<span aria-hidden="true">*</span></span></a></p>
       <p class="precision h-in" id="precision-installation"><span><span aria-hidden="true">* </span>L'installation demande un serveur Linux avec Docker.</span> <span>Une offre hébergée, payante, est à l'étude.</span></p>
       <!-- La version : celle de la dernière version publiée de CoproFirst, écrite par
-           scripts/version-produit.py --ecrire, jamais à la main (coprofirst-site#22). -->
+           scripts/version-produit.py --ecrire, jamais à la main. -->
       <ul class="confiance h-in" aria-label="Repères de confiance">
         <li data-version-produit><a href="https://github.com/philippe-tressard/coprofirst/releases/tag/v3.11.7"><b>Version 3.11.7</b> · 22/10/2026</a></li><li>Images signées, amd64 et arm64</li><li>Données sur le serveur choisi</li><li>IA éteinte par défaut</li><li>Licences conformes REUSE</li>
       </ul>
@@ -161,7 +161,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         <div class="imm i8" aria-hidden="true"><i></i><i></i><i class="on"></i></div>
         <div class="arbre a1" aria-hidden="true"></div>
         <div class="arbre a2" aria-hidden="true"></div>
-        <!-- Captures réelles de la démonstration : scripts/generer-captures.mjs (coprofirst-site#21) -->
+        <!-- Captures réelles de la démonstration : scripts/generer-captures.mjs -->
         <figure class="capture">
           <div class="fenetre-barre" aria-hidden="true"><i></i><i></i><i></i><span>demo.coprofirst.fr/tickets</span></div>
           <img src="captures/affaires-ordinateur.jpg?v=11780789" width="1180" height="740" decoding="async" fetchpriority="high" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
@@ -297,7 +297,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     </div>
     <div class="c"><ul class="garde-fous" aria-label="Garde-fous"><li>Désactivé par défaut</li><li>Plafonds d'appels, par mois et par heure</li><li>Texte assisté signalé ✨</li><li>Votre fournisseur, votre clé</li></ul>
       <!-- Le mot du créateur : l'éditeur parle de son propre produit. Il ne figure pas
-           parmi les avis d'utilisateurs (coprofirst-site#6, choix de Philippe du
+           parmi les avis d'utilisateurs (choix de Philippe du
            20/10/2026) : scripts/verifier-avis.py refuse son avis dans avis.json. -->
       <figure class="mot-createur revele">
         <figcaption><span class="surtitre">Le mot du créateur</span></figcaption>
@@ -329,7 +329,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
   </section>
 
   <!-- Avis d'utilisateurs : rendus par accueil.js depuis avis.json, l'export de
-       l'application (coprofirst-site#6). Masquée tant qu'aucun avis n'est valide —
+       l'application. Masquée tant qu'aucun avis n'est valide —
        jamais d'exemple à la place. data-nosnippet : le prénom des auteurs ne part
        pas dans les extraits des moteurs (minimisation, standards/14 §1). -->
   <section id="avis" aria-labelledby="titre-avis" style="padding-top:0" data-nosnippet hidden>

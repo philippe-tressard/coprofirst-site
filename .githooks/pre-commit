@@ -14,3 +14,5 @@ python3 "$racine/scripts/empreintes.py" || exit 1
 python3 "$racine/scripts/verifier-css.py" || exit 1
 # security.txt : champs exigés et échéance (le passage quotidien est en CI).
 python3 "$racine/scripts/verifier-security-txt.py" || exit 1
+# Renvois aux tickets : qualifiés (coprofirst-site#N) ; leur existence est en CI.
+python3 "$racine/scripts/verifier-renvois.py" || exit 1
