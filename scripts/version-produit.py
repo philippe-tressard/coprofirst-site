@@ -6,10 +6,11 @@
 # dernière version publiée ?
 #
 # Le héros porte « Version X · JJ/MM/AAAA » : la dernière RELEASE GitHub de
-# CoproFirst, c'est-à-dire la dernière version promue — celle qu'une résidence
-# installe, pas le dernier commit de main. Elle s'écrit dans le dépôt par
-# --ecrire, jamais à la main, et ce contrôle signale l'écart chaque jour en CI
-# (.github/workflows/comptes-demo.yml) : une promotion faite côté CoproFirst laisse
+# CoproFirst — celle que le canal Urgence installe aussitôt (les autres vagues la
+# reçoivent plus tard, coprofirst#2210), pas le dernier commit de main. Elle
+# s'écrit dans le dépôt par --ecrire, jamais à la main, et ce contrôle signale
+# l'écart chaque jour en CI (.github/workflows/comptes-demo.yml) : une release
+# publiée côté CoproFirst laisse
 # sinon le site en retard sans que rien ne le dise.
 #
 # Verdicts (standards/04 §1) : 0 = conforme, 1 = écart, 2 = INCONNU — API
