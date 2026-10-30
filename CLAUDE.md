@@ -30,10 +30,11 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
   que `'self'`). Le héros montre des **captures réelles** de la démo
-  (`site/captures/`, refaites par `node scripts/generer-captures.mjs` après chaque
-  version promue — le script affiche la version photographiée, lue au pied de
-  l'application : la démo se met à jour la nuit, et peut encore servir la
-  précédente juste après une promotion) et la **dernière version publiée** (`scripts/version-produit.py
+  (`site/captures/`, refaites par `node scripts/generer-captures.mjs` quand la
+  démo a changé de version — le script affiche la version photographiée, lue au
+  pied de l'application : la démo suit sa **vague** de distribution, pas la
+  dernière release (coprofirst#2210 : une mineure de recul, rodée 7 jours),
+  et peut donc servir une version de plusieurs jours en retard) et la **dernière version publiée** (`scripts/version-produit.py
   --ecrire`, jamais à la main). Un site
   sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
   exige que les pieds soient identiques.
@@ -218,13 +219,14 @@ l'appui a sa règle `:hover:active` qui compose les deux ; un `backdrop-filter`
 change se mesure là.** En `pre-commit` et en CI, avec `--selftest`.
 
 `python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
-héros affiche la dernière **release** de CoproFirst (la version promue, celle
-qu'une résidence installe — pas le dernier commit de `main`), datée à l'heure de
+héros affiche la dernière **release** de CoproFirst (celle que le canal
+Urgence installe aussitôt — pas le dernier commit de `main` ; les autres vagues la
+reçoivent plus tard, coprofirst#2210), datée à l'heure de
 Paris. Sortie 0 conforme, 1 écart, **2 INCONNU** ; `--ecrire`, `--selftest`,
 `--source`. Comme les comptes de la démo : **en CI seulement**, chaque jour
 (`comptes-demo.yml`, « Concordance avec CoproFirst »). Le site peut décrire une
-fonction de `main` pas encore promue : la version affichée reste celle qu'on
-installe. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne.
+fonction de `main` pas encore publiée : la version affichée reste la dernière
+publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne.
 
 `python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
 **`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé

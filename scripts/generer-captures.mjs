@@ -8,7 +8,8 @@
 //
 //   node scripts/generer-captures.mjs
 //
-// À relancer après chaque version promue de CoproFirst, puis
+// À relancer quand la démo a changé de version (elle suit sa vague, pas la
+// dernière release : coprofirst#2210), puis
 // `python3 scripts/empreintes.py --ecrire` (l'adresse de chaque capture porte
 // l'empreinte de son contenu, comme les CSS et JS) et committer les images.
 //
