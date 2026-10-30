@@ -160,8 +160,9 @@ porte déjà `no-transform`. **En CI seulement** (Docker) ; sur le poste, INCONN
 `python3 scripts/verifier-referencement.py` — chaque page a son adresse canonique
 (`https://coprofirst.fr/…`), ses balises Open Graph, un `<h1>` et aucun `noindex` ;
 ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages, et
-chaque `lastmod` est au moins la date du dernier commit de sa page (**l'avancer**
-quand on modifie une page) ;
+chaque `lastmod` est au moins la date du dernier commit de sa page — une page
+modifiée et pas encore committée compte pour aujourd'hui (**l'avancer** quand on
+modifie une page) ;
 `robots.txt` désigne le sitemap et ne ferme aucun robot ; les liens de `llms.txt`
 mènent à des fichiers du site. Les pages d'erreur (`PAGES_D_ERREUR` : `404.html`) sont
 nommées, et suivent la règle inverse : `noindex` obligatoire, ni canonique ni sitemap. En `pre-commit` et en CI, avec `--selftest`. **Une page

@@ -35,12 +35,14 @@
 #         python3 scripts/verifier-referencement.py --selftest
 import argparse
 import json
+import os
 import re
 import struct
 import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
+from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
 
@@ -235,14 +237,16 @@ def juger_lastmod(lastmods: dict, derniers_commits: dict) -> list[str]:
 def derniers_commits(site: Path):
     """{adresse canonique: date du dernier commit de la page}, ou None si git ne répond
     pas. Exige l'historique complet (en CI : fetch-depth 0) — un clone superficiel
-    daterait chaque page du dernier commit."""
+    daterait chaque page du dernier commit. Une page modifiée depuis HEAD (indexée ou
+    non) est datée d'aujourd'hui : c'est la date du commit qui la portera."""
     dates = {}
     for page in sorted(site.glob("*.html")):
         if page.name in PAGES_D_ERREUR:  # hors du sitemap : pas de lastmod à tenir
             continue
         try:
-            sortie = subprocess.run(["git", "log", "-1", "--format=%cs", "--", page.name], cwd=site,
-                                    capture_output=True, text=True, check=True).stdout.strip()
+            lire = lambda *a: subprocess.run(["git", *a, "--", page.name], cwd=site,  # noqa: E731
+                                             capture_output=True, text=True, check=True).stdout.strip()
+            sortie = date.today().isoformat() if lire("status", "--porcelain") else lire("log", "-1", "--format=%cs")
         except (OSError, subprocess.CalledProcessError):
             return None
         if sortie:  # une page jamais committée n'a pas encore de date
@@ -316,6 +320,28 @@ def selftest() -> int:
         (site / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {ORIGINE}sitemap.xml\n", encoding="utf-8")
         (site / "llms.txt").write_text(f"CoproFirst\n- [x]({ORIGINE}absente.html)\n", encoding="utf-8")
         cas("llms.txt sans titre, lien mort", ["LLMS"])
+    # Une page modifiée mais pas encore committée : le commit qui la portera est daté
+    # d'aujourd'hui. La dater de son commit précédent laissait passer, en pre-commit, un
+    # lastmod en retard que la CI refusait ensuite (main rouge du 25 au 30/10/2026).
+    with tempfile.TemporaryDirectory() as d:
+        site = Path(d)
+        horloge = {**os.environ, "GIT_AUTHOR_DATE": "2026-01-01T12:00:00", "GIT_COMMITTER_DATE": "2026-01-01T12:00:00"}
+        git = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],  # noqa: E731
+                                        cwd=site, capture_output=True, check=True, env=horloge)
+        git("init", "-q")
+        (site / "index.html").write_text("a", encoding="utf-8")
+        git("add", "index.html")
+        git("commit", "-q", "-m", "a")
+        for libelle, geste, attendu in [
+            ("page committée, intacte", lambda: None, "2026-01-01"),
+            ("page modifiée, non indexée", lambda: (site / "index.html").write_text("b", encoding="utf-8"),
+             date.today().isoformat()),
+            ("page modifiée et indexée", lambda: git("add", "index.html"), date.today().isoformat()),
+        ]:
+            geste()
+            obtenu = (derniers_commits(site) or {}).get(ORIGINE)
+            print(f"  {'ok    ' if obtenu == attendu else 'ÉCHEC '}  {libelle} → {obtenu}, attendu {attendu}")
+            echecs += obtenu != attendu
     with tempfile.TemporaryDirectory() as d:
         if juger_site(Path(d)) is not None:
             print("  ÉCHEC   dossier sans page → attendu INCONNU")
