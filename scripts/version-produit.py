@@ -8,10 +8,15 @@
 # Le héros porte « Version X · JJ/MM/AAAA » : la dernière RELEASE GitHub de
 # CoproFirst — celle que le canal Urgence installe aussitôt (les autres vagues la
 # reçoivent plus tard, coprofirst#2210), pas le dernier commit de main. Elle
-# s'écrit dans le dépôt par --ecrire, jamais à la main, et ce contrôle signale
-# l'écart chaque jour en CI (.github/workflows/comptes-demo.yml) : une release
-# publiée côté CoproFirst laisse
-# sinon le site en retard sans que rien ne le dise.
+# s'écrit dans le dépôt par --ecrire, jamais à la main : --ecrire avance aussi le
+# lastmod de l'accueil dans sitemap.xml (verifier-referencement.py l'exige), pour
+# que le dépôt reste cohérent en un seul geste.
+#
+# CoproFirst publie une dizaine de releases par jour (coprofirst-site#51) : ni une
+# mise à jour à la main ni un contrôle sur chaque PR ne tiennent ce rythme. Le
+# workflow planifié .github/workflows/version-produit.yml lance --ecrire et ouvre
+# ou met à jour la PR « version » ; ce contrôle ne tourne plus sur les PR des
+# autres sujets.
 #
 # Verdicts (standards/04 §1) : 0 = conforme, 1 = écart, 2 = INCONNU — API
 # injoignable ou illisible, page sans l'élément [data-version-produit].
@@ -34,6 +39,8 @@ from lecture_distante import Illisible, lire
 API = "https://api.github.com/repos/philippe-tressard/coprofirst/releases/latest"
 DEPOT = "https://github.com/philippe-tressard/coprofirst"
 PAGE = Path(__file__).resolve().parent.parent / "site" / "index.html"
+SITEMAP = PAGE.parent / "sitemap.xml"
+ACCUEIL = "https://coprofirst.fr/"
 OK, ECART, INCONNU = 0, 1, 2
 ELEMENT = re.compile(r"(<li data-version-produit>)(.*?)(</li>)", re.S)
 ETIQUETTE = re.compile(r"^v(\d+\.\d+\.\d+)$")
@@ -67,6 +74,16 @@ def juger(page: str, attendu: str) -> tuple[str | None, str]:
     return (None if actuel == attendu else f"la page affiche « {actuel} », attendu « {attendu} »"), corrigee
 
 
+def avancer_lastmod(sitemap: str, jour: str) -> str:
+    """Fonction PURE : le sitemap dont le lastmod de l'accueil vaut au moins `jour`
+    (AAAA-MM-JJ). Jamais reculé : un lastmod plus récent reste tel quel."""
+    motif = re.compile(r"(<loc>" + re.escape(ACCUEIL) + r"</loc>\s*<lastmod>)(\d{4}-\d{2}-\d{2})(</lastmod>)")
+    trouves = motif.findall(sitemap)
+    if len(trouves) != 1:
+        raise Illisible(f"sitemap : {len(trouves)} lastmod pour {ACCUEIL}, 1 attendu")
+    return motif.sub(lambda m: m[1] + max(m[2], jour) + m[3], sitemap)
+
+
 def selftest() -> int:
     rel = json.dumps({"tag_name": "v3.1.0", "published_at": "2026-10-18T22:30:00Z"})
     attendu = contenu_attendu("v3.1.0", "3.1.0", "19/10/2026")  # 22 h 30 UTC = le 19 à Paris
@@ -98,12 +115,26 @@ def selftest() -> int:
         ok = juger(corrigee, attendu)[0] is None and corrigee.count("data-version-produit") == 1
         echecs += not ok
         print(f"  {'ok   ' if ok else 'ÉCHEC'}   --ecrire corrige, puis le contrôle passe")
+    carte = f"<url><loc>{ACCUEIL}</loc><lastmod>2026-10-01</lastmod></url>"
+    for nom, entree, voulu in [
+        ("lastmod avancé", carte, "2026-11-05"),
+        ("lastmod plus récent gardé", carte.replace("10-01", "12-01"), "2026-12-01"),
+        ("sitemap sans l'accueil", carte.replace(ACCUEIL, ACCUEIL + "demo.html"), "INCONNU"),
+        ("accueil en double", carte + carte, "INCONNU"),
+    ]:
+        try:
+            obtenu = re.search(r"<lastmod>(.*?)</lastmod>", avancer_lastmod(entree, "2026-11-05"))[1]
+        except Illisible:
+            obtenu = "INCONNU"
+        echecs += obtenu != voulu
+        print(f"  {'ok   ' if obtenu == voulu else 'ÉCHEC'}   {nom} : {obtenu}")
     try:
         juger(PAGE.read_text(encoding="utf-8"), attendu)
-        print("  ok      index.html réelle : un seul élément [data-version-produit]")
+        avancer_lastmod(SITEMAP.read_text(encoding="utf-8"), "2026-01-01")
+        print("  ok      index.html et sitemap.xml réels : un élément, un lastmod d'accueil")
     except Illisible as e:
         echecs += 1
-        print(f"  ÉCHEC   index.html réelle : {e}")
+        print(f"  ÉCHEC   index.html ou sitemap.xml réels : {e}")
     print("selftest : OK" if echecs == 0 else f"selftest : {echecs} ÉCHEC(S)")
     return OK if echecs == 0 else ECART
 
@@ -121,12 +152,16 @@ def main() -> int:
     try:
         attendu = contenu_attendu(*version_publiee(lire(options.source)))
         ecart, corrigee = juger(PAGE.read_text(encoding="utf-8"), attendu)
+        if ecart and options.ecrire:  # lu et jugé avant toute écriture : tout ou rien
+            jour = datetime.now(ZoneInfo("Europe/Paris")).strftime("%Y-%m-%d")
+            carte = avancer_lastmod(SITEMAP.read_text(encoding="utf-8"), jour)
     except (Illisible, OSError) as e:
         print(f"INCONNU : {e} — rien n'a été comparé")
         return INCONNU
     if ecart and options.ecrire:
         PAGE.write_text(corrigee, encoding="utf-8", newline="\n")
-        print(f"version-produit : index.html mise à jour → {attendu}")
+        SITEMAP.write_text(carte, encoding="utf-8", newline="\n")
+        print(f"version-produit : index.html mise à jour → {attendu} (lastmod de l'accueil au {jour})")
         return OK
     if ecart:
         print(f"version-produit : {ecart}\n  → python3 scripts/version-produit.py --ecrire")
