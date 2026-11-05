@@ -234,17 +234,36 @@ def juger_lastmod(lastmods: dict, derniers_commits: dict) -> list[str]:
             for u, d in sorted(derniers_commits.items()) if not lastmods.get(u) or lastmods[u] < d]
 
 
+def env_git():
+    """L'environnement sans les variables qui désignent un dépôt, ou None si git ne
+    répond pas. Un hook les exporte (GIT_DIR, GIT_INDEX_FILE… : leur liste est celle
+    de `git rev-parse --local-env-vars`, jamais recopiée ici). Lancé depuis site/ avec
+    GIT_DIR et sans GIT_WORK_TREE, git prend site/ pour la racine de l'arbre de
+    travail : chaque page y paraît non suivie, donc modifiée aujourd'hui — faux écarts
+    LASTMOD au pre-commit d'un worktree lié (03/11/2026). Sans elles, git
+    redécouvre le dépôt depuis son répertoire courant."""
+    try:
+        locales = subprocess.run(["git", "rev-parse", "--local-env-vars"],
+                                 capture_output=True, text=True, check=True).stdout.split()
+    except (OSError, subprocess.CalledProcessError):
+        return None
+    return {k: v for k, v in os.environ.items() if k not in locales}
+
+
 def derniers_commits(site: Path):
     """{adresse canonique: date du dernier commit de la page}, ou None si git ne répond
     pas. Exige l'historique complet (en CI : fetch-depth 0) — un clone superficiel
     daterait chaque page du dernier commit. Une page modifiée depuis HEAD (indexée ou
     non) est datée d'aujourd'hui : c'est la date du commit qui la portera."""
+    env = env_git()
+    if env is None:
+        return None
     dates = {}
     for page in sorted(site.glob("*.html")):
         if page.name in PAGES_D_ERREUR:  # hors du sitemap : pas de lastmod à tenir
             continue
         try:
-            lire = lambda *a: subprocess.run(["git", *a, "--", page.name], cwd=site,  # noqa: E731
+            lire = lambda *a: subprocess.run(["git", *a, "--", page.name], cwd=site, env=env,  # noqa: E731
                                              capture_output=True, text=True, check=True).stdout.strip()
             sortie = date.today().isoformat() if lire("status", "--porcelain") else lire("log", "-1", "--format=%cs")
         except (OSError, subprocess.CalledProcessError):
@@ -323,23 +342,38 @@ def selftest() -> int:
     # Une page modifiée mais pas encore committée : le commit qui la portera est daté
     # d'aujourd'hui. La dater de son commit précédent laissait passer, en pre-commit, un
     # lastmod en retard que la CI refusait ensuite (main rouge du 25 au 30/10/2026).
+    # Le site dans un sous-dossier, comme ici : c'est ce qui piège git quand un hook
+    # exporte GIT_DIR (worktree lié) — il prend alors site/ pour la racine du dépôt.
     with tempfile.TemporaryDirectory() as d:
-        site = Path(d)
-        horloge = {**os.environ, "GIT_AUTHOR_DATE": "2026-01-01T12:00:00", "GIT_COMMITTER_DATE": "2026-01-01T12:00:00"}
+        racine = Path(d)
+        site = racine / "site"
+        site.mkdir()
+        # env_git() : lancé depuis un hook, ce dépôt jetable écrirait sinon dans le vrai.
+        horloge = {**(env_git() or {}), "GIT_AUTHOR_DATE": "2026-01-01T12:00:00", "GIT_COMMITTER_DATE": "2026-01-01T12:00:00"}
         git = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],  # noqa: E731
-                                        cwd=site, capture_output=True, check=True, env=horloge)
+                                        cwd=racine, capture_output=True, check=True, env=horloge)
         git("init", "-q")
         (site / "index.html").write_text("a", encoding="utf-8")
-        git("add", "index.html")
+        git("add", "site/index.html")
         git("commit", "-q", "-m", "a")
-        for libelle, geste, attendu in [
-            ("page committée, intacte", lambda: None, "2026-01-01"),
+        for libelle, geste, attendu, hook in [
+            ("page committée, intacte", lambda: None, "2026-01-01", False),
+            ("page committée, GIT_DIR posé par un hook", lambda: None, "2026-01-01", True),
             ("page modifiée, non indexée", lambda: (site / "index.html").write_text("b", encoding="utf-8"),
-             date.today().isoformat()),
-            ("page modifiée et indexée", lambda: git("add", "index.html"), date.today().isoformat()),
+             date.today().isoformat(), False),
+            ("page modifiée et indexée", lambda: git("add", "site/index.html"), date.today().isoformat(), False),
         ]:
             geste()
-            obtenu = (derniers_commits(site) or {}).get(ORIGINE)
+            ancien = os.environ.get("GIT_DIR")
+            if hook:  # ce que git exporte au pre-commit d'un worktree lié
+                os.environ["GIT_DIR"] = str(racine / ".git")
+            try:
+                obtenu = (derniers_commits(site) or {}).get(ORIGINE)
+            finally:
+                if ancien is None:
+                    os.environ.pop("GIT_DIR", None)
+                else:
+                    os.environ["GIT_DIR"] = ancien
             print(f"  {'ok    ' if obtenu == attendu else 'ÉCHEC '}  {libelle} → {obtenu}, attendu {attendu}")
             echecs += obtenu != attendu
     with tempfile.TemporaryDirectory() as d:
