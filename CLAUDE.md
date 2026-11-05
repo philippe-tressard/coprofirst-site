@@ -62,8 +62,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 
 ## Ce qui est propre à ce projet
 
-- **Le produit décrit est CoproFirst**, dont le code vit dans `C:\Dev\5hostachy`
-  (dépôt `philippe-tressard/coprofirst`). Toute affirmation sur une
+- **Le produit décrit est CoproFirst**, dont le code vit dans le répertoire que
+  `~/.claude/projets.json` déclare pour 5Hostachy sur le poste courant (dépôt
+  `philippe-tressard/coprofirst`). Toute affirmation sur une
   fonctionnalité se vérifie dans son `README.md` ou son manuel avant d'être écrite
   ici. Vocabulaire de l'application : « Bailleur (mandataire) » pour l'agence ou
   le gestionnaire, « Aidant » pour la délégation en lecture.
@@ -147,7 +148,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 ## Contrôles
 
 `bash scripts/verifier-depot.sh` — encodage (BOM), fins de ligne (CRLF), bits
-d'exécution et syntaxe des scripts. Il tourne en `pre-commit`
+d'exécution et syntaxe des scripts, et aucun chemin de poste écrit en dur dans un
+script ou un hook (`POSTE` : il se lit dans `~/.claude/projets.json`, comme le fait
+`.claude/env-report.sh`). Il tourne en `pre-commit`
 (`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
 `reuse lint`.
 
