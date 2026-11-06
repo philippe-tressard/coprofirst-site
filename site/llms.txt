@@ -24,7 +24,7 @@ Faits utiles :
 - [Contenu de l'accueil](https://coprofirst.fr/contenu.json) : les textes de l'accueil en JSON (sections, éléments, liens, captures), extraits de la page elle-même ; c'est ce que lit l'application iOS de CoproFirst.
 - [Démonstration](https://coprofirst.fr/demo.html) : les trois comptes publics et leurs identifiants
 - [Mentions légales](https://coprofirst.fr/mentions-legales.html) : éditeur, hébergeur, droits
-- [Confidentialité](https://coprofirst.fr/confidentialite.html) : ce que le site fait — et ne fait pas — des données des visiteurs, et comment les avis sont choisis, publiés et retirés
+- [Confidentialité](https://coprofirst.fr/confidentialite.html) : ce que le site et l'application pour iPhone font — et ne font pas — des données, et comment les avis sont choisis, publiés et retirés
 
 ## Logiciel
 
