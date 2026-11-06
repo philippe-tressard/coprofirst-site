@@ -136,7 +136,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 </header>
 
 <main id="contenu">
-  <section class="heros">
+  <section class="heros" data-contenu="heros">
     <div class="c">
       <a class="pastille-libre h-in" href="https://github.com/philippe-tressard/coprofirst">Logiciel libre · <b>AGPL-3.0 →</b></a>
       <h1 class="h-in">La copropriété, <span class="souligne">enfin en ordre.</span></h1>
@@ -164,10 +164,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         <!-- Captures réelles de la démonstration : scripts/generer-captures.mjs -->
         <figure class="capture">
           <div class="fenetre-barre" aria-hidden="true"><i></i><i></i><i></i><span>demo.coprofirst.fr/tickets</span></div>
-          <img src="captures/affaires-ordinateur.jpg?v=5f89e35d" width="1180" height="740" decoding="async" fetchpriority="high" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
+          <img data-contenu="capture-ordinateur" src="captures/affaires-ordinateur.jpg?v=5f89e35d" width="1180" height="740" decoding="async" fetchpriority="high" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
         </figure>
         <div class="telephone">
-          <div class="ecran"><img src="captures/affaires-telephone.jpg?v=22492f12" width="390" height="780" decoding="async" alt="Le même écran « Mes affaires » sur un téléphone."></div>
+          <div class="ecran"><img data-contenu="capture-telephone" src="captures/affaires-telephone.jpg?v=22492f12" width="390" height="780" decoding="async" alt="Le même écran « Mes affaires » sur un téléphone."></div>
         </div>
         <div class="bulle b1" aria-hidden="true"><b>Bât. B · 3ᵉ</b>L'ascenseur est réparé, merci&nbsp;!</div>
         <div class="bulle b2" aria-hidden="true"><b>✨ Assistant</b>Synthèse de l'affaire prête à relire.</div>
@@ -176,11 +176,11 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     </div>
   </section>
 
-  <section id="fonctions">
+  <section id="fonctions" data-contenu="fonctions">
     <div class="c">
       <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i></i><i class="on"></i><i></i></span>Fonctionnalités</span><h2>Pensée pour la vraie vie d'un immeuble</h2><p>Chaque écran répond à une question que les résidents se posent déjà.</p></div>
       <div class="bento">
-        <article class="tuile large t-ciel revele">
+        <article data-contenu="demande" class="tuile large t-ciel revele">
           <h3>« Où en est ma demande&nbsp;? »</h3>
           <p>Chaque affaire se lit en trois temps, qui se déplient l'un après l'autre.</p>
           <div class="trois-temps" aria-hidden="true">
@@ -189,8 +189,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
             <div><b>La synthèse</b><small>🧾 Validée par le conseil, versée au carnet</small></div>
           </div>
         </article>
-        <article class="tuile t-blanc revele"><h3>Documents</h3><p>Chacun lit ce qui le concerne, selon son profil.</p><div class="chips" aria-hidden="true"><span>PV d'AG</span><span>Règlement</span><span>Diagnostics</span></div></article>
-        <article class="tuile large t-lilas revele">
+        <article data-contenu="documents" class="tuile t-blanc revele"><h3>Documents</h3><p>Chacun lit ce qui le concerne, selon son profil.</p><div class="chips" aria-hidden="true"><span>PV d'AG</span><span>Règlement</span><span>Diagnostics</span></div></article>
+        <article data-contenu="point-syndic" class="tuile large t-lilas revele">
           <h3>Le point avec le syndic, compte rendu compris</h3>
           <p>Pendant la réunion, le conseil prend le compte rendu affaire par affaire. Les présents le valident ensuite, chacun d'un lien personnel.</p>
           <div class="cr" aria-hidden="true">
@@ -199,15 +199,15 @@ SPDX-License-Identifier: AGPL-3.0-or-later
             <div class="valide">✓ Validé par les 4 présents</div>
           </div>
         </article>
-        <article class="tuile t-menthe revele"><h3>Bilan pour l'AG</h3><p>Durée moyenne par catégorie, relances au syndic, intervenants les plus lents.</p><div class="jauge" aria-hidden="true"><i></i></div></article>
-        <article class="tuile t-peche revele"><h3>Badges et accès</h3><p>Demander, déclarer, confier à son locataire pour la durée du bail.</p></article>
-        <article class="tuile t-sable revele"><h3>Carnet d'entretien</h3><p>Constitué à partir des contrats et des affaires closes, sans ressaisie.</p></article>
-        <article class="tuile t-blanc revele"><h3>Communauté</h3><p>Idées, sondages, petites annonces — entre résidents.</p></article>
-        <article class="tuile t-ciel revele"><h3>Affiches de hall</h3><p>Un PDF au format qui convient, prêt à punaiser.</p></article>
-        <article class="tuile large t-blanc revele"><h3>Un fil de courriels devient une affaire</h3><p>Un membre du conseil transfère le fil reçu&nbsp;: chaque message devient une suite de l'affaire, datée et signée de son auteur.</p><div class="chips" aria-hidden="true"><span>Daté</span><span>Signé</span><span>Jamais en double</span></div></article>
-        <article class="tuile moyenne t-sable revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
-        <article class="tuile moyenne t-menthe revele"><h3>Ce qui est gardé, et combien de temps</h3><p>Si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie, et garde son texte. Un compte inactif depuis deux ans est prévenu, puis supprimé.</p></article>
-        <article class="tuile pleine t-blanc revele multi">
+        <article data-contenu="bilan-ag" class="tuile t-menthe revele"><h3>Bilan pour l'AG</h3><p>Durée moyenne par catégorie, relances au syndic, intervenants les plus lents.</p><div class="jauge" aria-hidden="true"><i></i></div></article>
+        <article data-contenu="badges" class="tuile t-peche revele"><h3>Badges et accès</h3><p>Demander, déclarer, confier à son locataire pour la durée du bail.</p></article>
+        <article data-contenu="carnet" class="tuile t-sable revele"><h3>Carnet d'entretien</h3><p>Constitué à partir des contrats et des affaires closes, sans ressaisie.</p></article>
+        <article data-contenu="communaute" class="tuile t-blanc revele"><h3>Communauté</h3><p>Idées, sondages, petites annonces — entre résidents.</p></article>
+        <article data-contenu="affiches" class="tuile t-ciel revele"><h3>Affiches de hall</h3><p>Un PDF au format qui convient, prêt à punaiser.</p></article>
+        <article data-contenu="fil-courriels" class="tuile large t-blanc revele"><h3>Un fil de courriels devient une affaire</h3><p>Un membre du conseil transfère le fil reçu&nbsp;: chaque message devient une suite de l'affaire, datée et signée de son auteur.</p><div class="chips" aria-hidden="true"><span>Daté</span><span>Signé</span><span>Jamais en double</span></div></article>
+        <article data-contenu="telephone" class="tuile moyenne t-sable revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
+        <article data-contenu="conservation" class="tuile moyenne t-menthe revele"><h3>Ce qui est gardé, et combien de temps</h3><p>Si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie, et garde son texte. Un compte inactif depuis deux ans est prévenu, puis supprimé.</p></article>
+        <article data-contenu="installations" class="tuile pleine t-blanc revele multi">
           <div><h3>Une installation, une ou plusieurs copropriétés</h3><p>Chaque résidence peut avoir sa propre installation. Une installation commune en sert plusieurs, chacune dans sa base, avec ses fichiers et ses textes légaux, sans rien voir des autres.</p></div>
           <ul class="adresses" aria-label="Exemples d'adresses"><li>residence-des-chenes.fr</li><li>75015-les-tilleuls.exemple.fr</li><li>69003-le-parc.exemple.fr</li></ul>
         </article>
@@ -215,7 +215,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     </div>
   </section>
 
-<section id="pour-qui" style="background:var(--creme-2)">
+<section id="pour-qui" data-contenu="pour-qui" style="background:var(--creme-2)">
     <div class="c">
       <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i class="on"></i><i></i><i></i></span>Pour qui</span><h2>Chacun y trouve sa place</h2><p>L'application montre à chacun ce qui le concerne — et rien de plus.</p></div>
       <div class="onglets-cadre revele">
@@ -231,66 +231,66 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         <div class="onglets copie" aria-hidden="true"><span class="onglet">Copropriétaire</span><span class="onglet">Copro-bailleur</span><span class="onglet">Mandataire</span><span class="onglet">Locataire</span><span class="onglet">Aidant</span><span class="onglet">Conseil syndical</span><span class="onglet">Syndic</span></div>
       </div>
 
-      <div class="panneau" role="tabpanel" id="p-occ" aria-labelledby="t-occ">
+      <div class="panneau" role="tabpanel" id="p-occ" data-contenu="coproprietaire" aria-labelledby="t-occ">
         <div><h3>Votre bien, vos documents, vos voisins</h3><p class="qui">Copropriétaire occupant</p><ul><li>Signaler un problème et suivre sa résolution</li><li>Procès-verbaux, règlement et diagnostics de votre résidence</li><li>Badges et télécommandes de parking</li></ul></div>
         <div class="vignette" style="background:var(--ciel)" aria-hidden="true"><div><b>Mes lots</b><br><small>Appartement · Cave · Parking</small></div><div><b>AG du 14 novembre</b><br><small>Convocation disponible</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-bail" aria-labelledby="t-bail" hidden>
+      <div class="panneau" role="tabpanel" id="p-bail" data-contenu="copro-bailleur" aria-labelledby="t-bail" hidden>
         <div><h3>Louer sans courir après les clés</h3><p class="qui">Copropriétaire bailleur</p><ul><li>Baux, locataires, inventaire de remise et documents</li><li>Confier les badges au locataire pour la durée du bail, les récupérer à sa sortie</li><li>Les informations de la copropriété, comme un occupant</li></ul></div>
         <div class="vignette" style="background:var(--sable)" aria-hidden="true"><div><b>Bail en cours</b><br><small>Appartement 24 · jusqu'au 30/06</small></div><div><b>2 badges confiés</b><br><small>Rendus à la sortie</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-mand" aria-labelledby="t-mand" hidden>
+      <div class="panneau" role="tabpanel" id="p-mand" data-contenu="mandataire" aria-labelledby="t-mand" hidden>
         <div><h3>L'agence a enfin le bon interlocuteur</h3><p class="qui">Agence ou gestionnaire qui loue pour un copropriétaire</p><ul><li>Recevoir ce que le conseil syndical adresse aux bailleurs</li><li>Consulter, sans agir au nom du propriétaire&nbsp;: le conseil syndical peut lui ajouter un rôle</li><li>Un compte à son nom, distinct de celui du propriétaire</li></ul></div>
         <div class="vignette" style="background:var(--peche)" aria-hidden="true"><div><b>Coupure d'eau jeudi</b><br><small>Adressée aux bailleurs du bâtiment B</small></div><div><b>Message aux bailleurs</b><br><small>Ravalement : accès aux balcons</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-loc" aria-labelledby="t-loc" hidden>
+      <div class="panneau" role="tabpanel" id="p-loc" data-contenu="locataire" aria-labelledby="t-loc" hidden>
         <div><h3>Informé comme un voisin</h3><p class="qui">Locataire</p><ul><li>Coupures, pannes et travaux de votre bâtiment</li><li>Les badges que votre bailleur vous confie</li><li>Idées, sondages et petites annonces</li></ul></div>
         <div class="vignette" style="background:var(--menthe)" aria-hidden="true"><div><b>Coupure d'eau jeudi</b><br><small>Bâtiment B · 9 h à 12 h</small></div><div><b>Badge confié</b><br><small>Jusqu'à la fin du bail</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-aid" aria-labelledby="t-aid" hidden>
+      <div class="panneau" role="tabpanel" id="p-aid" data-contenu="aidant" aria-labelledby="t-aid" hidden>
         <div><h3>Veiller sur un proche, sans parler à sa place</h3><p class="qui">Aidant d'un résident</p><ul><li>Lire ce qui est adressé à la personne aidée, tant qu'elle le souhaite</li><li>Le conseil syndical ouvre la délégation à sa demande, et elle peut la retirer</li><li>L'aidant lit, il n'agit pas à sa place</li></ul></div>
         <div class="vignette" style="background:var(--lilas)" aria-hidden="true"><div><b>Délégation active</b><br><small>Ouverte à la demande de votre mère</small></div><div><b>Coupure d'eau jeudi</b><br><small>Ce qu'elle reçoit, vous le lisez</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-cs" aria-labelledby="t-cs" hidden>
+      <div class="panneau" role="tabpanel" id="p-cs" data-contenu="conseil-syndical" aria-labelledby="t-cs" hidden>
         <div><h3>Moins de relances, plus de décisions</h3><p class="qui">Conseil syndical</p><ul><li>Le suivi des affaires en cours, par catégorie et par bâtiment, exportable en PDF</li><li>Le point avec le syndic&nbsp;: compte rendu pris en direct, validé par les présents</li><li>Le kanban des dossiers et un bilan chiffré de l'exercice pour l'assemblée</li></ul></div>
         <div class="vignette" style="background:var(--menthe)" aria-hidden="true"><div><b>12 affaires en cours</b><br><small>Dont 3 de plus de 90 jours</small></div><div><b>Point CS / Syndic</b><br><small>Compte rendu validé par les présents</small></div></div>
       </div>
-      <div class="panneau" role="tabpanel" id="p-syn" aria-labelledby="t-syn" hidden>
+      <div class="panneau" role="tabpanel" id="p-syn" data-contenu="syndic" aria-labelledby="t-syn" hidden>
         <div><h3>Des demandes claires, au bon endroit</h3><p class="qui">Syndic</p><ul><li>Des affaires qualifiées par le conseil syndical</li><li>Vos réponses par courriel versées au fil de l'affaire</li><li>Le compte rendu du point avec le conseil, à valider d'un lien</li></ul></div>
         <div class="vignette" style="background:var(--sable)" aria-hidden="true"><div><b>Relance groupée</b><br><small>Infiltration au parking, portail du garage</small></div><div><b>Compte rendu à valider</b><br><small>« Je valide » ou un commentaire</small></div></div>
       </div>
     </div>
   </section>
 
-  <section class="ia" id="ia" aria-labelledby="titre-ia">
+  <section class="ia" id="ia" data-contenu="ia" aria-labelledby="titre-ia">
     <div class="c"><div class="tete revele"><span class="surtitre">✨ Assistant IA — facultatif</span><h2 id="titre-ia">L'assistant qui lit les textes que personne ne lit</h2><p>Règlement, contrats, fils de courriels&nbsp;: il propose, une personne relit et décide. Éteint tant que la résidence ne l'active pas.</p></div></div>
     <div class="c commandes-carrousel"><span class="compteur" aria-hidden="true">1 / 7</span><button class="fleche-c" type="button" data-sens="-1" aria-label="Usage précédent">‹</button><button class="fleche-c" type="button" data-sens="1" aria-label="Usage suivant">›</button></div>
     <div class="carrousel revele" tabindex="0" aria-label="Usages de l'assistant IA, à faire défiler">
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="questions-reglement">
         <div class="illu illu-q" aria-hidden="true"><div class="bulle-q">Ai-je le droit d'installer une pergola&nbsp;?</div><div class="citation">« …sans l'autorisation de l'assemblée… »</div><div class="ok">✓ Extrait retrouvé dans le règlement</div></div>
         <h3>Questions au règlement</h3><p>Posée depuis Ma résidence, une réponse argumentée&nbsp;: chaque extrait cité est recherché dans le texte, et l'écran dit s'il y a été retrouvé. Un avis indicatif, pas un acte.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="resume-affaires">
         <div class="illu illu-r" aria-hidden="true"><div class="ligne-r"><b>TK-0142</b> Infiltration au parking — le syndic attend le devis de l'étancheur.</div><div class="ligne-r"><b>TK-0139</b> Portail du garage — pièce commandée, pose prévue.</div></div>
         <h3>Résumé des affaires en cours</h3><p>Pour le suivi du conseil et la relance du syndic&nbsp;: une ou deux phrases par affaire, tirées de toute sa matière, sans aucun nom.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="fusion-affaires">
         <div class="illu illu-f" aria-hidden="true"><div class="pile"><span>Fuite cave 12</span><span>Humidité cave 14</span></div><div class="fleche">↓</div><div class="suite">Infiltrations dans les caves du bâtiment B</div></div>
         <h3>Fusion d'affaires liées</h3><p>Deux signalements du même besoin&nbsp;? L'assistant propose le titre et la description&nbsp;; la plus ancienne absorbe les autres et reste ouverte.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="synthese-affaire">
         <div class="illu illu-g" aria-hidden="true"><i style="height:40%"></i><i style="height:65%"></i><i style="height:30%"></i><i style="height:80%"></i><i style="height:55%"></i><i style="height:100%"></i></div>
         <h3>Synthèse d'une affaire close</h3><p>Graphiques en jours ouvrés, récit, difficultés, piste d'amélioration. Le conseil la valide, elle rejoint le carnet.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="synthese-contrat">
         <div class="illu illu-c" aria-hidden="true"><div class="page"><i></i><i></i><i></i><i></i></div><div class="page"><i></i><i></i><i></i></div><div class="page"><i></i><i></i><i></i><i></i><i></i></div></div>
         <h3>Synthèse de contrat</h3><p>Contrat, avenants, conditions générales&nbsp;: tout est lu, et les fichiers non lus sont nommés.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="reponses-syndic">
         <div class="illu illu-m" aria-hidden="true"><div class="mail">&gt; Bonjour, suite à votre msg du 3/10, le plombier passera…</div><div class="fleche">↓</div><div class="suite">Le syndic confirme le passage du plombier.</div></div>
         <h3>Réponses du syndic</h3><p>Le courriel reçu devient une suite lisible du fil — l'original reste consultable.</p>
       </article>
-      <article class="carte-ia">
+      <article class="carte-ia" data-contenu="reprise-description">
         <div class="illu illu-d" aria-hidden="true"><div class="bulle-q">la porte du garage reste ouverte depuis hier…</div><div class="barre-ia"><span>Appliquer</span><span>Ignorer</span></div></div>
         <h3>Une description à reprendre</h3><p>Pour le conseil syndical, une proposition apparaît sous le champ. Appliquer, ou ignorer&nbsp;: c'est lui qui choisit.</p>
       </article>
@@ -299,7 +299,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <!-- Le mot du créateur : l'éditeur parle de son propre produit. Il ne figure pas
            parmi les avis d'utilisateurs (choix de Philippe du
            20/10/2026) : scripts/verifier-avis.py refuse son avis dans avis.json. -->
-      <figure class="mot-createur revele">
+      <figure class="mot-createur revele" data-contenu-hors>
         <figcaption><span class="surtitre">Le mot du créateur</span></figcaption>
         <blockquote><p class="titre-mot">Enfin autonome pour comprendre mon règlement de copropriété&nbsp;!</p><p>Grâce à l'IA, j'identifie instantanément les articles pertinents du règlement de copropriété. L'assistant juridique analyse les dispositions concernées et me propose un premier avis clair et argumenté, ce qui me fait gagner un temps précieux.</p></blockquote>
         <p class="signature-mot"><b>Philippe Tressard</b>, créateur et éditeur de CoproFirst, membre du conseil syndical de sa résidence</p>
@@ -307,7 +307,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     </div>
   </section>
 
-  <section id="demo" aria-labelledby="titre-demo">
+  <section id="demo" data-contenu="demo" aria-labelledby="titre-demo">
     <div class="c">
       <div class="demo revele">
         <div class="demo-texte">
@@ -318,9 +318,9 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         </div>
         <div class="roles">
           <ul aria-label="Comptes de la démonstration">
-            <li><a class="role" href="demo.html#conseil-syndical"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Bilan de l'exercice, prestataires, affiches</small></span></a></li>
-            <li><a class="role" href="demo.html#coproprietaire"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Copropriétaire</b><small>Signaler, suivre, demander un badge</small></span></a></li>
-            <li><a class="role" href="demo.html#locataire"><span class="role-ico" aria-hidden="true">🔑</span><span><b>Locataire</b><small>Coupures, travaux, badges confiés</small></span></a></li>
+            <li><a class="role" href="demo.html#conseil-syndical" data-contenu="conseil-syndical"><span class="role-ico" aria-hidden="true">🗂️</span><span><b>Conseil syndical</b><small>Bilan de l'exercice, prestataires, affiches</small></span></a></li>
+            <li><a class="role" href="demo.html#coproprietaire" data-contenu="coproprietaire"><span class="role-ico" aria-hidden="true">🏠</span><span><b>Copropriétaire</b><small>Signaler, suivre, demander un badge</small></span></a></li>
+            <li><a class="role" href="demo.html#locataire" data-contenu="locataire"><span class="role-ico" aria-hidden="true">🔑</span><span><b>Locataire</b><small>Coupures, travaux, badges confiés</small></span></a></li>
           </ul>
           <p class="adresse-demo">Sur <a href="https://demo.coprofirst.fr/auth/connexion">demo.coprofirst.fr</a></p>
         </div>
@@ -340,47 +340,47 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     <div class="c"><p class="avis-mention">Avis réels, déposés par des utilisateurs depuis leur compte CoproFirst. Seuls les avis de 4 ou 5&nbsp;étoiles dont l'auteur a accepté la publication peuvent paraître ici, et l'éditeur choisit ceux qui y figurent&nbsp;: ils ne représentent pas l'ensemble des avis. Aucune contrepartie n'est accordée pour un avis. Classés du plus récent au plus ancien&nbsp;; la date est celle de la dernière version de l'avis. <a href="confidentialite.html#t-avis">Contrôle, publication et retrait des avis</a></p></div>
   </section>
 
-  <section id="questions" aria-labelledby="titre-questions" style="padding-top:0" itemscope itemtype="https://schema.org/FAQPage">
+  <section id="questions" data-contenu="questions" aria-labelledby="titre-questions" style="padding-top:0" itemscope itemtype="https://schema.org/FAQPage">
     <div class="c">
       <div class="tete revele"><span class="surtitre"><span class="motif" aria-hidden="true"><i></i><i></i><i class="on"></i></span>Questions</span><h2 id="titre-questions">Questions fréquentes</h2><p>Ce qu'on demande avant d'installer CoproFirst dans sa résidence.</p></div>
       <div class="faq">
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="presentation" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Qu'est-ce que CoproFirst&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Une application web de gestion de copropriété, du côté des résidents et du conseil syndical&nbsp;: signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins. C'est un logiciel libre, publié sous licence AGPL-3.0-or-later.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="public" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">À qui s'adresse-t-elle&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>À toute la résidence&nbsp;: copropriétaires occupants ou bailleurs, locataires, agences mandataires, aidants d'un résident, conseil syndical et syndic. Chacun n'y voit que ce qui le concerne.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="cout" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Combien coûte CoproFirst&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Le logiciel est gratuit, sans prix de licence&nbsp;: son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.</p><p>Pour une copropriété qui ne veut pas tenir de serveur, une offre hébergée, payante, est à l'étude&nbsp;: rien n'est encore proposé à la vente.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="installation" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Comment l'installer&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur un serveur Linux (<code>amd64</code> ou <code>arm64</code>) équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md">installer CoproFirst</a>.</p><p>Une installation sert une copropriété, ou plusieurs&nbsp;: l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux, sans rien voir des autres.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="competences" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Faut-il des compétences techniques&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="donnees" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Où sont les données de la résidence&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Sur le serveur choisi pour elle&nbsp;: celui de la résidence, qui installe et héberge l'application, ou celui d'un hébergeur qui sert plusieurs copropriétés, chacune dans sa propre base. Le guide d'installation explique comment en garder une sauvegarde copiée hors de la machine.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="syndic" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Et le syndic&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>CoproFirst est l'outil des résidents et du conseil syndical. Le syndic y reçoit des demandes qualifiées par le conseil, et peut répondre par simple courriel&nbsp;: sa réponse est versée au fil de l'affaire. Après un point avec le conseil, il en valide le compte rendu d'un lien.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="assistant-ia" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">L'assistant IA est-il obligatoire&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Non. Il est désactivé tant que la résidence ne l'active pas, usage par usage, avec un plafond d'appels. Il propose&nbsp;; une personne relit et décide, et tout texte assisté est signalé ✨.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="essai" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Peut-on l'essayer avant de l'installer&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Oui&nbsp;: <a href="demo.html">la démonstration en ligne</a> ouvre une résidence fictive sous trois comptes publics — conseil syndical, copropriétaire, locataire —, sans inscription. Ses données repartent de zéro chaque nuit.</p></div></div>
         </article>
-        <article class="question revele" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
+        <article class="question revele" data-contenu="editeur" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Qui l'édite&nbsp;?</h3>
           <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Philippe Tressard, à titre non professionnel. Le code est public, et les contributions sont les bienvenues&nbsp;: <a href="https://github.com/philippe-tressard/coprofirst">le dépôt GitHub</a>.</p></div></div>
         </article>

@@ -193,6 +193,16 @@ déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
 `--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
 celui du commit.
 
+`python3 scripts/contenu-accueil.py` — `site/contenu.json`, que lit l'application
+iOS (`philippe-tressard/coprofirst-ios`, sans WebView), est la projection de
+`index.html` : la page reste la seule source. Ce qui part, elle le déclare par
+`data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
+installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios. Les
+règles d'extraction et le format sont dans la docstring du script. **Après toute
+modification de `index.html`** (texte, empreinte d'une capture, version du
+produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »
+(`proposer-version.sh`) le lance seule. En `pre-commit` et en CI, avec `--selftest`.
+
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de
 `api/app/demo/personnages.py` de CoproFirst (branche `main`, lu sur

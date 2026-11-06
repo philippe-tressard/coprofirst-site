@@ -17,6 +17,7 @@ page `demo.html` en publie les trois comptes publics.
 | Chemin | Rôle |
 |---|---|
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
+| `site/contenu.json` | le contenu de l'accueil en JSON, lu par l'application iOS : **extrait** de `index.html` par `scripts/contenu-accueil.py --ecrire`, jamais écrit à la main. Ce qui part, la page le déclare (`data-contenu="<id>"`) ; l'identifiant est un contrat avec l'app |
 | `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
 | `site/404.html` | la page des adresses inconnues, servie avec le code 404 par le Caddyfile (`noindex`, hors du sitemap) |
@@ -38,6 +39,7 @@ page `demo.html` en publie les trois comptes publics.
 | `scripts/proposer-version.sh` | chaque heure (`version-produit.yml`), ouvre ou met à jour la PR « version » : la dernière release écrite dans l'accueil |
 | `scripts/verifier-app-ios.py` | ce que `confidentialite.html` dit de l'app iPhone (paquets embarqués, permissions) est-il vrai dans son dépôt ? (CI, chaque jour) |
 | `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright et Chrome ou Edge du poste |
+| `scripts/contenu-accueil.py` | `site/contenu.json` rend-il `index.html` tel qu'il est ? `--ecrire` le réécrit (pre-commit, CI) |
 | `scripts/empreintes.py` | l'adresse de chaque CSS, JS et capture porte l'empreinte de son contenu (`--ecrire`) |
 
 Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
@@ -64,6 +66,8 @@ python3 scripts/verifier-referencement.py --selftest
 python3 scripts/verifier-referencement.py
 python3 scripts/signaler-echec-ci.py --selftest
 python3 scripts/signaler-echec-ci.py --verifier   # chaque job de CI finit par l'alerte d'échec
+python3 scripts/contenu-accueil.py --selftest
+python3 scripts/contenu-accueil.py
 python3 scripts/verifier-comptes-demo.py --selftest
 python3 scripts/verifier-comptes-demo.py   # réseau : lit personnages.py sur GitHub
 python3 scripts/version-produit.py --selftest
