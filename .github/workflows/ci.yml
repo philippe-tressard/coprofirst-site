@@ -39,6 +39,10 @@ jobs:
         run: python3 scripts/empreintes.py --selftest
       - name: Empreintes des CSS et JS — chaque adresse porte l'empreinte de son contenu
         run: python3 scripts/empreintes.py
+      - name: Contenu de l'accueil (selftest)
+        run: python3 scripts/contenu-accueil.py --selftest
+      - name: Contenu de l'accueil — contenu.json extrait de index.html, sans écart
+        run: python3 scripts/contenu-accueil.py
       - name: Feuilles de style (selftest)
         run: python3 scripts/verifier-css.py --selftest
       - name: Feuilles de style — contrastes des jetons, survol et appui

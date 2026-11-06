@@ -7,7 +7,9 @@
 #
 # CoproFirst publie une dizaine de releases par jour : la mettre à jour à la main ne
 # tient pas le rythme. Lancé chaque heure par .github/workflows/version-produit.yml :
-#   1. part de main, lance `version-produit.py --ecrire` (page ET lastmod) ;
+#   1. part de main, lance `version-produit.py --ecrire` (page ET lastmod), puis
+#      `contenu-accueil.py --ecrire` : contenu.json est la projection de la page, et
+#      la CI refuse une page qu'il ne rend plus (coprofirst-site#42) ;
 #   2. rien n'a changé → rien ; sinon un commit sur la branche du robot, BRANCHE ;
 #   3. la branche porte déjà exactement ce contenu → rien (pas une CI par heure pour
 #      rien) ; sinon elle est reconstruite depuis main et poussée (--force-with-lease :
@@ -30,6 +32,7 @@ proposer() {
   git fetch -q origin main
   git switch -q -C "$BRANCHE" origin/main
   python3 scripts/version-produit.py --ecrire
+  python3 scripts/contenu-accueil.py --ecrire
   if git diff --quiet; then
     echo "proposer-version : l'accueil affiche déjà la dernière release — rien à proposer"
     return 0
@@ -68,8 +71,10 @@ selftest() {
   git init -q --bare "$t/origin.git"
   git clone -q "$t/origin.git" "$t/clone" 2>/dev/null
   mkdir -p "$t/clone/scripts" "$t/clone/site" "$t/bin"
-  cp "$RACINE/scripts/version-produit.py" "$RACINE/scripts/lecture_distante.py" "$RACINE/scripts/proposer-version.sh" "$t/clone/scripts/"
-  printf '<ul><li data-version-produit><a href="x"><b>Version 1.0.0</b> · 01/01/2026</a></li></ul>\n' > "$t/clone/site/index.html"
+  cp "$RACINE/scripts/version-produit.py" "$RACINE/scripts/lecture_distante.py" "$RACINE/scripts/proposer-version.sh" \
+    "$RACINE/scripts/contenu-accueil.py" "$t/clone/scripts/"
+  printf '<section data-contenu="heros"><h1>Accueil</h1><ul><li data-version-produit><a href="x"><b>Version 1.0.0</b> · 01/01/2026</a></li></ul></section>\n' > "$t/clone/site/index.html"
+  python3 "$t/clone/scripts/contenu-accueil.py" --ecrire >/dev/null
   printf '<urlset><url><loc>https://coprofirst.fr/</loc><lastmod>2026-01-01</lastmod></url></urlset>\n' > "$t/clone/site/sitemap.xml"
   printf '#!/bin/bash\necho "gh $*" >> "%s/appels"\n[ "$1 $2" = "pr list" ] && [ -f "%s/pr" ] && echo 7\n[ "$1 $2" = "pr create" ] && touch "%s/pr"\nexit 0\n' "$t" "$t" "$t" > "$t/bin/gh"
   chmod +x "$t/bin/gh"
@@ -105,6 +110,9 @@ selftest() {
   contenu=$(git -C "$t/origin.git" show "auto/version-produit:site/index.html")
   case "$contenu" in *"Version 1.2.0"*) echo "  ok      la branche porte 1.2.0" ;;
     *) echo "  ÉCHEC   la branche ne porte pas 1.2.0"; echecs=$((echecs + 1)) ;; esac
+  case "$(git -C "$t/origin.git" show "auto/version-produit:site/contenu.json")" in *"Version 1.2.0"*)
+    echo "  ok      contenu.json suit la page" ;;
+    *) echo "  ÉCHEC   contenu.json ne porte pas 1.2.0 : la CI de la PR refuserait la page"; echecs=$((echecs + 1)) ;; esac
   case "$(git -C "$t/origin.git" show "auto/version-produit:site/sitemap.xml")" in *"<lastmod>2026-01-01"*)
     echo "  ÉCHEC   lastmod de l'accueil pas avancé"; echecs=$((echecs + 1)) ;; *) echo "  ok      lastmod avancé" ;; esac
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
