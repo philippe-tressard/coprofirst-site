@@ -42,15 +42,22 @@ proposer() {
   [ -n "$version" ] || { echo "INCONNU : version illisible dans site/index.html"; return 2; }
   git commit -q -am "chore(version) : version affichée $version, la dernière release de CoproFirst" \
     -m "Écrit par scripts/proposer-version.sh (workflow version-produit.yml, coprofirst-site#51)."
+  # « Rien à faire » exige les deux : la branche porte ce contenu ET la PR est
+  # ouverte. Une branche poussée sans PR (création refusée, PR fermée) se reprend.
+  local pr deja=non
+  pr=$(gh pr list --head "$BRANCHE" --state open --json number --jq '.[].number')
   if git fetch -q origin "$BRANCHE" 2>/dev/null \
      && [ "$(git rev-parse 'HEAD^{tree}')" = "$(git rev-parse 'FETCH_HEAD^{tree}')" ] \
      && git merge-base --is-ancestor origin/main FETCH_HEAD; then
+    deja=oui
+  fi
+  if [ "$deja" = oui ] && [ -n "$pr" ]; then
     echo "proposer-version : la PR porte déjà la version $version — rien à pousser"
     return 0
   fi
-  git push -q --force-with-lease origin "HEAD:refs/heads/$BRANCHE"
+  [ "$deja" = oui ] || git push -q --force-with-lease origin "HEAD:refs/heads/$BRANCHE"
   local titre="chore(version) : version affichée $version, la dernière release de CoproFirst"
-  if [ -n "$(gh pr list --head "$BRANCHE" --state open --json number --jq '.[].number')" ]; then
+  if [ -n "$pr" ]; then
     gh pr edit "$BRANCHE" --title "$titre" >/dev/null
   else
     gh pr create --base main --head "$BRANCHE" --title "$titre" --body "La dernière release de CoproFirst, écrite par \`version-produit.py --ecrire\` (page et \`lastmod\`). Branche refaite depuis \`main\` à chaque nouvelle release : la fusionner, puis \`bash deploiement/deployer.sh\`.
@@ -104,8 +111,13 @@ selftest() {
     echo "  ok      $1"
   }
   passe "nouvelle release → PR ouverte, CI relancée" v1.1.0 "gh pr create;gh workflow run ci.yml;gh workflow run comptes-demo.yml" "pr edit"
-  passe "même release → rien" v1.1.0 "" "pr |workflow"
+  passe "même release, PR ouverte → rien" v1.1.0 "" "pr create|pr edit|workflow"
   passe "release suivante → PR mise à jour, CI relancée" v1.2.0 "gh pr edit;gh workflow run ci.yml" "pr create"
+  # La branche est poussée mais la PR manque : création refusée au passage précédent
+  # (réglage Actions désactivé, 06/11/2026) ou PR fermée. Le contenu identique ne
+  # doit pas faire conclure qu'il n'y a « rien à faire ».
+  rm -f "$t/pr"
+  passe "branche déjà poussée, PR absente → PR créée" v1.2.0 "gh pr create;gh workflow run ci.yml" "-"
   local contenu
   contenu=$(git -C "$t/origin.git" show "auto/version-produit:site/index.html")
   case "$contenu" in *"Version 1.2.0"*) echo "  ok      la branche porte 1.2.0" ;;
