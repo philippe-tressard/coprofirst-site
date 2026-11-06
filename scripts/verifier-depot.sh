@@ -8,7 +8,11 @@
 #     scripts .cmd, qui doivent au contraire être entièrement en CRLF ;
 #   - un script .sh ou .py, ou un hook de .githooks/, sans bit d'exécution dans l'index
 #     (Windows avale `chmod +x`) ;
-#   - un script dont la syntaxe est fausse (`bash -n`).
+#   - un script dont la syntaxe est fausse (`bash -n`) ;
+#   - un script ou un hook qui écrit en dur le chemin d'un poste (le dossier Dev du PC,
+#     vu de Windows ou de Git Bash, ou celui du Mac) : il ment sur l'autre poste. Le chemin se lit dans
+#     ~/.claude/projets.json (.claude/env-report.sh criait « répertoire inattendu » à
+#     chaque session sur le Mac, 05/11/2026).
 # Et ce que la page publiée doit à la loi et à ses visiteurs (standards/14 §3, §4, §9) :
 #   - les pages Mentions légales et Confidentialité existent ;
 #   - chaque page du site y renvoie, sans lien mort (`href="#"`), avec le même pied ;
@@ -41,6 +45,10 @@ juger_fichier() {
   # Les hooks git n'ont pas d'extension, mais s'exécutent comme les scripts
   if [[ "$f" == *.sh || "$f" == *.py || "$f" == .githooks/* ]]; then
     [ "$mode" = "100755" ] || echo "MODE     $f ($mode, attendu 100755 : git update-index --chmod=+x $f)"
+  fi
+  # Les crochets empêchent le motif de se trouver lui-même dans ce fichier.
+  if [[ "$f" == *.sh || "$f" == *.py || "$f" == *.cmd || "$f" == *.mjs || "$f" == .githooks/* || "$f" == .claude/* ]]; then
+    grep -qE '/[c]/Dev/|[A-Za-z]:[\\]+Dev[\\]|/Volumes/Data/[D]ev/' "$f" && echo "POSTE    $f (chemin d'un poste écrit en dur : le lire dans ~/.claude/projets.json)"
   fi
   # Un script Python prouve sa syntaxe par son --selftest, lancé en CI
   if [[ "$f" == *.sh || "$f" == .githooks/* ]]; then
@@ -99,6 +107,11 @@ selftest() {
   printf '#!/bin/bash\nif then\n' > "$t/faux.sh"
   printf '\x89PNG\r\n' > "$t/image.png"
   printf '#!/usr/bin/env python3\n' > "$t/outil.py"
+  # Les chemins des cas fautifs s'assemblent, sinon ce fichier se refuserait lui-même.
+  local d=Dev
+  printf '#!/bin/bash\nA=/c/%s/Projet\n' "$d" > "$t/poste-bash.sh"
+  printf 'racine = r"C:\\%s\\Projet"\n' "$d" > "$t/poste-win.py"
+  printf 'const r = "/Volumes/Data/%s/Projet";\n' "$d" > "$t/poste-mac.mjs"
   local echecs=0
   verifie() { # <attendu> <fichier> <mode>
     local obtenu; obtenu=$(juger_fichier "$t/$2" "$3" | awk '{print $1}' | tr '\n' ' ')
@@ -115,6 +128,9 @@ selftest() {
   verifie "" image.png 100644
   verifie "" outil.py 100755
   verifie "MODE " outil.py 100644
+  verifie "POSTE " poste-bash.sh 100755
+  verifie "POSTE " poste-win.py 100755
+  verifie "POSTE " poste-mac.mjs 100644
   # Règles d'une page publiée
   local theme='<script src="theme.js?v=1"></script><button data-bascule-theme></button>'
   local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'"$theme"
