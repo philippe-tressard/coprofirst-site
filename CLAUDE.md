@@ -207,6 +207,17 @@ le réseau ne doit pas conditionner un commit. Il compare la page au code de `ma
 pas à la démo déployée. ⚠️ GitHub suspend un workflow planifié après 60 jours sans
 activité du dépôt.
 
+`python3 scripts/verifier-app-ios.py` — ce que `confidentialite.html#t-application`
+dit de l'**application iPhone** (l'adresse citée par la fiche App Store) se lit dans
+`philippe-tressard/coprofirst-ios` (`main`) : chaque paquet **embarqué** de son
+`DEPENDANCES.md` est un `apple/…` (la page dit « que des composants d'Apple »), et ses
+clés `NS…UsageDescription` (`project.yml`) sont exactement `PERMISSIONS` du script,
+chacune nommée par la section. **Une permission ou une bibliothèque ajoutée à l'app
+fait changer la page**, puis la liste. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
+notifications push y sont décrites d'après la spec de CoproFirst
+(`specs/architecture/notifications-push.md` §5–§7), que le contrôle ne lit pas : la
+page suit cette spec quand elle change. En CI seulement, comme les comptes de la démo.
+
 `python3 scripts/verifier-security-txt.py` — `site/.well-known/security.txt` (RFC 9116 :
 où signaler une faille, renvoie aux avis de sécurité privés de coprofirst) a un Contact,
 un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jours** :
