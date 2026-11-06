@@ -11,11 +11,13 @@
 # Un ticket, lui, compte parmi les issues ouvertes que chaque
 # session trie.
 #
-# Quand : sur un push vers main, un passage planifié (schedule) ou lancé à la main
-# (workflow_dispatch). Jamais sur une PR ni une autre branche : leur auteur voit le
-# rouge là où il travaille.
+# Quand : un passage planifié (schedule, toujours sur main), ou un push ou un
+# lancement à la main (workflow_dispatch) sur main. Jamais sur une PR ni une autre
+# branche — la branche du robot de version-produit.yml comprise, dont la CI est
+# relancée par workflow_dispatch : son auteur voit le rouge là où il travaille.
 # Dédoublonnage : un seul ticket ouvert par workflow, reconnu à son titre exact ; un
-# échec suivant y ajoute un commentaire (au plus un par passage — standards/07 §3).
+# échec suivant y ajoute un commentaire, au plus un toutes les DELAI_HEURES : un
+# passage horaire en échec ferait sinon 24 messages par jour (standards/07 §3).
 # Le ticket se ferme à la main, avec le passage revenu au vert qui le prouve.
 #
 # Usage (le pas final de chaque job, `if: failure()`, GH_TOKEN posé) :
@@ -30,25 +32,30 @@ import re
 import subprocess
 import sys
 import tempfile
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 RACINE = Path(__file__).resolve().parent.parent
 WORKFLOWS = RACINE / ".github" / "workflows"
 SCRIPT = "scripts/signaler-echec-ci.py"
 ETIQUETTES = ("bug", "priorité haute")
-EVENEMENTS_SURVEILLES = ("schedule", "workflow_dispatch")
+DELAI_HEURES = 12
 
 
 def titre(workflow: str) -> str:
     return f"CI rouge : {workflow}"
 
 
-def decider(evenement: str, ref: str, workflow: str, ouverts: list[dict]):
-    """Fonction PURE. ("rien", raison) | ("creer", titre) | ("commenter", numéro)."""
-    if evenement not in EVENEMENTS_SURVEILLES and not (evenement == "push" and ref == "refs/heads/main"):
+def decider(evenement: str, ref: str, workflow: str, ouverts: list[dict], maintenant: datetime):
+    """Fonction PURE. ("rien", raison) | ("creer", titre) | ("commenter", numéro).
+    ouverts : les tickets ouverts, {number, title, updatedAt (ISO 8601)}."""
+    if evenement != "schedule" and not (evenement in ("push", "workflow_dispatch") and ref == "refs/heads/main"):
         return ("rien", f"{evenement} sur {ref} : le rouge se voit là où l'on travaille")
     for ticket in ouverts:
         if ticket.get("title") == titre(workflow):
+            vu = datetime.fromisoformat(ticket.get("updatedAt", "1970-01-01T00:00:00Z").replace("Z", "+00:00"))
+            if maintenant - vu < timedelta(hours=DELAI_HEURES):
+                return ("rien", f"déjà signalé au ticket {ticket['number']} il y a moins de {DELAI_HEURES} h")
             return ("commenter", ticket["number"])
     return ("creer", titre(workflow))
 
@@ -72,8 +79,9 @@ def signaler(env: dict, gh) -> int:
         return 1
     try:
         ouverts = json.loads(gh(["issue", "list", "-R", depot, "--state", "open",
-                                 "--limit", "200", "--json", "number,title"]))
-        geste, valeur = decider(env.get("GITHUB_EVENT_NAME", ""), env.get("GITHUB_REF", ""), workflow, ouverts)
+                                 "--limit", "200", "--json", "number,title,updatedAt"]))
+        geste, valeur = decider(env.get("GITHUB_EVENT_NAME", ""), env.get("GITHUB_REF", ""), workflow, ouverts,
+                                datetime.now(timezone.utc))
         if geste == "rien":
             print(f"signaler-echec-ci : rien à signaler ({valeur})")
             return 0
@@ -111,7 +119,7 @@ def verifier(dossier: Path) -> list[str]:
         alertes = [p for p in pas if SCRIPT in p and "--signaler" in p]
         if len(alertes) != jobs or not all(re.search(r"if: failure\(\)\s*$", p, re.M) for p in alertes):
             ecarts.append(f"ALERTE   {f.name} : {jobs} job(s), {len(alertes)} pas `if: failure()` → {SCRIPT} --signaler")
-        if not re.search(r"^\s+issues: write\s*$", texte, re.M):
+        if not re.search(r"^\s+issues: write\s*(?:#.*)?$", texte, re.M):
             ecarts.append(f"DROIT    {f.name} : permissions sans `issues: write`, le ticket ne pourrait pas s'ouvrir")
         # Le pas d'alerte est le dernier de son job : un pas après lui ne serait pas couvert.
         for job in re.split(r"^  [\w-]+:\s*$", texte, flags=re.M)[1:]:
@@ -129,12 +137,17 @@ def selftest() -> int:
         print(f"  {'ok    ' if obtenu == attendu else 'ÉCHEC '}  {libelle} → {obtenu}")
         echecs += obtenu != attendu
 
-    ouvert = [{"number": 7, "title": titre("CI")}, {"number": 8, "title": "autre"}]
-    cas("push sur main, aucun ticket", decider("push", "refs/heads/main", "CI", [])[0], "creer")
-    cas("passage planifié, ticket déjà ouvert", decider("schedule", "refs/heads/main", "CI", ouvert), ("commenter", 7))
-    cas("lancé à la main", decider("workflow_dispatch", "refs/heads/main", "X", ouvert)[0], "creer")
-    cas("pull request", decider("pull_request", "refs/pull/3/merge", "CI", [])[0], "rien")
-    cas("push sur une autre branche", decider("push", "refs/heads/fix/x", "CI", [])[0], "rien")
+    t = datetime(2026, 11, 6, 12, tzinfo=timezone.utc)
+    ouvert = [{"number": 7, "title": titre("CI"), "updatedAt": "2026-11-05T06:00:00Z"},
+              {"number": 8, "title": "autre", "updatedAt": "2026-11-06T11:00:00Z"}]
+    recent = [{"number": 7, "title": titre("CI"), "updatedAt": "2026-11-06T11:30:00Z"}]
+    cas("push sur main, aucun ticket", decider("push", "refs/heads/main", "CI", [], t)[0], "creer")
+    cas("passage planifié, ticket ouvert hier", decider("schedule", "refs/heads/main", "CI", ouvert, t), ("commenter", 7))
+    cas("passage horaire, signalé il y a 30 min", decider("schedule", "refs/heads/main", "CI", recent, t)[0], "rien")
+    cas("lancé à la main sur main", decider("workflow_dispatch", "refs/heads/main", "X", ouvert, t)[0], "creer")
+    cas("relancé par le robot sur sa branche", decider("workflow_dispatch", "refs/heads/version", "CI", [], t)[0], "rien")
+    cas("pull request", decider("pull_request", "refs/pull/3/merge", "CI", [], t)[0], "rien")
+    cas("push sur une autre branche", decider("push", "refs/heads/fix/x", "CI", [], t)[0], "rien")
 
     # L'envoi lui-même, gh simulé : prouve que la commande part, et laquelle.
     env = {"GITHUB_REPOSITORY": "o/d", "GITHUB_WORKFLOW": "CI", "GITHUB_EVENT_NAME": "schedule",
@@ -175,6 +188,7 @@ def selftest() -> int:
             ("workflow sans alerte", tete, ["ALERTE", "ORDRE"]),
             ("alerte sans if: failure()", tete + pas.replace("        if: failure()\n", ""), ["ALERTE"]),
             ("sans issues: write", (tete + pas).replace("issues: write", "contents: read"), ["DROIT"]),
+            ("issues: write suivi d'un commentaire", (tete + pas).replace("issues: write", "issues: write # x"), []),
             ("pas après l'alerte", tete + pas + "      - run: echo fin\n", ["ORDRE"]),
             ("deux jobs, une alerte", tete + pas + "  b:\n    runs-on: u\n    steps:\n      - run: echo\n",
              ["ALERTE", "ORDRE"]),

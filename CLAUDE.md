@@ -256,8 +256,9 @@ en CI ; `--en-ligne` à chaque poussée et chaque jour (`comptes-demo.yml`).
 
 `python3 scripts/signaler-echec-ci.py` — le **dernier pas** de chaque job de CI
 (`if: failure()`, `--signaler`) : un rouge sur `main` ou au passage planifié ouvre
-un ticket « CI rouge : <workflow> », ou le commente s'il est déjà ouvert ; sur une
-PR ou une autre branche, rien. Le courriel de GitHub n'avait rien fait voir en sept
+un ticket « CI rouge : <workflow> », ou le commente s'il est déjà ouvert (au plus
+toutes les 12 h : `version-produit.yml` passe chaque heure) ; sur une PR ou une autre
+branche, rien — la branche du robot de version comprise. Le courriel de GitHub n'avait rien fait voir en sept
 jours de rouge (23 au 30/10/2026). Ce ticket se ferme à la main, avec le passage
 revenu au vert. `--verifier` refuse un job sans ce pas final ou un workflow sans
 `issues: write` : **un workflow ajouté le reçoit**. En `pre-commit` et en CI, avec
