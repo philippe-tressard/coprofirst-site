@@ -34,7 +34,8 @@ page `demo.html` en publie les trois comptes publics.
 | `scripts/generer-image-partage.sh` | refait `site/partage.png` à partir de `scripts/image-partage.html` |
 | `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main |
 | `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
-| `scripts/version-produit.py` | la version affichée par l'accueil est-elle la dernière release de CoproFirst ? `--ecrire` la met à jour (CI, chaque jour) |
+| `scripts/version-produit.py` | la version affichée par l'accueil est-elle la dernière release de CoproFirst ? `--ecrire` la met à jour |
+| `scripts/proposer-version.sh` | chaque heure (`version-produit.yml`), ouvre ou met à jour la PR « version » : la dernière release écrite dans l'accueil |
 | `scripts/verifier-app-ios.py` | ce que `confidentialite.html` dit de l'app iPhone (paquets embarqués, permissions) est-il vrai dans son dépôt ? (CI, chaque jour) |
 | `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright et Chrome ou Edge du poste |
 | `scripts/empreintes.py` | l'adresse de chaque CSS, JS et capture porte l'empreinte de son contenu (`--ecrire`) |
@@ -67,9 +68,10 @@ python3 scripts/version-produit.py --selftest
 python3 scripts/version-produit.py         # réseau : lit la dernière release sur GitHub
 python3 scripts/verifier-app-ios.py --selftest
 python3 scripts/verifier-app-ios.py        # réseau : lit le dépôt de l'app iOS sur GitHub
+bash scripts/proposer-version.sh --selftest
 ```
 
-Les trois derniers contrôles ne tournent pas en pre-commit : ils lisent le dépôt de CoproFirst ou de son app, où
+Les contrôles marqués « réseau » ne tournent pas en pre-commit : ils lisent le dépôt de CoproFirst ou de son app, où
 naît la dérive, et la CI les lance chaque jour. Ils sortent en **2 (INCONNU)** si la
 source est injoignable ou illisible — jamais en vert faute d'avoir comparé.
 
