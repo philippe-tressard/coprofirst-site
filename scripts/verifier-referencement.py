@@ -35,16 +35,16 @@
 #         python3 scripts/verifier-referencement.py --selftest
 import argparse
 import json
-import os
 import re
 import struct
-import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
-from datetime import date
 from html.parser import HTMLParser
 from pathlib import Path
+
+import dates_pages
+from dates_pages import dates_des_pages
 
 ORIGINE = "https://coprofirst.fr/"
 IMAGE_PARTAGE = (1200, 630)
@@ -234,43 +234,16 @@ def juger_lastmod(lastmods: dict, derniers_commits: dict) -> list[str]:
             for u, d in sorted(derniers_commits.items()) if not lastmods.get(u) or lastmods[u] < d]
 
 
-def env_git():
-    """L'environnement sans les variables qui désignent un dépôt, ou None si git ne
-    répond pas. Un hook les exporte (GIT_DIR, GIT_INDEX_FILE… : leur liste est celle
-    de `git rev-parse --local-env-vars`, jamais recopiée ici). Lancé depuis site/ avec
-    GIT_DIR et sans GIT_WORK_TREE, git prend site/ pour la racine de l'arbre de
-    travail : chaque page y paraît non suivie, donc modifiée aujourd'hui — faux écarts
-    LASTMOD au pre-commit d'un worktree lié (03/11/2026). Sans elles, git
-    redécouvre le dépôt depuis son répertoire courant."""
-    try:
-        locales = subprocess.run(["git", "rev-parse", "--local-env-vars"],
-                                 capture_output=True, text=True, check=True).stdout.split()
-    except (OSError, subprocess.CalledProcessError):
+def derniers_commits(site: Path, lastmods: dict):
+    """({adresse canonique: date que son lastmod doit atteindre}, [INCONNU…]), ou None
+    si git ne répond pas. Les règles (page modifiée, hook, squash) : dates_pages.py."""
+    pages = [p for p in sorted(site.glob("*.html")) if p.name not in PAGES_D_ERREUR]
+    adresses = {p.name: adresse_canonique(p) for p in pages}
+    lus = dates_des_pages(pages, {n: lastmods.get(u) for n, u in adresses.items()})
+    if lus is None:
         return None
-    return {k: v for k, v in os.environ.items() if k not in locales}
-
-
-def derniers_commits(site: Path):
-    """{adresse canonique: date du dernier commit de la page}, ou None si git ne répond
-    pas. Exige l'historique complet (en CI : fetch-depth 0) — un clone superficiel
-    daterait chaque page du dernier commit. Une page modifiée depuis HEAD (indexée ou
-    non) est datée d'aujourd'hui : c'est la date du commit qui la portera."""
-    env = env_git()
-    if env is None:
-        return None
-    dates = {}
-    for page in sorted(site.glob("*.html")):
-        if page.name in PAGES_D_ERREUR:  # hors du sitemap : pas de lastmod à tenir
-            continue
-        try:
-            lire = lambda *a: subprocess.run(["git", *a, "--", page.name], cwd=site, env=env,  # noqa: E731
-                                             capture_output=True, text=True, check=True).stdout.strip()
-            sortie = date.today().isoformat() if lire("status", "--porcelain") else lire("log", "-1", "--format=%cs")
-        except (OSError, subprocess.CalledProcessError):
-            return None
-        if sortie:  # une page jamais committée n'a pas encore de date
-            dates[adresse_canonique(page)] = sortie
-    return dates
+    dates, inconnus = lus
+    return {adresses[n]: d for n, d in dates.items()}, inconnus
 
 
 def selftest() -> int:
@@ -339,43 +312,12 @@ def selftest() -> int:
         (site / "robots.txt").write_text(f"User-agent: *\nAllow: /\n\nSitemap: {ORIGINE}sitemap.xml\n", encoding="utf-8")
         (site / "llms.txt").write_text(f"CoproFirst\n- [x]({ORIGINE}absente.html)\n", encoding="utf-8")
         cas("llms.txt sans titre, lien mort", ["LLMS"])
-    # Une page modifiée mais pas encore committée : le commit qui la portera est daté
-    # d'aujourd'hui. La dater de son commit précédent laissait passer, en pre-commit, un
-    # lastmod en retard que la CI refusait ensuite (main rouge du 25 au 30/10/2026).
-    # Le site dans un sous-dossier, comme ici : c'est ce qui piège git quand un hook
-    # exporte GIT_DIR (worktree lié) — il prend alors site/ pour la racine du dépôt.
-    with tempfile.TemporaryDirectory() as d:
-        racine = Path(d)
-        site = racine / "site"
-        site.mkdir()
-        # env_git() : lancé depuis un hook, ce dépôt jetable écrirait sinon dans le vrai.
-        horloge = {**(env_git() or {}), "GIT_AUTHOR_DATE": "2026-01-01T12:00:00", "GIT_COMMITTER_DATE": "2026-01-01T12:00:00"}
-        git = lambda *a: subprocess.run(["git", "-c", "user.name=t", "-c", "user.email=t@t", *a],  # noqa: E731
-                                        cwd=racine, capture_output=True, check=True, env=horloge)
-        git("init", "-q")
-        (site / "index.html").write_text("a", encoding="utf-8")
-        git("add", "site/index.html")
-        git("commit", "-q", "-m", "a")
-        for libelle, geste, attendu, hook in [
-            ("page committée, intacte", lambda: None, "2026-01-01", False),
-            ("page committée, GIT_DIR posé par un hook", lambda: None, "2026-01-01", True),
-            ("page modifiée, non indexée", lambda: (site / "index.html").write_text("b", encoding="utf-8"),
-             date.today().isoformat(), False),
-            ("page modifiée et indexée", lambda: git("add", "site/index.html"), date.today().isoformat(), False),
-        ]:
-            geste()
-            ancien = os.environ.get("GIT_DIR")
-            if hook:  # ce que git exporte au pre-commit d'un worktree lié
-                os.environ["GIT_DIR"] = str(racine / ".git")
-            try:
-                obtenu = (derniers_commits(site) or {}).get(ORIGINE)
-            finally:
-                if ancien is None:
-                    os.environ.pop("GIT_DIR", None)
-                else:
-                    os.environ["GIT_DIR"] = ancien
-            print(f"  {'ok    ' if obtenu == attendu else 'ÉCHEC '}  {libelle} → {obtenu}, attendu {attendu}")
-            echecs += obtenu != attendu
+    # Les dates lues dans git (page modifiée, hook, squash) : dates_pages.py.
+    echecs += dates_pages.selftest()
+    # De bout en bout : un lastmod vraiment en retard sur la PR squashée reste un écart.
+    cas_juge = juger_lastmod({"a": "2026-01-01"}, {"a": "2026-01-02"})
+    print(f"  {'ok    ' if len(cas_juge) == 1 else 'ÉCHEC '}  lastmod en retard sur la date de la PR → {len(cas_juge)} écart(s)")
+    echecs += len(cas_juge) != 1
     with tempfile.TemporaryDirectory() as d:
         if juger_site(Path(d)) is not None:
             print("  ÉCHEC   dossier sans page → attendu INCONNU")
@@ -400,15 +342,21 @@ def main() -> int:
     if ecarts is None:
         print(f"INCONNU : aucune page .html dans {args.site} — rien n'a été vérifié")
         return 2
-    commits = derniers_commits(site)
-    if commits is None:
+    lastmods = lastmod_du_sitemap(site)
+    lus = derniers_commits(site, lastmods)
+    if lus is None:
         print("INCONNU : git ne répond pas — les lastmod du sitemap n'ont pas été vérifiés")
         return 2
-    ecarts += juger_lastmod(lastmod_du_sitemap(site), commits)
+    commits, inconnus = lus
+    ecarts += juger_lastmod(lastmods, commits)
+    if ecarts or inconnus:
+        print("\n".join(ecarts + inconnus))
     if ecarts:
-        print("\n".join(ecarts))
         print(f"verifier-referencement : {len(ecarts)} écart(s)")
         return 1
+    if inconnus:
+        print(f"verifier-referencement : INCONNU — {len(inconnus)} lastmod non jugé(s)")
+        return 2
     print(f"verifier-referencement : OK ({len(sorted(Path(args.site).glob('*.html')))} pages)")
     return 0
 

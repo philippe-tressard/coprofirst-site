@@ -166,7 +166,10 @@ porte déjà `no-transform`. **En CI seulement** (Docker) ; sur le poste, INCONN
 ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages, et
 chaque `lastmod` est au moins la date du dernier commit de sa page — une page
 modifiée et pas encore committée compte pour aujourd'hui (**l'avancer** quand on
-modifie une page) ;
+modifie une page) ; pour un commit de **squash** (« (#N) »), c'est la date du dernier
+commit de la PR qui touche la page (lue dans `refs/pull/N/head`), si la page est
+celle de la PR : une PR verte fusionnée le lendemain ne rend plus `main` rouge. PR
+introuvable : INCONNU. Les règles de date sont dans `scripts/dates_pages.py` ;
 `robots.txt` désigne le sitemap et ne ferme aucun robot ; les liens de `llms.txt`
 mènent à des fichiers du site. Les pages d'erreur (`PAGES_D_ERREUR` : `404.html`) sont
 nommées, et suivent la règle inverse : `noindex` obligatoire, ni canonique ni sitemap. En `pre-commit` et en CI, avec `--selftest`. **Une page
