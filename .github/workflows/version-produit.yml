@@ -20,6 +20,7 @@ permissions:
   contents: write # pousser la branche du robot
   pull-requests: write # ouvrir ou renommer la PR
   actions: write # relancer la CI sur la branche (un push du GITHUB_TOKEN ne la déclenche pas)
+  issues: write # l'alerte d'échec ouvre un ticket (scripts/signaler-echec-ci.py)
 
 # Deux passages ne se croisent jamais sur la même branche.
 concurrency:
@@ -44,3 +45,10 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           bash scripts/proposer-version.sh
+      # Le DERNIER pas : un passage en échec ouvre un ticket (une PR qui ne s'ouvre
+      # plus ne se voit pas). Au plus un message toutes les 12 h, pas un par heure.
+      - name: Alerte d'échec — un ticket ouvert, ou commenté s'il l'est déjà
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/signaler-echec-ci.py --signaler

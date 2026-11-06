@@ -196,6 +196,16 @@ déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
 `--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
 celui du commit.
 
+`python3 scripts/contenu-accueil.py` — `site/contenu.json`, que lit l'application
+iOS (`philippe-tressard/coprofirst-ios`, sans WebView), est la projection de
+`index.html` : la page reste la seule source. Ce qui part, elle le déclare par
+`data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
+installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios. Les
+règles d'extraction et le format sont dans la docstring du script. **Après toute
+modification de `index.html`** (texte, empreinte d'une capture, version du
+produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »
+(`proposer-version.sh`) le lance seule. En `pre-commit` et en CI, avec `--selftest`.
+
 `python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
 listes `.identifiants` de `site/demo.html` sont exactement ceux de
 `api/app/demo/personnages.py` de CoproFirst (branche `main`, lu sur
@@ -256,3 +266,13 @@ Les tickets terminés sont **supprimés** de GitHub, pas seulement fermés (choi
 Philippe, 24/10/2026) : une décision se justifie donc dans le commentaire et le
 message de commit, pas par un renvoi à un ticket fermé. Hors ligne en `pre-commit` et
 en CI ; `--en-ligne` à chaque poussée et chaque jour (`comptes-demo.yml`).
+
+`python3 scripts/signaler-echec-ci.py` — le **dernier pas** de chaque job de CI
+(`if: failure()`, `--signaler`) : un rouge sur `main` ou au passage planifié ouvre
+un ticket « CI rouge : <workflow> », ou le commente s'il est déjà ouvert (au plus
+toutes les 12 h : `version-produit.yml` passe chaque heure) ; sur une PR ou une autre
+branche, rien — la branche du robot de version comprise. Le courriel de GitHub n'avait rien fait voir en sept
+jours de rouge (23 au 30/10/2026). Ce ticket se ferme à la main, avec le passage
+revenu au vert. `--verifier` refuse un job sans ce pas final ou un workflow sans
+`issues: write` : **un workflow ajouté le reçoit**. En `pre-commit` et en CI, avec
+`--selftest` (gh simulé : la commande part, dédoublonnée, même sans étiquette).

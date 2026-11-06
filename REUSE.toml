@@ -50,8 +50,9 @@ SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
 SPDX-License-Identifier = "AGPL-3.0-or-later"
 
 # Le JSON n'admet pas de commentaire : l'en-tête ne peut pas y vivre.
+# site/contenu.json : extrait de index.html par scripts/contenu-accueil.py.
 [[annotations]]
-path = [".claude/settings.json", ".claude/launch.json"]
+path = [".claude/settings.json", ".claude/launch.json", "site/contenu.json"]
 precedence = "override"
 SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
 SPDX-License-Identifier = "AGPL-3.0-or-later"

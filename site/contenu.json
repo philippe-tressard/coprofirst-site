@@ -1,0 +1,486 @@
+{
+ "format": 1,
+ "adresse": "https://coprofirst.fr/",
+ "langue": "fr",
+ "sections": [
+  {
+   "id": "heros",
+   "titre": "La copropriété, enfin en ordre.",
+   "textes": [
+    "Signalements suivis, documents rangés, carnet d'entretien tenu, voisins informés. Une application libre de gestion de copropriété, installée par votre résidence ou hébergée pour elle — sur l'ordinateur comme sur le téléphone.",
+    "L'installation demande un serveur Linux avec Docker. Une offre hébergée, payante, est à l'étude."
+   ],
+   "points": [
+    "Images signées, amd64 et arm64",
+    "Données sur le serveur choisi",
+    "IA éteinte par défaut",
+    "Licences conformes REUSE"
+   ],
+   "liens": [
+    {
+     "texte": "Logiciel libre · AGPL-3.0 →",
+     "adresse": "https://github.com/philippe-tressard/coprofirst"
+    },
+    {
+     "texte": "Essayer la démo →",
+     "adresse": "https://coprofirst.fr/demo.html"
+    },
+    {
+     "texte": "Installer CoproFirst",
+     "adresse": "https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md"
+    },
+    {
+     "texte": "Version 3.67.4 · 05/11/2026",
+     "adresse": "https://github.com/philippe-tressard/coprofirst/releases/tag/v3.67.4"
+    }
+   ],
+   "images": [
+    {
+     "id": "capture-ordinateur",
+     "image": "captures/affaires-ordinateur.jpg?v=5f89e35d",
+     "largeur": 1180,
+     "hauteur": 740,
+     "description": "L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires."
+    },
+    {
+     "id": "capture-telephone",
+     "image": "captures/affaires-telephone.jpg?v=22492f12",
+     "largeur": 390,
+     "hauteur": 780,
+     "description": "Le même écran « Mes affaires » sur un téléphone."
+    }
+   ]
+  },
+  {
+   "id": "fonctions",
+   "surtitre": "Fonctionnalités",
+   "titre": "Pensée pour la vraie vie d'un immeuble",
+   "textes": [
+    "Chaque écran répond à une question que les résidents se posent déjà."
+   ],
+   "elements": [
+    {
+     "id": "demande",
+     "titre": "« Où en est ma demande ? »",
+     "textes": [
+      "Chaque affaire se lit en trois temps, qui se déplient l'un après l'autre."
+     ]
+    },
+    {
+     "id": "documents",
+     "titre": "Documents",
+     "textes": [
+      "Chacun lit ce qui le concerne, selon son profil."
+     ]
+    },
+    {
+     "id": "point-syndic",
+     "titre": "Le point avec le syndic, compte rendu compris",
+     "textes": [
+      "Pendant la réunion, le conseil prend le compte rendu affaire par affaire. Les présents le valident ensuite, chacun d'un lien personnel."
+     ]
+    },
+    {
+     "id": "bilan-ag",
+     "titre": "Bilan pour l'AG",
+     "textes": [
+      "Durée moyenne par catégorie, relances au syndic, intervenants les plus lents."
+     ]
+    },
+    {
+     "id": "badges",
+     "titre": "Badges et accès",
+     "textes": [
+      "Demander, déclarer, confier à son locataire pour la durée du bail."
+     ]
+    },
+    {
+     "id": "carnet",
+     "titre": "Carnet d'entretien",
+     "textes": [
+      "Constitué à partir des contrats et des affaires closes, sans ressaisie."
+     ]
+    },
+    {
+     "id": "communaute",
+     "titre": "Communauté",
+     "textes": [
+      "Idées, sondages, petites annonces — entre résidents."
+     ]
+    },
+    {
+     "id": "affiches",
+     "titre": "Affiches de hall",
+     "textes": [
+      "Un PDF au format qui convient, prêt à punaiser."
+     ]
+    },
+    {
+     "id": "fil-courriels",
+     "titre": "Un fil de courriels devient une affaire",
+     "textes": [
+      "Un membre du conseil transfère le fil reçu : chaque message devient une suite de l'affaire, datée et signée de son auteur."
+     ]
+    },
+    {
+     "id": "telephone",
+     "titre": "Sur le téléphone, sans magasin d'applications",
+     "textes": [
+      "CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence."
+     ]
+    },
+    {
+     "id": "conservation",
+     "titre": "Ce qui est gardé, et combien de temps",
+     "textes": [
+      "Si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie, et garde son texte. Un compte inactif depuis deux ans est prévenu, puis supprimé."
+     ]
+    },
+    {
+     "id": "installations",
+     "titre": "Une installation, une ou plusieurs copropriétés",
+     "textes": [
+      "Chaque résidence peut avoir sa propre installation. Une installation commune en sert plusieurs, chacune dans sa base, avec ses fichiers et ses textes légaux, sans rien voir des autres."
+     ],
+     "points": [
+      "residence-des-chenes.fr",
+      "75015-les-tilleuls.exemple.fr",
+      "69003-le-parc.exemple.fr"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pour-qui",
+   "surtitre": "Pour qui",
+   "titre": "Chacun y trouve sa place",
+   "textes": [
+    "L'application montre à chacun ce qui le concerne — et rien de plus."
+   ],
+   "elements": [
+    {
+     "id": "coproprietaire",
+     "etiquette": "Copropriétaire",
+     "titre": "Votre bien, vos documents, vos voisins",
+     "textes": [
+      "Copropriétaire occupant"
+     ],
+     "points": [
+      "Signaler un problème et suivre sa résolution",
+      "Procès-verbaux, règlement et diagnostics de votre résidence",
+      "Badges et télécommandes de parking"
+     ]
+    },
+    {
+     "id": "copro-bailleur",
+     "etiquette": "Copro-bailleur",
+     "titre": "Louer sans courir après les clés",
+     "textes": [
+      "Copropriétaire bailleur"
+     ],
+     "points": [
+      "Baux, locataires, inventaire de remise et documents",
+      "Confier les badges au locataire pour la durée du bail, les récupérer à sa sortie",
+      "Les informations de la copropriété, comme un occupant"
+     ]
+    },
+    {
+     "id": "mandataire",
+     "etiquette": "Mandataire",
+     "titre": "L'agence a enfin le bon interlocuteur",
+     "textes": [
+      "Agence ou gestionnaire qui loue pour un copropriétaire"
+     ],
+     "points": [
+      "Recevoir ce que le conseil syndical adresse aux bailleurs",
+      "Consulter, sans agir au nom du propriétaire : le conseil syndical peut lui ajouter un rôle",
+      "Un compte à son nom, distinct de celui du propriétaire"
+     ]
+    },
+    {
+     "id": "locataire",
+     "etiquette": "Locataire",
+     "titre": "Informé comme un voisin",
+     "textes": [
+      "Locataire"
+     ],
+     "points": [
+      "Coupures, pannes et travaux de votre bâtiment",
+      "Les badges que votre bailleur vous confie",
+      "Idées, sondages et petites annonces"
+     ]
+    },
+    {
+     "id": "aidant",
+     "etiquette": "Aidant",
+     "titre": "Veiller sur un proche, sans parler à sa place",
+     "textes": [
+      "Aidant d'un résident"
+     ],
+     "points": [
+      "Lire ce qui est adressé à la personne aidée, tant qu'elle le souhaite",
+      "Le conseil syndical ouvre la délégation à sa demande, et elle peut la retirer",
+      "L'aidant lit, il n'agit pas à sa place"
+     ]
+    },
+    {
+     "id": "conseil-syndical",
+     "etiquette": "Conseil syndical",
+     "titre": "Moins de relances, plus de décisions",
+     "textes": [
+      "Conseil syndical"
+     ],
+     "points": [
+      "Le suivi des affaires en cours, par catégorie et par bâtiment, exportable en PDF",
+      "Le point avec le syndic : compte rendu pris en direct, validé par les présents",
+      "Le kanban des dossiers et un bilan chiffré de l'exercice pour l'assemblée"
+     ]
+    },
+    {
+     "id": "syndic",
+     "etiquette": "Syndic",
+     "titre": "Des demandes claires, au bon endroit",
+     "textes": [
+      "Syndic"
+     ],
+     "points": [
+      "Des affaires qualifiées par le conseil syndical",
+      "Vos réponses par courriel versées au fil de l'affaire",
+      "Le compte rendu du point avec le conseil, à valider d'un lien"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "ia",
+   "surtitre": "✨ Assistant IA — facultatif",
+   "titre": "L'assistant qui lit les textes que personne ne lit",
+   "textes": [
+    "Règlement, contrats, fils de courriels : il propose, une personne relit et décide. Éteint tant que la résidence ne l'active pas."
+   ],
+   "points": [
+    "Désactivé par défaut",
+    "Plafonds d'appels, par mois et par heure",
+    "Texte assisté signalé ✨",
+    "Votre fournisseur, votre clé"
+   ],
+   "elements": [
+    {
+     "id": "questions-reglement",
+     "titre": "Questions au règlement",
+     "textes": [
+      "Posée depuis Ma résidence, une réponse argumentée : chaque extrait cité est recherché dans le texte, et l'écran dit s'il y a été retrouvé. Un avis indicatif, pas un acte."
+     ]
+    },
+    {
+     "id": "resume-affaires",
+     "titre": "Résumé des affaires en cours",
+     "textes": [
+      "Pour le suivi du conseil et la relance du syndic : une ou deux phrases par affaire, tirées de toute sa matière, sans aucun nom."
+     ]
+    },
+    {
+     "id": "fusion-affaires",
+     "titre": "Fusion d'affaires liées",
+     "textes": [
+      "Deux signalements du même besoin ? L'assistant propose le titre et la description ; la plus ancienne absorbe les autres et reste ouverte."
+     ]
+    },
+    {
+     "id": "synthese-affaire",
+     "titre": "Synthèse d'une affaire close",
+     "textes": [
+      "Graphiques en jours ouvrés, récit, difficultés, piste d'amélioration. Le conseil la valide, elle rejoint le carnet."
+     ]
+    },
+    {
+     "id": "synthese-contrat",
+     "titre": "Synthèse de contrat",
+     "textes": [
+      "Contrat, avenants, conditions générales : tout est lu, et les fichiers non lus sont nommés."
+     ]
+    },
+    {
+     "id": "reponses-syndic",
+     "titre": "Réponses du syndic",
+     "textes": [
+      "Le courriel reçu devient une suite lisible du fil — l'original reste consultable."
+     ]
+    },
+    {
+     "id": "reprise-description",
+     "titre": "Une description à reprendre",
+     "textes": [
+      "Pour le conseil syndical, une proposition apparaît sous le champ. Appliquer, ou ignorer : c'est lui qui choisit."
+     ]
+    }
+   ]
+  },
+  {
+   "id": "demo",
+   "surtitre": "Démonstration en ligne",
+   "titre": "Essayez-la sans rien installer",
+   "textes": [
+    "Une résidence fictive, ouverte à tous. Choisissez un rôle : ses identifiants sont publiés, aucun compte n'est à créer.",
+    "Données fictives, effacées chaque nuit. Aucun courriel, message WhatsApp ni appel à l'assistant IA n'y est réellement envoyé.",
+    "Sur demo.coprofirst.fr"
+   ],
+   "liens": [
+    {
+     "texte": "demo.coprofirst.fr",
+     "adresse": "https://demo.coprofirst.fr/auth/connexion"
+    }
+   ],
+   "elements": [
+    {
+     "id": "conseil-syndical",
+     "titre": "Conseil syndical",
+     "adresse": "https://coprofirst.fr/demo.html#conseil-syndical",
+     "textes": [
+      "Bilan de l'exercice, prestataires, affiches"
+     ]
+    },
+    {
+     "id": "coproprietaire",
+     "titre": "Copropriétaire",
+     "adresse": "https://coprofirst.fr/demo.html#coproprietaire",
+     "textes": [
+      "Signaler, suivre, demander un badge"
+     ]
+    },
+    {
+     "id": "locataire",
+     "titre": "Locataire",
+     "adresse": "https://coprofirst.fr/demo.html#locataire",
+     "textes": [
+      "Coupures, travaux, badges confiés"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "questions",
+   "surtitre": "Questions",
+   "titre": "Questions fréquentes",
+   "textes": [
+    "Ce qu'on demande avant d'installer CoproFirst dans sa résidence."
+   ],
+   "elements": [
+    {
+     "id": "presentation",
+     "titre": "Qu'est-ce que CoproFirst ?",
+     "textes": [
+      "Une application web de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis jusqu'à leur résolution, documents classés par profil, carnet d'entretien, badges d'accès, communauté entre voisins. C'est un logiciel libre, publié sous licence AGPL-3.0-or-later."
+     ]
+    },
+    {
+     "id": "public",
+     "titre": "À qui s'adresse-t-elle ?",
+     "textes": [
+      "À toute la résidence : copropriétaires occupants ou bailleurs, locataires, agences mandataires, aidants d'un résident, conseil syndical et syndic. Chacun n'y voit que ce qui le concerne."
+     ]
+    },
+    {
+     "id": "cout",
+     "titre": "Combien coûte CoproFirst ?",
+     "textes": [
+      "Le logiciel est gratuit, sans prix de licence : son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.",
+      "Pour une copropriété qui ne veut pas tenir de serveur, une offre hébergée, payante, est à l'étude : rien n'est encore proposé à la vente."
+     ]
+    },
+    {
+     "id": "installation",
+     "titre": "Comment l'installer ?",
+     "textes": [
+      "Sur un serveur Linux (amd64 ou arm64) équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt : installer CoproFirst.",
+      "Une installation sert une copropriété, ou plusieurs : l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux, sans rien voir des autres."
+     ],
+     "liens": [
+      {
+       "texte": "installer CoproFirst",
+       "adresse": "https://github.com/philippe-tressard/coprofirst/blob/main/deploiement/standard/LISEZMOI.md"
+      }
+     ]
+    },
+    {
+     "id": "competences",
+     "titre": "Faut-il des compétences techniques ?",
+     "textes": [
+      "Pour l'installer, oui : administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non : c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur."
+     ]
+    },
+    {
+     "id": "donnees",
+     "titre": "Où sont les données de la résidence ?",
+     "textes": [
+      "Sur le serveur choisi pour elle : celui de la résidence, qui installe et héberge l'application, ou celui d'un hébergeur qui sert plusieurs copropriétés, chacune dans sa propre base. Le guide d'installation explique comment en garder une sauvegarde copiée hors de la machine."
+     ]
+    },
+    {
+     "id": "syndic",
+     "titre": "Et le syndic ?",
+     "textes": [
+      "CoproFirst est l'outil des résidents et du conseil syndical. Le syndic y reçoit des demandes qualifiées par le conseil, et peut répondre par simple courriel : sa réponse est versée au fil de l'affaire. Après un point avec le conseil, il en valide le compte rendu d'un lien."
+     ]
+    },
+    {
+     "id": "assistant-ia",
+     "titre": "L'assistant IA est-il obligatoire ?",
+     "textes": [
+      "Non. Il est désactivé tant que la résidence ne l'active pas, usage par usage, avec un plafond d'appels. Il propose ; une personne relit et décide, et tout texte assisté est signalé ✨."
+     ]
+    },
+    {
+     "id": "essai",
+     "titre": "Peut-on l'essayer avant de l'installer ?",
+     "textes": [
+      "Oui : la démonstration en ligne ouvre une résidence fictive sous trois comptes publics — conseil syndical, copropriétaire, locataire —, sans inscription. Ses données repartent de zéro chaque nuit."
+     ],
+     "liens": [
+      {
+       "texte": "la démonstration en ligne",
+       "adresse": "https://coprofirst.fr/demo.html"
+      }
+     ]
+    },
+    {
+     "id": "editeur",
+     "titre": "Qui l'édite ?",
+     "textes": [
+      "Philippe Tressard, à titre non professionnel. Le code est public, et les contributions sont les bienvenues : le dépôt GitHub."
+     ],
+     "liens": [
+      {
+       "texte": "le dépôt GitHub",
+       "adresse": "https://github.com/philippe-tressard/coprofirst"
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "id": "pied",
+   "textes": [
+    "CoproFirst — Demande de marque n° 5307183 · Licence AGPL-3.0-or-later"
+   ],
+   "liens": [
+    {
+     "texte": "contact@coprofirst.fr",
+     "adresse": "mailto:contact@coprofirst.fr"
+    },
+    {
+     "texte": "Code source",
+     "adresse": "https://github.com/philippe-tressard/coprofirst"
+    },
+    {
+     "texte": "Mentions légales",
+     "adresse": "https://coprofirst.fr/mentions-legales.html"
+    },
+    {
+     "texte": "Confidentialité",
+     "adresse": "https://coprofirst.fr/confidentialite.html"
+    }
+   ]
+  }
+ ]
+}
