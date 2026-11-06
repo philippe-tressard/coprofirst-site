@@ -6,8 +6,9 @@
 # Hors du pre-commit : la source vit dans le dépôt de CoproFirst, et la lire
 # demande le réseau. Le passage QUOTIDIEN attrape un compte changé ou une version
 # promue côté application, même quand ce site ne bouge pas — et l'échéance de
-# site/.well-known/security.txt, qui expire sans qu'aucun commit ne le dise ; son échec part par
-# courriel (notifications GitHub des workflows planifiés).
+# site/.well-known/security.txt, qui expire sans qu'aucun commit ne le dise. Son échec
+# ouvre un ticket (dernier pas) : le courriel de GitHub n'avait rien fait voir en sept
+# jours de rouge (23 au 30/10/2026).
 # ⚠️ GitHub suspend un workflow planifié après 60 jours sans activité du dépôt.
 name: Concordance avec CoproFirst
 on:
@@ -19,7 +20,8 @@ on:
 
 permissions:
   contents: read
-  issues: read
+  # Lire les tickets cités (verifier-renvois.py), ouvrir celui de l'alerte d'échec.
+  issues: write
 
 jobs:
   comptes:
@@ -51,3 +53,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         run: python3 scripts/verifier-renvois.py --en-ligne
+      # Le DERNIER pas : un rouge sur main ou au passage planifié ouvre un ticket
+      # (sept jours de rouge muet, fin octobre 2026). Sur une PR, rien.
+      - name: Alerte d'échec — un ticket ouvert, ou commenté s'il l'est déjà
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/signaler-echec-ci.py --signaler

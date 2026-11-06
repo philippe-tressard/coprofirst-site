@@ -64,6 +64,8 @@ bash scripts/verifier-depot.sh
 python -m reuse lint
 python3 scripts/verifier-referencement.py --selftest
 python3 scripts/verifier-referencement.py
+python3 scripts/signaler-echec-ci.py --selftest
+python3 scripts/signaler-echec-ci.py --verifier   # chaque job de CI finit par l'alerte d'échec
 python3 scripts/contenu-accueil.py --selftest
 python3 scripts/contenu-accueil.py
 python3 scripts/verifier-comptes-demo.py --selftest

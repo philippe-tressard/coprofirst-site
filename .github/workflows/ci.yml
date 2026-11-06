@@ -12,6 +12,8 @@ on:
 
 permissions:
   contents: read
+  # L'alerte d'échec ouvre un ticket (scripts/signaler-echec-ci.py).
+  issues: write
 
 jobs:
   depot:
@@ -49,6 +51,10 @@ jobs:
         run: python3 scripts/verifier-css.py
       - name: security.txt (selftest)
         run: python3 scripts/verifier-security-txt.py --selftest
+      - name: Alerte d'échec (selftest)
+        run: python3 scripts/signaler-echec-ci.py --selftest
+      - name: Alerte d'échec — chaque job finit par elle
+        run: python3 scripts/signaler-echec-ci.py --verifier
       - name: Renvois aux tickets (selftest)
         run: python3 scripts/verifier-renvois.py --selftest
       - name: Renvois aux tickets — aucun renvoi nu
@@ -64,3 +70,10 @@ jobs:
         run: |
           python -m pip install reuse==6.2.0
           python -m reuse lint
+      # Le DERNIER pas : un rouge sur main ou au passage planifié ouvre un ticket
+      # (sept jours de rouge muet, fin octobre 2026). Sur une PR, rien.
+      - name: Alerte d'échec — un ticket ouvert, ou commenté s'il l'est déjà
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/signaler-echec-ci.py --signaler
