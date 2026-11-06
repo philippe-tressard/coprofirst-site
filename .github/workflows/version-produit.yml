@@ -1,0 +1,46 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# La version affichée par l'accueil suit la dernière release de CoproFirst, qui en
+# publie une dizaine par jour (coprofirst-site#51) : chaque heure, une PR
+# « version » est ouverte ou mise à jour (scripts/proposer-version.sh). La fusion et
+# le déploiement restent à Philippe ; la PR ouverte est le signal du retard. Le
+# contrôle ne tourne plus sur les PR des autres sujets, qu'une release faisait
+# passer au rouge sans rapport avec elles.
+# Exige le réglage du dépôt « Allow GitHub Actions to create and approve pull
+# requests » (Settings › Actions › General) : sans lui, la création de la PR échoue.
+# ⚠️ GitHub suspend un workflow planifié après 60 jours sans activité du dépôt.
+name: Version affichée
+on:
+  schedule:
+    - cron: "41 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write # pousser la branche du robot
+  pull-requests: write # ouvrir ou renommer la PR
+  actions: write # relancer la CI sur la branche (un push du GITHUB_TOKEN ne la déclenche pas)
+
+# Deux passages ne se croisent jamais sur la même branche.
+concurrency:
+  group: version-produit
+  cancel-in-progress: false
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          ref: main
+          # L'ascendance de la branche du robot se juge sur l'historique entier.
+          fetch-depth: 0
+      - name: Le script lui-même (selftest)
+        run: bash scripts/proposer-version.sh --selftest
+      - name: La PR « version », ouverte ou mise à jour
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          bash scripts/proposer-version.sh

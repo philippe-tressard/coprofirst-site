@@ -5,6 +5,8 @@
 # Actions épinglées par SHA, outils par version : la CI se rejoue à l'identique.
 name: CI
 on:
+  # workflow_dispatch : la PR « version » du robot relance la CI (proposer-version.sh).
+  workflow_dispatch:
   push:
   pull_request:
 
