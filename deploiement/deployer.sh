@@ -55,7 +55,7 @@ deployer() {
     python3 scripts/verifier-avis.py --fichier "$AVIS" || { echo "REFUS : $AVIS non conforme (ci-dessus)." >&2; exit 1; }
     if grep -q '"avis": *\[ *\]' "$AVIS"; then echo "Attention : aucun avis dans $AVIS — la section des avis sera masquée."; fi
   fi
-  echo "Déploiement de ${commit:0:7} sur $HOTE…"
+  echo "Déploiement de ${commit:0:7} sur ${HOTE}…"
   # Le commit, plus l'export des avis (non versionné) ajouté à l'archive.
   archive=$(mktemp)
   trap 'rm -f "$archive"' EXIT

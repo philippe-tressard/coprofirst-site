@@ -115,7 +115,7 @@ selftest() {
   local echecs=0
   verifie() { # <attendu> <fichier> <mode>
     local obtenu; obtenu=$(juger_fichier "$t/$2" "$3" | awk '{print $1}' | tr '\n' ' ')
-    if [ "$obtenu" = "$1" ]; then echo "  ok      $2 → «$1»"; else echo "  ÉCHEC   $2 → «$obtenu», attendu «$1»"; echecs=$((echecs + 1)); fi
+    if [ "$obtenu" = "$1" ]; then echo "  ok      $2 → «$1»"; else echo "  ÉCHEC   $2 → «${obtenu}», attendu «$1»"; echecs=$((echecs + 1)); fi
   }
   verifie "" bon.html 100644
   verifie "BOM " bom.html 100644
@@ -155,7 +155,7 @@ selftest() {
   page() { # <attendu> <fichier>
     local obtenu; obtenu=$(juger_page "$t/$2" | awk '{print $1}' | tr '
 ' ' ')
-    if [ "$obtenu" = "$1" ]; then echo "  ok      $2 → «$1»"; else echo "  ÉCHEC   $2 → «$obtenu», attendu «$1»"; echecs=$((echecs + 1)); fi
+    if [ "$obtenu" = "$1" ]; then echo "  ok      $2 → «$1»"; else echo "  ÉCHEC   $2 → «${obtenu}», attendu «$1»"; echecs=$((echecs + 1)); fi
   }
   page "" bonne.html
   page "LIEN " morte.html
