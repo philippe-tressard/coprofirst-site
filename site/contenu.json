@@ -37,14 +37,14 @@
    "images": [
     {
      "id": "capture-ordinateur",
-     "image": "captures/affaires-ordinateur.jpg?v=5f89e35d",
+     "image": "captures/affaires-ordinateur.jpg?v=0db8d103",
      "largeur": 1180,
      "hauteur": 740,
      "description": "L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires."
     },
     {
      "id": "capture-telephone",
-     "image": "captures/affaires-telephone.jpg?v=22492f12",
+     "image": "captures/affaires-telephone.jpg?v=020e8802",
      "largeur": 390,
      "hauteur": 780,
      "description": "Le même écran « Mes affaires » sur un téléphone."
