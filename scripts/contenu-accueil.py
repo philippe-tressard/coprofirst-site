@@ -30,6 +30,17 @@ Les adresses sont absolues ; les images, des chemins relatifs à contenu.json, q
 doivent exister dans site/. Un champ vide est omis. `format` change si un champ
 change de sens ou disparaît ; un champ ajouté le laisse.
 
+Ce dont l'app iOS dépend est FIGÉ dans CONTRAT_APP (coprofirst-site#66) : les `id`
+des éléments qu'elle accroche à ses symboles, et ce qu'elle lit de chacun (`titre`,
+`textes[0]` ; pour la section `demo`, aussi `textes[1]`, l'avertissement). Un `id`
+retiré, renommé, ou un `textes[1]` déplacé fait échouer le contrôle (CONTRAT), et
+--ecrire refuse d'écrire un tel fichier : l'app refuse un contenu incomplet et
+garde sa dernière lecture, donc toutes les apps installées cesseraient de suivre le
+site sans que personne le voie. Pareil changement se décide AVEC coprofirst-ios :
+nouvelle version de l'app d'abord, ou `format: 2`. La liste est recopiée de
+`ContenuVitrine.idsRequis` (CoproFirst/Entree/Contenu/ContenuVitrine.swift de
+coprofirst-ios) ; elle se modifie des deux côtés ensemble.
+
   python3 scripts/contenu-accueil.py            contrôle (pre-commit, CI) : 0 à jour, 1 écart, 2 INCONNU
   python3 scripts/contenu-accueil.py --ecrire   réécrit site/contenu.json depuis index.html
   python3 scripts/contenu-accueil.py --selftest
@@ -48,6 +59,14 @@ BASE = "https://coprofirst.fr/"
 FORMAT = 1
 OK, ECART, INCONNU = 0, 1, 2
 VIDES = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
+# Le contrat avec l'app iOS (coprofirst-ios#51, ContenuVitrine.idsRequis). Pour chaque
+# section : le nombre de textes qu'elle doit porter (l'app lit textes[0], et pour la
+# démo textes[1]) et les éléments requis, chacun avec un titre et textes[0].
+CONTRAT_APP = {
+    "heros": {"textes": 1, "elements": ()},
+    "fonctions": {"textes": 1, "elements": ("demande", "documents", "point-syndic", "badges", "carnet", "communaute")},
+    "demo": {"textes": 2, "elements": ("conseil-syndical", "coproprietaire", "locataire")},
+}
 IDENTIFIANT = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
 ESPACES = re.compile(r"[ \t\r\n]+")  # pas l'espace insécable : la typographie française la garde
 
@@ -237,17 +256,43 @@ def nettoyer(p):
     return sortie
 
 
+def ecarts_contrat(contenu, contrat):
+    """Les écarts entre ce que la page donne et ce que l'app iOS lit (CONTRAT_APP)."""
+    ecarts = []
+
+    def verifier(quoi, noeud, textes):
+        if noeud is None:
+            ecarts.append(f"CONTRAT  {quoi} : absent — l'app iOS l'exige, à décider avec coprofirst-ios")
+            return
+        if not noeud.get("titre"):
+            ecarts.append(f"CONTRAT  {quoi} : plus de titre — l'app iOS le lit")
+        if len(noeud.get("textes", [])) < textes:
+            ecarts.append(f"CONTRAT  {quoi} : textes[{textes - 1}] absent — l'app iOS le lit")
+
+    sections = {s.get("id"): s for s in contenu.get("sections", [])}
+    for sid, regle in (contrat or {}).items():
+        section = sections.get(sid)
+        verifier(f"section {sid}", section, regle["textes"])
+        if section is None:
+            continue
+        elements = {e.get("id"): e for e in section.get("elements", [])}
+        for eid in regle["elements"]:
+            verifier(f"{sid}/{eid}", elements.get(eid), 1)
+    return ecarts
+
+
 def serialiser(contenu):
     return json.dumps(contenu, ensure_ascii=False, indent=1) + "\n"
 
 
-def juger(site):
+def juger(site, contrat=CONTRAT_APP):
     """(verdict, écarts, texte attendu de contenu.json). Ne modifie rien."""
     try:
         html = (site / "index.html").read_text(encoding="utf-8")
     except (OSError, UnicodeDecodeError) as e:
         return INCONNU, [f"INCONNU  index.html illisible : {e}"], None
     contenu, ecarts = Lecture(html, site).lire()
+    ecarts += ecarts_contrat(contenu, contrat)
     attendu = serialiser(contenu)
     try:
         actuel = (site / "contenu.json").read_text(encoding="utf-8")
@@ -262,8 +307,8 @@ def juger(site):
     return (ECART if ecarts else OK), ecarts, attendu
 
 
-def principal(site, ecrire):
-    verdict, ecarts, attendu = juger(site)
+def principal(site, ecrire, contrat=CONTRAT_APP):
+    verdict, ecarts, attendu = juger(site, contrat)
     structurels = [e for e in ecarts if not e.startswith(("ABSENT", "DIVERGE"))]
     if ecrire and attendu is not None and not structurels and verdict != INCONNU:
         (site / "contenu.json").write_text(attendu, encoding="utf-8", newline="\n")
@@ -326,10 +371,10 @@ def selftest():
 
         def codes(html):
             (site / "index.html").write_text(html, encoding="utf-8")
-            return sorted({e.split()[0] for e in juger(site)[1]})
+            return sorted({e.split()[0] for e in juger(site, None)[1]})
 
         verifie("contenu.json absent → ABSENT", codes(PAGE_TEST) == ["ABSENT"])
-        verifie("--ecrire, puis contrôle conforme", principal(site, ecrire=True) == OK and juger(site)[0] == OK)
+        verifie("--ecrire, puis contrôle conforme", principal(site, ecrire=True, contrat=None) == OK and juger(site, None)[0] == OK)
         verifie("page retouchée, fichier non suivi → DIVERGE", codes(PAGE_TEST.replace("Trois temps.", "Quatre temps.")) == ["DIVERGE"])
         verifie("image absente → IMAGE", "IMAGE" in codes(PAGE_TEST.replace('src="c.jpg', 'src="d.jpg')))
         verifie("image externe → IMAGE", "IMAGE" in codes(PAGE_TEST.replace('src="c.jpg', 'src="https://x.fr/c.jpg')))
@@ -340,9 +385,30 @@ def selftest():
         verifie("aucune section → VIDE", "VIDE" in codes("<html><body><footer><p>x</p></footer></body></html>"))
         (site / "index.html").write_text(PAGE_TEST.replace("<h3>Demande</h3>", ""), encoding="utf-8")
         avant = (site / "contenu.json").read_text(encoding="utf-8")
-        verifie("--ecrire refuse une page fautive", principal(site, ecrire=True) == ECART and (site / "contenu.json").read_text(encoding="utf-8") == avant)
+        verifie("--ecrire refuse une page fautive", principal(site, ecrire=True, contrat=None) == ECART and (site / "contenu.json").read_text(encoding="utf-8") == avant)
         (site / "index.html").unlink()
-        verifie("index.html absent → INCONNU, jamais OK", juger(site)[0] == INCONNU)
+        verifie("index.html absent → INCONNU, jamais OK", juger(site, None)[0] == INCONNU)
+        # Le contrat avec l'app iOS : chaque cas fautif doit être refusé (coprofirst-site#66).
+        contrat = {"heros": {"textes": 2, "elements": ()}, "fonctions": {"textes": 1, "elements": ("demande",)}}
+
+        def contrat_sur(html):
+            (site / "index.html").write_text(html, encoding="utf-8")
+            return [e for e in juger(site, contrat)[1] if e.startswith("CONTRAT")]
+
+        def refuse(html, fragment):
+            return any(fragment in e for e in contrat_sur(html))
+
+        verifie("contrat tenu → aucun écart CONTRAT", contrat_sur(PAGE_TEST) == [])
+        verifie("id requis retiré → CONTRAT", refuse(PAGE_TEST.replace('data-contenu="demande"', ""), "fonctions/demande : absent"))
+        verifie("id requis renommé → CONTRAT", refuse(PAGE_TEST.replace('data-contenu="demande"', 'data-contenu="demandes"'), "fonctions/demande : absent"))
+        verifie("section requise retirée → CONTRAT", refuse(PAGE_TEST.replace('data-contenu="heros"', ""), "section heros : absent"))
+        verifie("titre de l'élément perdu → CONTRAT", refuse(PAGE_TEST.replace("<h3>Demande</h3>", "<p>Demande</p>"), "fonctions/demande : plus de titre"))
+        verifie("textes[1] déplacé → CONTRAT", refuse(PAGE_TEST.replace("Précision.", ""), "section heros : textes[1] absent"))
+        (site / "index.html").write_text(PAGE_TEST, encoding="utf-8")
+        principal(site, ecrire=True, contrat=None)
+        avant = (site / "contenu.json").read_text(encoding="utf-8")
+        (site / "index.html").write_text(PAGE_TEST.replace('data-contenu="demande"', ""), encoding="utf-8")
+        verifie("--ecrire refuse un contenu qui perd un id requis", principal(site, ecrire=True, contrat=contrat) == ECART and (site / "contenu.json").read_text(encoding="utf-8") == avant)
     print("selftest : OK" if echecs == 0 else f"selftest : {echecs} ÉCHEC(S)")
     return 1 if echecs else 0
 

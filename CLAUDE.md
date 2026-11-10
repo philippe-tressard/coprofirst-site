@@ -203,7 +203,10 @@ celui du commit.
 iOS (`philippe-tressard/coprofirst-ios`, sans WebView), est la projection de
 `index.html` : la page reste la seule source. Ce qui part, elle le déclare par
 `data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
-installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios. Les
+installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios.
+`CONTRAT_APP` (même script) fige les `id` et les champs que l'app lit, recopiés de
+`ContenuVitrine.idsRequis` : en retirer ou renommer un fait échouer le contrôle, et
+`--ecrire` refuse d'écrire un tel fichier — se décide avec coprofirst-ios. Les
 règles d'extraction et le format sont dans la docstring du script. **Après toute
 modification de `index.html`** (texte, empreinte d'une capture, version du
 produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »
