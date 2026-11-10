@@ -116,7 +116,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
  ]
 }
 </script>
-<link rel="stylesheet" href="accueil.css?v=11b9d5a6">
+<link rel="stylesheet" href="accueil.css?v=7195eb13">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script src="accueil.js?v=06310979"></script>
 </head>
@@ -164,10 +164,14 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         <!-- Captures réelles de la démonstration : scripts/generer-captures.mjs -->
         <figure class="capture">
           <div class="fenetre-barre" aria-hidden="true"><i></i><i></i><i></i><span>demo.coprofirst.fr/tickets</span></div>
-          <img data-contenu="capture-ordinateur" src="captures/affaires-ordinateur.jpg?v=5f89e35d" width="1180" height="740" decoding="async" fetchpriority="high" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
+          <img class="vue-sombre" src="captures/affaires-ordinateur-sombre.jpg?v=febfa135" width="1180" height="740" decoding="async" fetchpriority="high" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
+          <img class="vue-clair" data-contenu="capture-ordinateur" src="captures/affaires-ordinateur.jpg?v=0db8d103" width="1180" height="740" loading="lazy" decoding="async" alt="L'écran « Mes affaires » de la démonstration de CoproFirst sur ordinateur : le menu de la résidence, la recherche, les filtres par nature et par suivi, puis la liste des actualités et des affaires.">
         </figure>
         <div class="telephone">
-          <div class="ecran"><img data-contenu="capture-telephone" src="captures/affaires-telephone.jpg?v=22492f12" width="390" height="780" decoding="async" alt="Le même écran « Mes affaires » sur un téléphone."></div>
+          <div class="ecran">
+            <img class="vue-sombre" src="captures/affaires-telephone-sombre.jpg?v=7f321008" width="390" height="780" decoding="async" alt="Le même écran « Mes affaires » sur un téléphone.">
+            <img class="vue-clair" data-contenu="capture-telephone" src="captures/affaires-telephone.jpg?v=020e8802" width="390" height="780" loading="lazy" decoding="async" alt="Le même écran « Mes affaires » sur un téléphone.">
+          </div>
         </div>
         <div class="bulle b1" aria-hidden="true"><b>Bât. B · 3ᵉ</b>L'ascenseur est réparé, merci&nbsp;!</div>
         <div class="bulle b2" aria-hidden="true"><b>✨ Assistant</b>Synthèse de l'affaire prête à relire.</div>

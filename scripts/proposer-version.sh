@@ -17,7 +17,12 @@
 #      qu'exige la protection) ;
 #   4. la PR est ouverte, ou son titre suit la nouvelle version ;
 #   5. la CI est relancée sur la branche : un push du GITHUB_TOKEN ne déclenche
-#      aucun workflow, et le check requis `depot` ne viendrait jamais.
+#      aucun workflow, et le check requis `depot` ne viendrait jamais. Une PR déjà
+#      à jour mais SANS check (relance perdue) reçoit la sienne au passage suivant :
+#      la PR du robot ne reste pas bloquée (coprofirst-site#63).
+# Tout appel à GitHub est tenté trois fois (essayer) : un 500, un 504 ou un push
+# refusé passagers ne doivent pas ouvrir un ticket « CI rouge » ; l'échec qui dure,
+# lui, fait échouer le passage et le signale.
 # La fusion reste celle de Philippe (champ `fusion` de projets.json), le déploiement
 # aussi : la PR ouverte EST le signal du retard.
 #
@@ -27,9 +32,30 @@ set -euo pipefail
 BRANCHE="${BRANCHE:-auto/version-produit}"
 RACINE=$(cd "$(dirname "$0")/.." && pwd)
 
+# essayer <commande…> : jusqu'à trois essais, avec une attente entre eux
+# (ESSAI_ATTENTES, en secondes ; le selftest la met à zéro). Rend l'échec du dernier.
+essayer() {
+  local n=0 attentes
+  attentes=(${ESSAI_ATTENTES:-5 15})
+  until "$@"; do
+    if [ "$n" -ge "${#attentes[@]}" ]; then
+      echo "proposer-version : échec après $((n + 1)) essais : $*" >&2
+      return 1
+    fi
+    echo "proposer-version : essai $((n + 1)) raté (${1} ${2:-}…), nouvel essai dans ${attentes[$n]} s" >&2
+    sleep "${attentes[$n]}"
+    n=$((n + 1))
+  done
+}
+
+lancer_ci() {
+  essayer gh workflow run ci.yml --ref "$BRANCHE"
+  essayer gh workflow run comptes-demo.yml --ref "$BRANCHE"
+}
+
 proposer() {
   cd "$RACINE"
-  git fetch -q origin main
+  essayer git fetch -q origin main
   git switch -q -C "$BRANCHE" origin/main
   python3 scripts/version-produit.py --ecrire
   python3 scripts/contenu-accueil.py --ecrire
@@ -45,27 +71,33 @@ proposer() {
   # « Rien à faire » exige les deux : la branche porte ce contenu ET la PR est
   # ouverte. Une branche poussée sans PR (création refusée, PR fermée) se reprend.
   local pr deja=non
-  pr=$(gh pr list --head "$BRANCHE" --state open --json number --jq '.[].number')
+  pr=$(essayer gh pr list --head "$BRANCHE" --state open --json number --jq '.[].number')
   if git fetch -q origin "$BRANCHE" 2>/dev/null \
      && [ "$(git rev-parse 'HEAD^{tree}')" = "$(git rev-parse 'FETCH_HEAD^{tree}')" ] \
      && git merge-base --is-ancestor origin/main FETCH_HEAD; then
     deja=oui
   fi
   if [ "$deja" = oui ] && [ -n "$pr" ]; then
-    echo "proposer-version : la PR porte déjà la version $version — rien à pousser"
+    local checks
+    checks=$(essayer gh pr view "$BRANCHE" --json statusCheckRollup --jq '.statusCheckRollup | length')
+    if [ "${checks:-0}" = 0 ]; then
+      echo "proposer-version : la PR porte déjà la version $version mais n'a aucun check — CI relancée"
+      lancer_ci
+    else
+      echo "proposer-version : la PR porte déjà la version $version — rien à pousser"
+    fi
     return 0
   fi
-  [ "$deja" = oui ] || git push -q --force-with-lease origin "HEAD:refs/heads/$BRANCHE"
+  [ "$deja" = oui ] || essayer git push -q --force-with-lease origin "HEAD:refs/heads/$BRANCHE"
   local titre="chore(version) : version affichée $version, la dernière release de CoproFirst"
   if [ -n "$pr" ]; then
-    gh pr edit "$BRANCHE" --title "$titre" >/dev/null
+    essayer gh pr edit "$BRANCHE" --title "$titre" >/dev/null
   else
-    gh pr create --base main --head "$BRANCHE" --title "$titre" --body "La dernière release de CoproFirst, écrite par \`version-produit.py --ecrire\` (page et \`lastmod\`). Branche refaite depuis \`main\` à chaque nouvelle release : la fusionner, puis \`bash deploiement/deployer.sh\`.
+    essayer gh pr create --base main --head "$BRANCHE" --title "$titre" --body "La dernière release de CoproFirst, écrite par \`version-produit.py --ecrire\` (page et \`lastmod\`). Branche refaite depuis \`main\` à chaque nouvelle release : la fusionner, puis \`bash deploiement/deployer.sh\`.
 
 Ouverte par \`.github/workflows/version-produit.yml\` (coprofirst-site#51)." >/dev/null
   fi
-  gh workflow run ci.yml --ref "$BRANCHE"
-  gh workflow run comptes-demo.yml --ref "$BRANCHE"
+  lancer_ci
   echo "proposer-version : PR « version $version » à jour sur $BRANCHE"
 }
 
@@ -80,10 +112,35 @@ selftest() {
   mkdir -p "$t/clone/scripts" "$t/clone/site" "$t/bin"
   cp "$RACINE/scripts/version-produit.py" "$RACINE/scripts/lecture_distante.py" "$RACINE/scripts/proposer-version.sh" \
     "$RACINE/scripts/contenu-accueil.py" "$t/clone/scripts/"
-  printf '<section data-contenu="heros"><h1>Accueil</h1><ul><li data-version-produit><a href="x"><b>Version 1.0.0</b> · 01/01/2026</a></li></ul></section>\n' > "$t/clone/site/index.html"
+  # Une page qui tient le contrat de l'app iOS (CONTRAT_APP de contenu-accueil.py,
+  # coprofirst-site#66) : sans elle, `contenu-accueil.py --ecrire` refuse d'écrire.
+  {
+    printf '<section data-contenu="heros"><h1>Accueil</h1><p>Texte.</p><ul><li data-version-produit><a href="x"><b>Version 1.0.0</b> · 01/01/2026</a></li></ul></section>\n'
+    printf '<section data-contenu="fonctions"><h2>Fonctions</h2><p>Texte.</p>'
+    for id in demande documents point-syndic badges carnet communaute; do
+      printf '<article data-contenu="%s"><h3>%s</h3><p>Texte.</p></article>' "$id" "$id"
+    done
+    printf '</section>\n<section data-contenu="demo"><h2>Démo</h2><p>Chapeau.</p><p>Avertissement.</p>'
+    for id in conseil-syndical coproprietaire locataire; do
+      printf '<article data-contenu="%s"><h3>%s</h3><p>Texte.</p></article>' "$id" "$id"
+    done
+    printf '</section>\n'
+  } > "$t/clone/site/index.html"
   python3 "$t/clone/scripts/contenu-accueil.py" --ecrire >/dev/null
   printf '<urlset><url><loc>https://coprofirst.fr/</loc><lastmod>2026-01-01</lastmod></url></urlset>\n' > "$t/clone/site/sitemap.xml"
-  printf '#!/bin/bash\necho "gh $*" >> "%s/appels"\n[ "$1 $2" = "pr list" ] && [ -f "%s/pr" ] && echo 7\n[ "$1 $2" = "pr create" ] && touch "%s/pr"\nexit 0\n' "$t" "$t" "$t" > "$t/bin/gh"
+  # Le gh simulé note ses appels (MOCK_DIR/appels) et obéit à des drapeaux posés par
+  # les cas : pr (une PR existe), checks (nombre de checks), echec_une_fois (la
+  # prochaine « workflow run » échoue), echec_toujours (« pr create » échoue).
+  cat > "$t/bin/gh" <<'MOCK'
+#!/bin/bash
+echo "gh $*" >> "$MOCK_DIR/appels"
+if [ "$1 $2" = "workflow run" ] && [ -f "$MOCK_DIR/echec_une_fois" ]; then rm -f "$MOCK_DIR/echec_une_fois"; exit 1; fi
+if [ "$1 $2" = "pr create" ] && [ -f "$MOCK_DIR/echec_toujours" ]; then exit 1; fi
+[ "$1 $2" = "pr list" ] && [ -f "$MOCK_DIR/pr" ] && echo 7
+[ "$1 $2" = "pr view" ] && { cat "$MOCK_DIR/checks" 2>/dev/null || echo 2; }
+[ "$1 $2" = "pr create" ] && touch "$MOCK_DIR/pr"
+exit 0
+MOCK
   chmod +x "$t/bin/gh"
   # version-produit.py lit la release dans --source : le selftest l'impose par un
   # python3 qui l'ajoute, le reste du script étant celui qui tourne en CI.
@@ -98,7 +155,7 @@ selftest() {
     printf '{"tag_name": "%s", "published_at": "2026-11-05T17:01:00Z"}' "$2" > "$t/release.json"
     : > "$t/appels"
     local sortie
-    sortie=$(cd "$t/clone" && PATH="$t/bin:$PATH" GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r \
+    sortie=$(cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r \
       bash scripts/proposer-version.sh 2>&1) || { echo "  ÉCHEC   $1 : sortie non nulle — $sortie"; echecs=$((echecs + 1)); return; }
     local exige
     while IFS= read -r -d ';' exige; do
@@ -127,6 +184,24 @@ selftest() {
     *) echo "  ÉCHEC   contenu.json ne porte pas 1.2.0 : la CI de la PR refuserait la page"; echecs=$((echecs + 1)) ;; esac
   case "$(git -C "$t/origin.git" show "auto/version-produit:site/sitemap.xml")" in *"<lastmod>2026-01-01"*)
     echo "  ÉCHEC   lastmod de l'accueil pas avancé"; echecs=$((echecs + 1)) ;; *) echo "  ok      lastmod avancé" ;; esac
+  # coprofirst-site#63 : une PR à jour mais sans check reçoit sa CI ; une relance qui
+  # échoue une fois est retentée ; un échec qui dure fait échouer le passage.
+  echo 0 > "$t/checks"
+  passe "PR à jour sans aucun check → CI relancée" v1.2.0 "gh workflow run ci.yml;gh workflow run comptes-demo.yml" "pr create|pr edit"
+  rm -f "$t/checks"
+  touch "$t/echec_une_fois"
+  passe "relance de la CI refusée une fois → retentée" v1.3.0 "gh pr edit" "pr create"
+  case "$(grep -c 'gh workflow run ci.yml' "$t/appels")" in 2) echo "  ok      relance retentée : deux appels" ;;
+    *) echo "  ÉCHEC   relance non retentée : $(tr '\n' '|' < "$t/appels")"; echecs=$((echecs + 1)) ;; esac
+  rm -f "$t/pr"
+  touch "$t/echec_toujours"
+  if (cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r \
+       bash scripts/proposer-version.sh >/dev/null 2>&1); then
+    echo "  ÉCHEC   un échec qui dure doit faire échouer le passage"; echecs=$((echecs + 1))
+  else
+    echo "  ok      échec qui dure → passage en échec (le ticket s'ouvre)"
+  fi
+  rm -f "$t/echec_toujours"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
 

@@ -74,6 +74,14 @@ juger_page() {
   grep -Eiv '<link rel="(canonical|alternate)"' "$f" \
     | grep -Eiq '<(script|img|iframe)[^>]* src="(https?:)?//|<link[^>]* href="(https?:)?//|url\((["'"'"'])?(https?:)?//|@import' \
     && echo "TIERS    $f (ressource chargée depuis un autre site)"
+  # Les deux prises d'une capture, une par thème (coprofirst-site#33), vont par paire ;
+  # la claire porte loading="lazy" : une image en display:none se télécharge, sauf lazy.
+  local claires sombres
+  claires=$(grep -c 'class="vue-clair"' "$f" || true)
+  sombres=$(grep -c 'class="vue-sombre"' "$f" || true)
+  [ "$claires" = "$sombres" ] || echo "CAPTURE  $f ($claires prise(s) claire(s), $sombres sombre(s) : elles vont par paire)"
+  grep 'class="vue-clair"' "$f" | grep -qv 'loading="lazy"' \
+    && echo "CAPTURE  $f (prise claire sans loading=\"lazy\" : elle se télécharge même cachée)"
   return 0
 }
 
@@ -171,6 +179,13 @@ selftest() {
   page "" pied-absolu.html
   page "" canonique.html
   page "TIERS " canonique-et-police.html
+  local paire='<img class="vue-sombre" src="a-sombre.jpg"><img class="vue-clair" src="a.jpg" loading="lazy">'
+  printf '%s\n' "$liens" "$paire" > "$t/capture-paire.html"
+  printf '%s\n' "$liens" '<img class="vue-clair" src="a.jpg" loading="lazy">' > "$t/capture-sans-sombre.html"
+  printf '%s\n' "$liens" '<img class="vue-sombre" src="a-sombre.jpg"><img class="vue-clair" src="a.jpg">' > "$t/capture-sans-lazy.html"
+  page "" capture-paire.html
+  page "CAPTURE " capture-sans-sombre.html
+  page "CAPTURE " capture-sans-lazy.html
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }

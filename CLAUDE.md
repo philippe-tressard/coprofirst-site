@@ -29,7 +29,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   texte bleu `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
   `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
-  que `'self'`). Le héros montre des **captures réelles** de la démo
+  que `'self'`). Le héros montre des **captures réelles** de la démo, une par thème
+  (`*-sombre.jpg` : la page montre celle de son thème, la variante cachée est
+  `loading="lazy"` pour ne pas être téléchargée — `verifier-depot.sh` exige la paire et
+  le `lazy`)
   (`site/captures/`, refaites par `node scripts/generer-captures.mjs` quand la
   démo a changé de version — le script affiche la version photographiée, lue au
   pied de l'application : la démo suit sa **vague** de distribution, pas la
@@ -203,7 +206,10 @@ celui du commit.
 iOS (`philippe-tressard/coprofirst-ios`, sans WebView), est la projection de
 `index.html` : la page reste la seule source. Ce qui part, elle le déclare par
 `data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
-installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios. Les
+installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios.
+`CONTRAT_APP` (même script) fige les `id` et les champs que l'app lit, recopiés de
+`ContenuVitrine.idsRequis` : en retirer ou renommer un fait échouer le contrôle, et
+`--ecrire` refuse d'écrire un tel fichier — se décide avec coprofirst-ios. Les
 règles d'extraction et le format sont dans la docstring du script. **Après toute
 modification de `index.html`** (texte, empreinte d'une capture, version du
 produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »
@@ -259,7 +265,12 @@ plus sur les PR, qu'elle rendait rouges sans rapport avec elles. Le workflow
 **La fusion et le déploiement restent à Philippe** : la PR ouverte est le signal du
 retard. Il exige le réglage *Allow GitHub Actions to create and approve pull
 requests* du dépôt. Le site peut décrire une fonction de `main` pas encore publiée :
-la version affichée reste la dernière publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne.
+la version affichée reste la dernière publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne : trois
+essais sur une erreur passagère (5xx, 429, limite de débit), le `GH_TOKEN` de la CI
+n'y part qu'à `api.github.com` (sans lui, l'IP partagée du runner épuise la limite
+anonyme), `--selftest` en CI. `proposer-version.sh` tente de même chaque appel à
+GitHub trois fois, et relance la CI d'une PR à jour mais sans aucun check : un ticket
+« CI rouge » ne s'ouvre plus pour une erreur de GitHub qu'une relance efface.
 
 `python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
 **`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé
