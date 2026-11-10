@@ -65,6 +65,13 @@ Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorati
 .telephone{border-radius:42px;padding:11px;background:#0f1d30;box-shadow:0 40px 70px -28px var(--ombre)}
 .ecran{border-radius:32px;background:var(--creme);overflow:hidden;height:500px}
 .ecran img{display:block;width:100%;height:100%;object-fit:cover;object-position:top}
+/* Deux prises de chaque écran, une par thème : la page montre celle du sien (sombre par
+   défaut, y compris sans JS). Un data-theme n'est pas une media query, un <picture> ne
+   peut donc pas choisir. La variante cachée porte loading="lazy" : une image lazy en
+   display:none n'est jamais téléchargée (coprofirst-site#33). */
+.capture img.vue-clair,.ecran img.vue-clair{display:none}
+:root[data-theme="clair"] img.vue-clair{display:block}
+:root[data-theme="clair"] img.vue-sombre{display:none}
 .scene .capture{position:absolute;left:5%;bottom:60px;width:64%;z-index:2}
 .scene .telephone{position:absolute;right:7%;bottom:8px;z-index:3;width:270px}
 .bulle{position:absolute;z-index:6;background:var(--carte);border-radius:18px;padding:10px 14px;font-size:.86rem;line-height:1.35;box-shadow:0 14px 30px -14px var(--ombre);max-width:220px}

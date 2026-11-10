@@ -29,7 +29,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   texte bleu `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
   `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
   dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
-  que `'self'`). Le héros montre des **captures réelles** de la démo
+  que `'self'`). Le héros montre des **captures réelles** de la démo, une par thème
+  (`*-sombre.jpg` : la page montre celle de son thème, la variante cachée est
+  `loading="lazy"` pour ne pas être téléchargée — `verifier-depot.sh` exige la paire et
+  le `lazy`)
   (`site/captures/`, refaites par `node scripts/generer-captures.mjs` quand la
   démo a changé de version — le script affiche la version photographiée, lue au
   pied de l'application : la démo suit sa **vague** de distribution, pas la
