@@ -262,7 +262,12 @@ plus sur les PR, qu'elle rendait rouges sans rapport avec elles. Le workflow
 **La fusion et le déploiement restent à Philippe** : la PR ouverte est le signal du
 retard. Il exige le réglage *Allow GitHub Actions to create and approve pull
 requests* du dépôt. Le site peut décrire une fonction de `main` pas encore publiée :
-la version affichée reste la dernière publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne.
+la version affichée reste la dernière publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne : trois
+essais sur une erreur passagère (5xx, 429, limite de débit), le `GH_TOKEN` de la CI
+n'y part qu'à `api.github.com` (sans lui, l'IP partagée du runner épuise la limite
+anonyme), `--selftest` en CI. `proposer-version.sh` tente de même chaque appel à
+GitHub trois fois, et relance la CI d'une PR à jour mais sans aucun check : un ticket
+« CI rouge » ne s'ouvre plus pour une erreur de GitHub qu'une relance efface.
 
 `python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
 **`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé
