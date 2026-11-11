@@ -261,7 +261,7 @@ une **dizaine de releases par jour** (coprofirst-site#51) : la comparaison ne to
 plus sur les PR, qu'elle rendait rouges sans rapport avec elles. Le workflow
 `version-produit.yml` lance chaque heure `bash scripts/proposer-version.sh`, qui
 écrit la page depuis `main` et ouvre ou met à jour la PR « version » (branche
-`auto/version-produit`, refaite depuis `main`, CI relancée par `workflow_dispatch`).
+`auto/version-produit`, refaite depuis `main`, CI de la PR approuvée par le robot).
 **La fusion et le déploiement restent à Philippe** : la PR ouverte est le signal du
 retard. Il exige le réglage *Allow GitHub Actions to create and approve pull
 requests* du dépôt. Le site peut décrire une fonction de `main` pas encore publiée :
@@ -270,11 +270,12 @@ essais sur une erreur passagère (5xx, 429, limite de débit), le `GH_TOKEN` de 
 n'y part qu'à `api.github.com` (sans lui, l'IP partagée du runner épuise la limite
 anonyme), `--selftest` en CI. `proposer-version.sh` tente de même chaque appel à
 GitHub trois fois : un ticket « CI rouge » ne s'ouvre plus pour une erreur de GitHub
-qu'une relance efface. La PR du robot n'a pas de vrais checks `pull_request` (son
-événement ne crée qu'une suite **fantôme** sans job, qui masque toute suite plus
-ancienne du même workflow) : le script relance la CI après elle et **relit les checks
-sur la PR** jusqu'à y voir `depot` et `comptes`, sinon le passage échoue. Ne pas
-fermer et rouvrir la PR à la main : le défaut doit se voir (coprofirst-site#63).
+qu'une relance efface. Les runs `pull_request` de la PR du robot **attendent une
+approbation** (politique « first_time_contributors », qui couvre `github-actions[bot]`) :
+le script approuve ceux-là seulement (sa branche, son commit, ce dépôt) et **relit les
+checks sur la PR** jusqu'à y voir `depot` et `comptes`, sinon le passage échoue. Une
+relance par `workflow_dispatch` ne compte pas : la PR ignore ces suites. Ne pas fermer
+et rouvrir la PR à la main : le défaut doit se voir (coprofirst-site#63).
 
 `python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
 **`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé

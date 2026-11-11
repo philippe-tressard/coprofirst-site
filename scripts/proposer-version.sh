@@ -16,17 +16,18 @@
 #      le robot seul y écrit, et une branche refaite reste à jour avec main, ce
 #      qu'exige la protection) ;
 #   4. la PR est ouverte, ou son titre suit la nouvelle version ;
-#   5. la CI est relancée sur la branche : un push du GITHUB_TOKEN ne déclenche
-#      aucun workflow, et le check requis `depot` ne viendrait jamais. Mais la PR
-#      ouverte ou poussée par le robot reçoit aussi, pour son événement
-#      pull_request, une suite « fantôme » par workflow (en échec, sans job), et
-#      GitHub ne montre sur la PR que la suite la plus RÉCENTE de chaque workflow :
-#      arrivée après la relance, elle la masque — la PR paraît sans check, et
-#      `depot` attendu bloque la fusion (constaté du 10 au 11/11/2026, onze PR de
-#      suite). La relance attend donc que la fantôme soit passée, puis RELIT les
-#      checks sur la PR et relance tant qu'ils n'y sont pas ; absents au bout des
-#      essais, le passage échoue et le signale. Une PR déjà à jour mais sans ses
-#      checks reçoit sa relance au passage suivant (coprofirst-site#63).
+#   5. la PR doit montrer ses checks : la poussée et l'ouverture faites avec le
+#      GITHUB_TOKEN ne lancent pas la CI, mais l'événement pull_request du robot
+#      crée bien ses runs, en ATTENTE D'APPROBATION (action_required : la politique
+#      « first_time_contributors » du dépôt couvre github-actions[bot]). Sans
+#      approbation, ils restent sans job, la PR paraît sans check et `depot` requis
+#      bloque la fusion (coprofirst-site#63 : onze PR de suite, 10–11/11/2026). Le
+#      robot approuve donc CES runs-là — même dépôt, sa branche, son commit, ouverts
+#      par lui (filtre_en_attente) —, puis relit les checks sur la PR jusqu'à y voir
+#      `depot` et `comptes` ; absents au bout des essais, le passage échoue et le
+#      signale. Une relance par workflow_dispatch ne sert à rien : le rollup du
+#      commit, que lit la PR, ignore ces suites (mesuré le 11/11/2026). Une PR déjà à
+#      jour mais sans ses checks est reprise au passage suivant.
 # Tout appel à GitHub est tenté trois fois (essayer) : un 500, un 504 ou un push
 # refusé passagers ne doivent pas ouvrir un ticket « CI rouge » ; l'échec qui dure,
 # lui, fait échouer le passage et le signale.
@@ -56,36 +57,52 @@ essayer() {
 }
 
 # checks_vus : combien des deux checks attendus (`depot`, requis, et `comptes`) la
-# PR montre — ceux que voit la protection de main, pas ceux du commit.
+# PR montre — ce que voit la protection de main.
 checks_vus() {
   essayer gh pr view "$BRANCHE" --json statusCheckRollup \
     --jq '[.statusCheckRollup[] | select(.name == "depot" or .name == "comptes")] | length'
 }
 
-# lancer_ci [apres-evenement] : relance la CI sur la branche jusqu'à ce que la PR en
-# montre les checks (étape 5 ci-dessus). « apres-evenement » : la branche vient
-# d'être poussée ou la PR ouverte, la suite fantôme est en route — l'attendre
-# (CI_ATTENTE_INITIALE) évite une relance perdue. VERIF_ATTENTES : l'attente avant
-# chaque relecture, une par relance (le selftest les met à zéro).
-lancer_ci() {
+# filtre_en_attente <sha> : le filtre jq des runs que le robot a le droit
+# d'approuver — ceux de SON événement pull_request, sur SA branche et SON commit,
+# dans CE dépôt (jamais une fork). L'approbation protège du code d'un inconnu : ici
+# le commit est celui que le robot vient d'écrire depuis main.
+filtre_en_attente() {
+  printf '.workflow_runs[] | select(.event == "pull_request" and .status == "action_required" and .head_sha == "%s" and .head_branch == "%s" and .head_repository.full_name == .repository.full_name and .actor.login == "github-actions[bot]") | .id' \
+    "$1" "$BRANCHE"
+}
+
+# approuver_en_attente : approuve les runs du robot qui attendent sur la tête de la PR.
+approuver_en_attente() {
+  local sha ids id
+  sha=$(essayer gh pr view "$BRANCHE" --json headRefOid --jq .headRefOid) || return 1
+  ids=$(essayer gh api "repos/{owner}/{repo}/actions/runs?event=pull_request&status=action_required&head_sha=$sha" \
+    --jq "$(filtre_en_attente "$sha")") || return 1
+  for id in $ids; do
+    essayer gh api -X POST "repos/{owner}/{repo}/actions/runs/$id/approve" >/dev/null || return 1
+    echo "proposer-version : run $id approuvé (pull_request du robot sur $sha)"
+  done
+}
+
+# obtenir_checks : jusqu'à ce que la PR montre ses checks, approuver ce qui attend
+# (étape 5). VERIF_ATTENTES : l'attente avant chaque lecture — la première laisse à
+# GitHub le temps de créer les runs (le selftest les met à zéro).
+obtenir_checks() {
   local attentes n=0 vus
-  attentes=(${VERIF_ATTENTES:-20 30 45})
-  [ "${1:-}" = apres-evenement ] && sleep "${CI_ATTENTE_INITIALE:-20}"
+  attentes=(${VERIF_ATTENTES:-10 20 30 45})
   while :; do
-    essayer gh workflow run ci.yml --ref "$BRANCHE"
-    essayer gh workflow run comptes-demo.yml --ref "$BRANCHE"
     sleep "${attentes[$n]}"
     vus=$(checks_vus) || return 1
     if [ "${vus:-0}" -ge 2 ]; then
       echo "proposer-version : la PR montre ses checks (depot, comptes)"
       return 0
     fi
-    n=$((n + 1))
-    if [ "$n" -ge "${#attentes[@]}" ]; then
-      echo "proposer-version : la PR ne montre toujours pas ses checks après $n relances — fusion bloquée (coprofirst-site#63)" >&2
+    if [ "$((n + 1))" -ge "${#attentes[@]}" ]; then
+      echo "proposer-version : la PR ne montre toujours pas ses checks ($vus sur 2) — fusion bloquée (coprofirst-site#63)" >&2
       return 1
     fi
-    echo "proposer-version : relance $n masquée sur la PR ($vus check(s) sur 2) — CI relancée" >&2
+    approuver_en_attente || return 1
+    n=$((n + 1))
   done
 }
 
@@ -117,8 +134,8 @@ proposer() {
     local vus
     vus=$(checks_vus)
     if [ "${vus:-0}" -lt 2 ]; then
-      echo "proposer-version : la PR porte déjà la version $version mais ne montre pas ses checks — CI relancée"
-      lancer_ci
+      echo "proposer-version : la PR porte déjà la version $version mais ne montre pas ses checks"
+      obtenir_checks
     else
       echo "proposer-version : la PR porte déjà la version $version — rien à pousser"
     fi
@@ -133,7 +150,7 @@ proposer() {
 
 Ouverte par \`.github/workflows/version-produit.yml\` (coprofirst-site#51)." >/dev/null
   fi
-  lancer_ci apres-evenement
+  obtenir_checks
   echo "proposer-version : PR « version $version » à jour sur $BRANCHE"
 }
 
@@ -166,15 +183,23 @@ selftest() {
   printf '<urlset><url><loc>https://coprofirst.fr/</loc><lastmod>2026-01-01</lastmod></url></urlset>\n' > "$t/clone/site/sitemap.xml"
   # Le gh simulé note ses appels (MOCK_DIR/appels) et obéit à des drapeaux posés par
   # les cas : pr (une PR existe), checks (ce que rend chaque lecture des checks de la
-  # PR, une ligne par lecture, puis 2 : les deux checks attendus), echec_une_fois (la
-  # prochaine « workflow run » échoue), echec_toujours (« pr create » échoue).
+  # PR, une ligne par lecture, puis 2 : les deux checks attendus), attente (les runs
+  # en attente d'approbation, un id par ligne ; approuvé, il en sort), echec_une_fois
+  # (la prochaine approbation échoue), echec_toujours (« pr create » échoue).
   cat > "$t/bin/gh" <<'MOCK'
 #!/bin/bash
 echo "gh $*" >> "$MOCK_DIR/appels"
-if [ "$1 $2" = "workflow run" ] && [ -f "$MOCK_DIR/echec_une_fois" ]; then rm -f "$MOCK_DIR/echec_une_fois"; exit 1; fi
+if [ "$1 $2 $3" = "api -X POST" ]; then
+  if [ -f "$MOCK_DIR/echec_une_fois" ]; then rm -f "$MOCK_DIR/echec_une_fois"; exit 1; fi
+  id=$(echo "$4" | sed -n 's|.*/runs/\([0-9]*\)/approve|\1|p')
+  grep -vx "$id" "$MOCK_DIR/attente" > "$MOCK_DIR/attente.suite" 2>/dev/null; mv "$MOCK_DIR/attente.suite" "$MOCK_DIR/attente"
+  exit 0
+fi
+[ "$1" = api ] && { cat "$MOCK_DIR/attente" 2>/dev/null; exit 0; }
 if [ "$1 $2" = "pr create" ] && [ -f "$MOCK_DIR/echec_toujours" ]; then exit 1; fi
 [ "$1 $2" = "pr list" ] && [ -f "$MOCK_DIR/pr" ] && echo 7
 if [ "$1 $2" = "pr view" ]; then
+  case "$*" in *headRefOid*) echo cafe123; exit 0 ;; esac
   if [ -s "$MOCK_DIR/checks" ]; then
     head -1 "$MOCK_DIR/checks"; tail -n +2 "$MOCK_DIR/checks" > "$MOCK_DIR/checks.suite"; mv "$MOCK_DIR/checks.suite" "$MOCK_DIR/checks"
   else echo 2; fi
@@ -196,7 +221,7 @@ MOCK
   lancer() {
     printf '{"tag_name": "%s", "published_at": "2026-11-05T17:01:00Z"}' "$1" > "$t/release.json"
     : > "$t/appels"
-    (cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" CI_ATTENTE_INITIALE=0 VERIF_ATTENTES="0 0 0" \
+    (cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" VERIF_ATTENTES="0 0 0 0" \
       GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r bash scripts/proposer-version.sh 2>&1)
   }
   # echoue <libellé> <tag> : le passage doit échouer (le ticket « CI rouge » s'ouvre).
@@ -204,11 +229,13 @@ MOCK
     if lancer "$2" >/dev/null; then echo "  ÉCHEC   $1 : le passage aurait dû échouer"; echecs=$((echecs + 1))
     else echo "  ok      $1"; fi
   }
-  # relances <libellé> <n> : la dernière exécution a relancé ci.yml exactement n fois.
-  relances() {
-    case "$(grep -c 'gh workflow run ci.yml' "$t/appels")" in "$2") echo "  ok      $1" ;;
+  # compte <libellé> <motif> <n> : la dernière exécution a fait n appels gh <motif>.
+  compte() {
+    case "$(grep -c "$2" "$t/appels")" in "$3") echo "  ok      $1" ;;
       *) echo "  ÉCHEC   $1 : $(tr '\n' '|' < "$t/appels")"; echecs=$((echecs + 1)) ;; esac
   }
+  # attend <ids…> : la PR ne montre d'abord aucun check, et ces runs attendent.
+  attend() { echo 0 > "$t/checks"; printf '%s\n' "$@" > "$t/attente"; }
   passe() { # <libellé> <tag> <appels gh exigés, séparés par ;> <absents (motif) ou ->
     local sortie
     sortie=$(lancer "$2") || { echo "  ÉCHEC   $1 : sortie non nulle — $sortie"; echecs=$((echecs + 1)); return; }
@@ -222,14 +249,19 @@ MOCK
     fi
     echo "  ok      $1"
   }
-  passe "nouvelle release → PR ouverte, CI relancée" v1.1.0 "gh pr create;gh workflow run ci.yml;gh workflow run comptes-demo.yml" "pr edit"
-  passe "même release, PR ouverte → rien" v1.1.0 "" "pr create|pr edit|workflow"
-  passe "release suivante → PR mise à jour, CI relancée" v1.2.0 "gh pr edit;gh workflow run ci.yml" "pr create"
+  # coprofirst-site#63 : les runs pull_request du robot attendent une approbation ;
+  # sans elle la PR reste sans check et la fusion bloquée.
+  attend 111 222
+  passe "nouvelle release → PR ouverte, runs du robot approuvés" v1.1.0 "gh pr create;runs/111/approve;runs/222/approve" "pr edit|workflow run"
+  passe "même release, PR ouverte → rien" v1.1.0 "" "pr create|pr edit|approve"
+  attend 333
+  passe "release suivante → PR mise à jour, runs approuvés" v1.2.0 "gh pr edit;runs/333/approve" "pr create"
   # La branche est poussée mais la PR manque : création refusée au passage précédent
   # (réglage Actions désactivé, 06/11/2026) ou PR fermée. Le contenu identique ne
   # doit pas faire conclure qu'il n'y a « rien à faire ».
   rm -f "$t/pr"
-  passe "branche déjà poussée, PR absente → PR créée" v1.2.0 "gh pr create;gh workflow run ci.yml" "-"
+  attend 444
+  passe "branche déjà poussée, PR absente → PR créée" v1.2.0 "gh pr create;runs/444/approve" "-"
   local contenu
   contenu=$(git -C "$t/origin.git" show "auto/version-produit:site/index.html")
   case "$contenu" in *"Version 1.2.0"*) echo "  ok      la branche porte 1.2.0" ;;
@@ -239,27 +271,43 @@ MOCK
     *) echo "  ÉCHEC   contenu.json ne porte pas 1.2.0 : la CI de la PR refuserait la page"; echecs=$((echecs + 1)) ;; esac
   case "$(git -C "$t/origin.git" show "auto/version-produit:site/sitemap.xml")" in *"<lastmod>2026-01-01"*)
     echo "  ÉCHEC   lastmod de l'accueil pas avancé"; echecs=$((echecs + 1)) ;; *) echo "  ok      lastmod avancé" ;; esac
-  # coprofirst-site#63 : une PR à jour mais sans check reçoit sa CI ; une relance qui
-  # échoue une fois est retentée ; un échec qui dure fait échouer le passage.
-  echo 0 > "$t/checks"
-  passe "PR à jour sans aucun check → CI relancée" v1.2.0 "gh workflow run ci.yml;gh workflow run comptes-demo.yml" "pr create|pr edit"
-  rm -f "$t/checks"
+  # Une PR à jour mais sans ses checks (approbation ratée au passage précédent) est
+  # reprise ; une approbation refusée une fois est retentée ; des checks jamais vus
+  # et un échec qui dure font échouer le passage, qui ouvre le ticket.
+  attend 555
+  printf '0\n0\n' > "$t/checks"
+  passe "PR à jour sans ses checks → runs approuvés" v1.2.0 "runs/555/approve" "pr create|pr edit"
+  attend 666
   touch "$t/echec_une_fois"
-  passe "relance de la CI refusée une fois → retentée" v1.3.0 "gh pr edit" "pr create"
-  relances "relance retentée : deux appels" 2
-  # coprofirst-site#63, 10–11/11/2026 : la relance passe, mais la suite « fantôme » que
-  # GitHub crée pour l'événement pull_request du robot (en échec, sans job) arrive
-  # après elle et la masque. Les checks se relisent sur la PR, et la CI se relance
-  # tant qu'ils n'y sont pas ; toujours absents, le passage échoue.
-  printf '0\n2\n' > "$t/checks"
-  passe "relance masquée par la suite fantôme → relancée, checks vus" v1.4.0 "gh pr edit" "pr create"
-  relances "relance masquée : deux appels" 2
-  printf '0\n0\n0\n0\n' > "$t/checks"
-  echoue "checks jamais vus sur la PR → passage en échec" v1.5.0
-  rm -f "$t/checks" "$t/pr"
+  passe "approbation refusée une fois → retentée" v1.3.0 "gh pr edit" "pr create"
+  compte "approbation retentée : deux appels" "runs/666/approve" 2
+  attend
+  printf '0\n0\n0\n0\n0\n' > "$t/checks"
+  echoue "checks jamais vus sur la PR → passage en échec" v1.4.0
+  rm -f "$t/checks" "$t/attente" "$t/pr"
   touch "$t/echec_toujours"
-  echoue "échec qui dure → passage en échec (le ticket s'ouvre)" v1.6.0
+  echoue "échec qui dure → passage en échec (le ticket s'ouvre)" v1.5.0
   rm -f "$t/echec_toujours"
+  # Le filtre des runs approuvables, sur une réponse de l'API : seul le run du robot,
+  # sur sa branche, son commit et ce dépôt, passe — jamais celui d'une fork.
+  if command -v jq >/dev/null; then
+    local ids
+    ids=$(jq -r "$(filtre_en_attente cafe123)" <<'JSON' | tr '\n' ' '
+{"workflow_runs": [
+ {"id": 1, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
+ {"id": 2, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "intrus/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
+ {"id": 3, "event": "pull_request", "status": "action_required", "head_sha": "beef456", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
+ {"id": 4, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "autre", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
+ {"id": 5, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "inconnu"}},
+ {"id": 6, "event": "push", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}}
+]}
+JSON
+)
+    if [ "$ids" = "1 " ]; then echo "  ok      seul le run du robot est approuvable (fork, autre commit, autre branche, autre auteur écartés)"
+    else echo "  ÉCHEC   filtre des runs approuvables : « $ids », attendu « 1 »"; echecs=$((echecs + 1)); fi
+  else
+    echo "  INCONNU filtre des runs approuvables : jq absent"; echecs=$((echecs + 1))
+  fi
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
 

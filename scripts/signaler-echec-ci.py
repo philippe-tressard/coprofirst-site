@@ -13,8 +13,8 @@
 #
 # Quand : un passage planifié (schedule, toujours sur main), ou un push ou un
 # lancement à la main (workflow_dispatch) sur main. Jamais sur une PR ni une autre
-# branche — la branche du robot de version-produit.yml comprise, dont la CI est
-# relancée par workflow_dispatch : son auteur voit le rouge là où il travaille.
+# branche — la branche du robot de version-produit.yml comprise, dont la CI tourne
+# sur sa PR : son auteur voit le rouge là où il travaille.
 # Dédoublonnage : un seul ticket ouvert par workflow, reconnu à son titre exact ; un
 # échec suivant y ajoute un commentaire, au plus un toutes les DELAI_HEURES : un
 # passage horaire en échec ferait sinon 24 messages par jour (standards/07 §3).
@@ -145,7 +145,7 @@ def selftest() -> int:
     cas("passage planifié, ticket ouvert hier", decider("schedule", "refs/heads/main", "CI", ouvert, t), ("commenter", 7))
     cas("passage horaire, signalé il y a 30 min", decider("schedule", "refs/heads/main", "CI", recent, t)[0], "rien")
     cas("lancé à la main sur main", decider("workflow_dispatch", "refs/heads/main", "X", ouvert, t)[0], "creer")
-    cas("relancé par le robot sur sa branche", decider("workflow_dispatch", "refs/heads/version", "CI", [], t)[0], "rien")
+    cas("lancé à la main sur une autre branche", decider("workflow_dispatch", "refs/heads/version", "CI", [], t)[0], "rien")
     cas("pull request", decider("pull_request", "refs/pull/3/merge", "CI", [], t)[0], "rien")
     cas("push sur une autre branche", decider("push", "refs/heads/fix/x", "CI", [], t)[0], "rien")
 
