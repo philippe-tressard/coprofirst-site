@@ -19,7 +19,7 @@ on:
 permissions:
   contents: write # pousser la branche du robot
   pull-requests: write # ouvrir ou renommer la PR
-  actions: write # relancer la CI sur la branche (un push du GITHUB_TOKEN ne la déclenche pas)
+  actions: write # relancer la CI sur la branche : la PR du robot n'a que des suites fantômes (coprofirst-site#63)
   issues: write # l'alerte d'échec ouvre un ticket (scripts/signaler-echec-ci.py)
 
 # Deux passages ne se croisent jamais sur la même branche.

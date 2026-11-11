@@ -17,9 +17,16 @@
 #      qu'exige la protection) ;
 #   4. la PR est ouverte, ou son titre suit la nouvelle version ;
 #   5. la CI est relancée sur la branche : un push du GITHUB_TOKEN ne déclenche
-#      aucun workflow, et le check requis `depot` ne viendrait jamais. Une PR déjà
-#      à jour mais SANS check (relance perdue) reçoit la sienne au passage suivant :
-#      la PR du robot ne reste pas bloquée (coprofirst-site#63).
+#      aucun workflow, et le check requis `depot` ne viendrait jamais. Mais la PR
+#      ouverte ou poussée par le robot reçoit aussi, pour son événement
+#      pull_request, une suite « fantôme » par workflow (en échec, sans job), et
+#      GitHub ne montre sur la PR que la suite la plus RÉCENTE de chaque workflow :
+#      arrivée après la relance, elle la masque — la PR paraît sans check, et
+#      `depot` attendu bloque la fusion (constaté du 10 au 11/11/2026, onze PR de
+#      suite). La relance attend donc que la fantôme soit passée, puis RELIT les
+#      checks sur la PR et relance tant qu'ils n'y sont pas ; absents au bout des
+#      essais, le passage échoue et le signale. Une PR déjà à jour mais sans ses
+#      checks reçoit sa relance au passage suivant (coprofirst-site#63).
 # Tout appel à GitHub est tenté trois fois (essayer) : un 500, un 504 ou un push
 # refusé passagers ne doivent pas ouvrir un ticket « CI rouge » ; l'échec qui dure,
 # lui, fait échouer le passage et le signale.
@@ -48,9 +55,38 @@ essayer() {
   done
 }
 
+# checks_vus : combien des deux checks attendus (`depot`, requis, et `comptes`) la
+# PR montre — ceux que voit la protection de main, pas ceux du commit.
+checks_vus() {
+  essayer gh pr view "$BRANCHE" --json statusCheckRollup \
+    --jq '[.statusCheckRollup[] | select(.name == "depot" or .name == "comptes")] | length'
+}
+
+# lancer_ci [apres-evenement] : relance la CI sur la branche jusqu'à ce que la PR en
+# montre les checks (étape 5 ci-dessus). « apres-evenement » : la branche vient
+# d'être poussée ou la PR ouverte, la suite fantôme est en route — l'attendre
+# (CI_ATTENTE_INITIALE) évite une relance perdue. VERIF_ATTENTES : l'attente avant
+# chaque relecture, une par relance (le selftest les met à zéro).
 lancer_ci() {
-  essayer gh workflow run ci.yml --ref "$BRANCHE"
-  essayer gh workflow run comptes-demo.yml --ref "$BRANCHE"
+  local attentes n=0 vus
+  attentes=(${VERIF_ATTENTES:-20 30 45})
+  [ "${1:-}" = apres-evenement ] && sleep "${CI_ATTENTE_INITIALE:-20}"
+  while :; do
+    essayer gh workflow run ci.yml --ref "$BRANCHE"
+    essayer gh workflow run comptes-demo.yml --ref "$BRANCHE"
+    sleep "${attentes[$n]}"
+    vus=$(checks_vus) || return 1
+    if [ "${vus:-0}" -ge 2 ]; then
+      echo "proposer-version : la PR montre ses checks (depot, comptes)"
+      return 0
+    fi
+    n=$((n + 1))
+    if [ "$n" -ge "${#attentes[@]}" ]; then
+      echo "proposer-version : la PR ne montre toujours pas ses checks après $n relances — fusion bloquée (coprofirst-site#63)" >&2
+      return 1
+    fi
+    echo "proposer-version : relance $n masquée sur la PR ($vus check(s) sur 2) — CI relancée" >&2
+  done
 }
 
 proposer() {
@@ -78,10 +114,10 @@ proposer() {
     deja=oui
   fi
   if [ "$deja" = oui ] && [ -n "$pr" ]; then
-    local checks
-    checks=$(essayer gh pr view "$BRANCHE" --json statusCheckRollup --jq '.statusCheckRollup | length')
-    if [ "${checks:-0}" = 0 ]; then
-      echo "proposer-version : la PR porte déjà la version $version mais n'a aucun check — CI relancée"
+    local vus
+    vus=$(checks_vus)
+    if [ "${vus:-0}" -lt 2 ]; then
+      echo "proposer-version : la PR porte déjà la version $version mais ne montre pas ses checks — CI relancée"
       lancer_ci
     else
       echo "proposer-version : la PR porte déjà la version $version — rien à pousser"
@@ -97,7 +133,7 @@ proposer() {
 
 Ouverte par \`.github/workflows/version-produit.yml\` (coprofirst-site#51)." >/dev/null
   fi
-  lancer_ci
+  lancer_ci apres-evenement
   echo "proposer-version : PR « version $version » à jour sur $BRANCHE"
 }
 
@@ -129,7 +165,8 @@ selftest() {
   python3 "$t/clone/scripts/contenu-accueil.py" --ecrire >/dev/null
   printf '<urlset><url><loc>https://coprofirst.fr/</loc><lastmod>2026-01-01</lastmod></url></urlset>\n' > "$t/clone/site/sitemap.xml"
   # Le gh simulé note ses appels (MOCK_DIR/appels) et obéit à des drapeaux posés par
-  # les cas : pr (une PR existe), checks (nombre de checks), echec_une_fois (la
+  # les cas : pr (une PR existe), checks (ce que rend chaque lecture des checks de la
+  # PR, une ligne par lecture, puis 2 : les deux checks attendus), echec_une_fois (la
   # prochaine « workflow run » échoue), echec_toujours (« pr create » échoue).
   cat > "$t/bin/gh" <<'MOCK'
 #!/bin/bash
@@ -137,7 +174,11 @@ echo "gh $*" >> "$MOCK_DIR/appels"
 if [ "$1 $2" = "workflow run" ] && [ -f "$MOCK_DIR/echec_une_fois" ]; then rm -f "$MOCK_DIR/echec_une_fois"; exit 1; fi
 if [ "$1 $2" = "pr create" ] && [ -f "$MOCK_DIR/echec_toujours" ]; then exit 1; fi
 [ "$1 $2" = "pr list" ] && [ -f "$MOCK_DIR/pr" ] && echo 7
-[ "$1 $2" = "pr view" ] && { cat "$MOCK_DIR/checks" 2>/dev/null || echo 2; }
+if [ "$1 $2" = "pr view" ]; then
+  if [ -s "$MOCK_DIR/checks" ]; then
+    head -1 "$MOCK_DIR/checks"; tail -n +2 "$MOCK_DIR/checks" > "$MOCK_DIR/checks.suite"; mv "$MOCK_DIR/checks.suite" "$MOCK_DIR/checks"
+  else echo 2; fi
+fi
 [ "$1 $2" = "pr create" ] && touch "$MOCK_DIR/pr"
 exit 0
 MOCK
@@ -151,12 +192,26 @@ MOCK
     cd "$t/clone" && git -c user.name=t -c user.email=t@t commit -q --allow-empty -m init \
       && git add -A && git -c user.name=t -c user.email=t@t commit -q -m site && git push -q origin HEAD:main 2>/dev/null
   )
-  passe() { # <libellé> <tag> <appels gh exigés, séparés par ;> <absents (motif) ou ->
-    printf '{"tag_name": "%s", "published_at": "2026-11-05T17:01:00Z"}' "$2" > "$t/release.json"
+  # lancer <tag> : un passage du robot sur la release <tag>, attentes à zéro.
+  lancer() {
+    printf '{"tag_name": "%s", "published_at": "2026-11-05T17:01:00Z"}' "$1" > "$t/release.json"
     : > "$t/appels"
+    (cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" CI_ATTENTE_INITIALE=0 VERIF_ATTENTES="0 0 0" \
+      GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r bash scripts/proposer-version.sh 2>&1)
+  }
+  # echoue <libellé> <tag> : le passage doit échouer (le ticket « CI rouge » s'ouvre).
+  echoue() {
+    if lancer "$2" >/dev/null; then echo "  ÉCHEC   $1 : le passage aurait dû échouer"; echecs=$((echecs + 1))
+    else echo "  ok      $1"; fi
+  }
+  # relances <libellé> <n> : la dernière exécution a relancé ci.yml exactement n fois.
+  relances() {
+    case "$(grep -c 'gh workflow run ci.yml' "$t/appels")" in "$2") echo "  ok      $1" ;;
+      *) echo "  ÉCHEC   $1 : $(tr '\n' '|' < "$t/appels")"; echecs=$((echecs + 1)) ;; esac
+  }
+  passe() { # <libellé> <tag> <appels gh exigés, séparés par ;> <absents (motif) ou ->
     local sortie
-    sortie=$(cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r \
-      bash scripts/proposer-version.sh 2>&1) || { echo "  ÉCHEC   $1 : sortie non nulle — $sortie"; echecs=$((echecs + 1)); return; }
+    sortie=$(lancer "$2") || { echo "  ÉCHEC   $1 : sortie non nulle — $sortie"; echecs=$((echecs + 1)); return; }
     local exige
     while IFS= read -r -d ';' exige; do
       [ -z "$exige" ] || grep -qF "$exige" "$t/appels" || {
@@ -191,16 +246,19 @@ MOCK
   rm -f "$t/checks"
   touch "$t/echec_une_fois"
   passe "relance de la CI refusée une fois → retentée" v1.3.0 "gh pr edit" "pr create"
-  case "$(grep -c 'gh workflow run ci.yml' "$t/appels")" in 2) echo "  ok      relance retentée : deux appels" ;;
-    *) echo "  ÉCHEC   relance non retentée : $(tr '\n' '|' < "$t/appels")"; echecs=$((echecs + 1)) ;; esac
-  rm -f "$t/pr"
+  relances "relance retentée : deux appels" 2
+  # coprofirst-site#63, 10–11/11/2026 : la relance passe, mais la suite « fantôme » que
+  # GitHub crée pour l'événement pull_request du robot (en échec, sans job) arrive
+  # après elle et la masque. Les checks se relisent sur la PR, et la CI se relance
+  # tant qu'ils n'y sont pas ; toujours absents, le passage échoue.
+  printf '0\n2\n' > "$t/checks"
+  passe "relance masquée par la suite fantôme → relancée, checks vus" v1.4.0 "gh pr edit" "pr create"
+  relances "relance masquée : deux appels" 2
+  printf '0\n0\n0\n0\n' > "$t/checks"
+  echoue "checks jamais vus sur la PR → passage en échec" v1.5.0
+  rm -f "$t/checks" "$t/pr"
   touch "$t/echec_toujours"
-  if (cd "$t/clone" && PATH="$t/bin:$PATH" MOCK_DIR="$t" ESSAI_ATTENTES="0 0" GIT_AUTHOR_NAME=r GIT_AUTHOR_EMAIL=r@r GIT_COMMITTER_NAME=r GIT_COMMITTER_EMAIL=r@r \
-       bash scripts/proposer-version.sh >/dev/null 2>&1); then
-    echo "  ÉCHEC   un échec qui dure doit faire échouer le passage"; echecs=$((echecs + 1))
-  else
-    echo "  ok      échec qui dure → passage en échec (le ticket s'ouvre)"
-  fi
+  echoue "échec qui dure → passage en échec (le ticket s'ouvre)" v1.6.0
   rm -f "$t/echec_toujours"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }

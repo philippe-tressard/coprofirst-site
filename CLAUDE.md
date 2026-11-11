@@ -269,8 +269,12 @@ la version affichée reste la dernière publiée. `scripts/lecture_distante.py` 
 essais sur une erreur passagère (5xx, 429, limite de débit), le `GH_TOKEN` de la CI
 n'y part qu'à `api.github.com` (sans lui, l'IP partagée du runner épuise la limite
 anonyme), `--selftest` en CI. `proposer-version.sh` tente de même chaque appel à
-GitHub trois fois, et relance la CI d'une PR à jour mais sans aucun check : un ticket
-« CI rouge » ne s'ouvre plus pour une erreur de GitHub qu'une relance efface.
+GitHub trois fois : un ticket « CI rouge » ne s'ouvre plus pour une erreur de GitHub
+qu'une relance efface. La PR du robot n'a pas de vrais checks `pull_request` (son
+événement ne crée qu'une suite **fantôme** sans job, qui masque toute suite plus
+ancienne du même workflow) : le script relance la CI après elle et **relit les checks
+sur la PR** jusqu'à y voir `depot` et `comptes`, sinon le passage échoue. Ne pas
+fermer et rouvrir la PR à la main : le défaut doit se voir (coprofirst-site#63).
 
 `python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
 **`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé
