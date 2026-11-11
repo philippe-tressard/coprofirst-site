@@ -67,8 +67,12 @@ checks_vus() {
 # d'approuver — ceux de SON événement pull_request, sur SA branche et SON commit,
 # dans CE dépôt (jamais une fork). L'approbation protège du code d'un inconnu : ici
 # le commit est celui que le robot vient d'écrire depuis main.
+# Un run en attente d'approbation est TERMINÉ : `status` vaut `completed`, et c'est
+# `conclusion` qui vaut `action_required` (relevé sur la PR coprofirst-site#82). Le
+# paramètre `status=action_required` de la requête, lui, porte sur l'un ou l'autre.
+# Le 11/11/2026, le filtre testait `.status` : il n'a rien trouvé en vrai.
 filtre_en_attente() {
-  printf '.workflow_runs[] | select(.event == "pull_request" and .status == "action_required" and .head_sha == "%s" and .head_branch == "%s" and .head_repository.full_name == .repository.full_name and .actor.login == "github-actions[bot]") | .id' \
+  printf '.workflow_runs[] | select(.event == "pull_request" and .conclusion == "action_required" and .head_sha == "%s" and .head_branch == "%s" and .head_repository.full_name == .repository.full_name and .actor.login == "github-actions[bot]") | .id' \
     "$1" "$BRANCHE"
 }
 
@@ -158,6 +162,9 @@ Ouverte par \`.github/workflows/version-produit.yml\` (coprofirst-site#51)." >/d
 # note ses appels, et une source de release locale à la place de l'API.
 selftest() {
   local t echecs=0
+  # Le gh simulé passe ses réponses par jq, comme `gh --jq` : sans jq, rien ne
+  # se prouve.
+  command -v jq >/dev/null || { echo "selftest : INCONNU — jq absent"; return 2; }
   t=$(mktemp -d)
   trap 'rm -rf "$t"' RETURN
   git init -q --bare "$t/origin.git"
@@ -181,11 +188,20 @@ selftest() {
   } > "$t/clone/site/index.html"
   python3 "$t/clone/scripts/contenu-accueil.py" --ecrire >/dev/null
   printf '<urlset><url><loc>https://coprofirst.fr/</loc><lastmod>2026-01-01</lastmod></url></urlset>\n' > "$t/clone/site/sitemap.xml"
+  # Un run en attente tel que l'API le rend : relevé sur la PR coprofirst-site#82 le
+  # 11/11/2026 (run 43006428811, champs lus par le filtre), commit remplacé par celui
+  # du gh simulé. Le jeu inventé auparavant portait `status: action_required` : le
+  # selftest passait, le vrai passage ne trouvait rien. Les cas en dérivent tous.
+  cat > "$t/run.json" <<'JSON'
+{"id": 43006428811, "event": "pull_request", "status": "completed", "conclusion": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "philippe-tressard/coprofirst-site"}, "repository": {"full_name": "philippe-tressard/coprofirst-site"}, "actor": {"login": "github-actions[bot]"}, "triggering_actor": {"login": "github-actions[bot]"}}
+JSON
   # Le gh simulé note ses appels (MOCK_DIR/appels) et obéit à des drapeaux posés par
   # les cas : pr (une PR existe), checks (ce que rend chaque lecture des checks de la
   # PR, une ligne par lecture, puis 2 : les deux checks attendus), attente (les runs
   # en attente d'approbation, un id par ligne ; approuvé, il en sort), echec_une_fois
-  # (la prochaine approbation échoue), echec_toujours (« pr create » échoue).
+  # (la prochaine approbation échoue), echec_toujours (« pr create » échoue). La liste
+  # des runs est rendue au format de l'API (run.json) et passée par le filtre --jq
+  # du script : c'est lui qui choisit les runs à approuver, pas le gh simulé.
   cat > "$t/bin/gh" <<'MOCK'
 #!/bin/bash
 echo "gh $*" >> "$MOCK_DIR/appels"
@@ -195,7 +211,13 @@ if [ "$1 $2 $3" = "api -X POST" ]; then
   grep -vx "$id" "$MOCK_DIR/attente" > "$MOCK_DIR/attente.suite" 2>/dev/null; mv "$MOCK_DIR/attente.suite" "$MOCK_DIR/attente"
   exit 0
 fi
-[ "$1" = api ] && { cat "$MOCK_DIR/attente" 2>/dev/null; exit 0; }
+if [ "$1" = api ]; then
+  [ "$3" = --jq ] || { echo "gh simulé : --jq attendu" >&2; exit 1; }
+  touch "$MOCK_DIR/attente"
+  jq -n --slurpfile r "$MOCK_DIR/run.json" --rawfile ids "$MOCK_DIR/attente" \
+    '{workflow_runs: [$ids | split("\n")[] | select(. != "") | $r[0] + {id: tonumber}]}' | jq -r "$4"
+  exit 0
+fi
 if [ "$1 $2" = "pr create" ] && [ -f "$MOCK_DIR/echec_toujours" ]; then exit 1; fi
 [ "$1 $2" = "pr list" ] && [ -f "$MOCK_DIR/pr" ] && echo 7
 if [ "$1 $2" = "pr view" ]; then
@@ -288,26 +310,21 @@ MOCK
   touch "$t/echec_toujours"
   echoue "échec qui dure → passage en échec (le ticket s'ouvre)" v1.5.0
   rm -f "$t/echec_toujours"
-  # Le filtre des runs approuvables, sur une réponse de l'API : seul le run du robot,
-  # sur sa branche, son commit et ce dépôt, passe — jamais celui d'une fork.
-  if command -v jq >/dev/null; then
-    local ids
-    ids=$(jq -r "$(filtre_en_attente cafe123)" <<'JSON' | tr '\n' ' '
-{"workflow_runs": [
- {"id": 1, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
- {"id": 2, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "intrus/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
- {"id": 3, "event": "pull_request", "status": "action_required", "head_sha": "beef456", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
- {"id": 4, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "autre", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}},
- {"id": 5, "event": "pull_request", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "inconnu"}},
- {"id": 6, "event": "push", "status": "action_required", "head_sha": "cafe123", "head_branch": "auto/version-produit", "head_repository": {"full_name": "p/site"}, "repository": {"full_name": "p/site"}, "actor": {"login": "github-actions[bot]"}}
-]}
-JSON
-)
-    if [ "$ids" = "1 " ]; then echo "  ok      seul le run du robot est approuvable (fork, autre commit, autre branche, autre auteur écartés)"
-    else echo "  ÉCHEC   filtre des runs approuvables : « $ids », attendu « 1 »"; echecs=$((echecs + 1)); fi
-  else
-    echo "  INCONNU filtre des runs approuvables : jq absent"; echecs=$((echecs + 1))
-  fi
+  # Le filtre des runs approuvables, sur des variantes du run réel : seul le run du
+  # robot en attente, sur sa branche, son commit et ce dépôt, passe — jamais celui
+  # d'une fork, ni un run déjà joué.
+  local ids
+  ids=$(jq -c '. as $r | {workflow_runs: [
+      $r + {id: 1},
+      $r + {id: 2, head_repository: {full_name: "intrus/coprofirst-site"}},
+      $r + {id: 3, head_sha: "beef456"},
+      $r + {id: 4, head_branch: "autre"},
+      $r + {id: 5, actor: {login: "inconnu"}},
+      $r + {id: 6, event: "push"},
+      $r + {id: 7, conclusion: "success"}
+    ]}' "$t/run.json" | jq -r "$(filtre_en_attente cafe123)" | tr '\n' ' ')
+  if [ "$ids" = "1 " ]; then echo "  ok      seul le run du robot en attente est approuvable (fork, autre commit, autre branche, autre auteur, run joué écartés)"
+  else echo "  ÉCHEC   filtre des runs approuvables : « $ids », attendu « 1 »"; echecs=$((echecs + 1)); fi
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
 
