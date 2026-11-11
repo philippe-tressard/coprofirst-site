@@ -229,10 +229,13 @@ activité du dépôt.
 `python3 scripts/verifier-app-ios.py` — ce que `confidentialite.html#t-application`
 dit de l'**application iPhone** (l'adresse citée par la fiche App Store) se lit dans
 `philippe-tressard/coprofirst-ios` (`main`) : chaque paquet **embarqué** de son
-`DEPENDANCES.md` est un `apple/…` (la page dit « que des composants d'Apple »), et ses
+`DEPENDANCES.md` est un `apple/…` (la page dit « aucun code d'un tiers autre
+qu'Apple ») ou un tiers déclaré dans `TIERS_ADMIS` — des dessins, jamais du code —,
+que la section nomme avec ses licences, celles de `DEPENDANCES.md` ; et ses
 clés `NS…UsageDescription` (`project.yml`) sont exactement `PERMISSIONS` du script,
 chacune nommée par la section. **Une permission ou une bibliothèque ajoutée à l'app
-fait changer la page**, puis la liste. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
+fait changer la page**, puis la liste ; un tiers ou une permission retirés de l'app
+en sortent aussi. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
 notifications push y sont décrites d'après la spec de CoproFirst
 (`specs/architecture/notifications-push.md` §5–§7), que le contrôle ne lit pas : la
 page suit cette spec quand elle change. En CI seulement, comme les comptes de la démo.
