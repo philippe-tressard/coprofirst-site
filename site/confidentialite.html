@@ -112,6 +112,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
   <section aria-labelledby="t-application">
     <h2 id="t-application">L'application CoproFirst pour iPhone</h2>
     <p>L'application ouvre l'espace de <strong>votre résidence</strong>&nbsp;: elle se connecte directement au site de la résidence, dont vous saisissez l'adresse ou scannez le QR code (il n'y a pas d'annuaire des résidences). Ce que vous y lisez et y écrivez est conservé par la résidence, pas par l'application ni par l'éditeur. Son responsable de traitement, ses règles et le refus de ses statistiques de navigation sont dans sa propre politique de confidentialité, que l'application ouvre depuis votre profil (Vos droits).</p>
+    <p>Son accueil lit aussi le texte de présentation de coprofirst.fr, une fois par lancement, sans cookie ni identifiant&nbsp;: c'est une visite de ce site, et ce qu'en dit <a href="#t-technique">«&nbsp;Ce qui passe malgré tout par le réseau&nbsp;»</a> vaut aussi pour l'application. La dernière lecture est gardée sur l'iPhone, pour l'afficher hors ligne.</p>
     <h3>Ce que l'application ne fait pas</h3>
     <ul class="rien">
       <li>Aucune mesure d'audience pour l'éditeur, aucun traceur, aucune publicité, aucun code d'un tiers autre qu'Apple.</li>
@@ -121,10 +122,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     <h3>Ce qui reste sur votre iPhone</h3>
     <ul>
       <li><strong>La liste des résidences ouvertes</strong> sur cet iPhone (leur adresse et leur nom) et le thème choisi.</li>
+      <li><strong>Pour chaque résidence, votre courriel et votre profil</strong>&nbsp;: le courriel de votre dernière connexion, pour pré-remplir la suivante, et ce que la résidence dit de vous (votre statut, vos rôles, le libellé de votre logement). Ils vont au Trousseau de l'iPhone après chaque connexion, que Face&nbsp;ID soit activé ou non, sans être synchronisés avec iCloud ni envoyés ailleurs. La déconnexion les garde&nbsp;; «&nbsp;Oublier toutes les résidences&nbsp;», dans votre profil, les efface.</li>
       <li><strong>Votre session</strong>, en mémoire seulement&nbsp;: elle n'est gardée que si vous activez Face&nbsp;ID. Elle va alors au Trousseau de l'iPhone, protégée par Face&nbsp;ID, jamais synchronisée avec iCloud&nbsp;; elle en est retirée quand vous vous déconnectez.</li>
       <li><strong>Face&nbsp;ID</strong> est vérifié par iOS&nbsp;: l'application ne reçoit jamais votre visage, seulement la réponse.</li>
       <li><strong>La caméra</strong> ne sert qu'à lire le QR code de votre fiche d'arrivée&nbsp;; l'image n'est ni enregistrée ni envoyée.</li>
       <li><strong>Un document que vous ouvrez</strong> est copié dans un dossier temporaire de l'application, chiffré par l'iPhone, pour être affiché ou partagé.</li>
+      <li><strong>Quelques réglages</strong>, qui ne disent rien de vous&nbsp;: l'identifiant tiré au hasard qui abonne cet iPhone aux notifications de chaque résidence (oublié à la déconnexion), le fait que Face&nbsp;ID vous a déjà été proposé, et la date à laquelle vous avez remis à plus tard l'offre de notifications.</li>
     </ul>
     <h3>Les notifications sur le téléphone</h3>
     <p>Elles n'existent que si votre résidence les active (elles sont coupées par défaut) et si vous les acceptez dans iOS, qui vous permet de les retirer à tout moment. Pour faire sonner votre iPhone, la résidence passe par le relais de notifications de CoproFirst, opéré par l'éditeur, puis par le service de notifications d'<strong>Apple</strong>, société américaine, qui reçoit l'identifiant de votre appareil.</p>
