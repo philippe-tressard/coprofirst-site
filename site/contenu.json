@@ -143,9 +143,9 @@
       "Chaque résidence peut avoir sa propre installation. Une installation commune en sert plusieurs, chacune dans sa base, avec ses fichiers et ses textes légaux, sans rien voir des autres."
      ],
      "points": [
-      "residence-des-chenes.fr",
-      "75015-les-tilleuls.exemple.fr",
-      "69003-le-parc.exemple.fr"
+      "residence.example.com",
+      "75015-les-tilleuls.example.com",
+      "69003-le-parc.example.com"
      ]
     }
    ]

@@ -167,7 +167,7 @@ def selftest() -> int:
         ("genere_le absent", {"avis": []}, ["DATE"]),
         ("texte vide", {"genere_le": "2026-10-18", "avis": [{**bon, "texte": "  "}]}, ["VIDE"]),
         ("nom entier", {"genere_le": "2026-10-18", "avis": [{**bon, "auteur": "Alain Girard"}]}, ["AUTEUR"]),
-        ("courriel", {"genere_le": "2026-10-18", "avis": [{**bon, "texte": "écrivez à a.g@exemple.fr"}]}, ["DONNÉE"]),
+        ("courriel", {"genere_le": "2026-10-18", "avis": [{**bon, "texte": "écrivez à a.g@example.com"}]}, ["DONNÉE"]),
         ("téléphone", {"genere_le": "2026-10-18", "avis": [{**bon, "texte": "appelez le 06 12 34 56 78"}]}, ["DONNÉE"]),
         ("avis pas objet", {"genere_le": "2026-10-18", "avis": ["x"]}, ["FORME"]),
         ("avis pas liste", {"genere_le": "2026-10-18", "avis": {}}, ["FORME"]),

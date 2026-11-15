@@ -177,8 +177,8 @@ def selftest() -> int:
         os.environ["GH_TOKEN"] = "jeton-ci"
         verifie("jeton d'environnement envoyé à api.github.com", _requete("https://api.github.com/x").get_header("Authorization") == "Bearer jeton-ci")
         verifie("… et à aucun autre hôte", _requete("https://raw.githubusercontent.com/x").get_header("Authorization") is None)
-        verifie("… ni à un hôte qui l'imite", _requete("https://api.github.com.evil.fr/x").get_header("Authorization") is None)
-        verifie("jeton explicite toujours envoyé", _requete("https://exemple.fr/x", "a").get_header("Authorization") == "Bearer a")
+        verifie("… ni à un hôte qui l'imite", _requete("https://api.github.com.evil.example/x").get_header("Authorization") is None)
+        verifie("jeton explicite toujours envoyé", _requete("https://example.com/x", "a").get_header("Authorization") == "Bearer a")
     finally:
         os.environ.clear()
         os.environ.update(environ)

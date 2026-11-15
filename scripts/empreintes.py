@@ -94,9 +94,9 @@ def selftest() -> int:
             ("capture sans empreinte", '<img src="d/c.jpg">', ["VERSION"]),
             ("adresse absolue, à jour", f'<link href="/b.css?v={vb}">', []),
             ("adresse absolue sans empreinte", '<script src="/a.js"></script>', ["VERSION"]),
-            ("adresse protocolaire ignorée", '<script src="//x.fr/a.js"></script>', []),
+            ("adresse protocolaire ignorée", '<script src="//x.example/a.js"></script>', []),
             ("adresses externes et autres types ignorés",
-             '<a href="https://x.fr/a.js">x</a><img src="logo.svg"><a href="avis.json">j</a>', []),
+             '<a href="https://x.example/a.js">x</a><img src="logo.svg"><a href="avis.json">j</a>', []),
         ]
         for nom, html, attendu in cas:
             (site / "p.html").write_text(html, encoding="utf-8")

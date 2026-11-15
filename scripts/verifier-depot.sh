@@ -12,7 +12,10 @@
 #   - un script ou un hook qui écrit en dur le chemin d'un poste (le dossier Dev du PC,
 #     vu de Windows ou de Git Bash, ou celui du Mac) : il ment sur l'autre poste. Le chemin se lit dans
 #     ~/.claude/projets.json (.claude/env-report.sh criait « répertoire inattendu » à
-#     chaque session sur le Mac, 05/11/2026).
+#     chaque session sur le Mac, 05/11/2026) ;
+#   - un nom de domaine qui n'est ni un vrai domaine du site (liste blanche) ni un nom
+#     réservé (example.com, .test, .example, .invalid) : un hôte fictif inventé est
+#     souvent le domaine d'un tiers (standards/03 §8 quater, coprofirst-site#96).
 # Et ce que la page publiée doit à la loi et à ses visiteurs (standards/14 §3, §4, §9) :
 #   - les pages Mentions légales et Confidentialité existent ;
 #   - chaque page du site y renvoie, sans lien mort (`href="#"`), avec le même pied ;
@@ -25,6 +28,27 @@ set -uo pipefail
 
 # Extensions qui ne sont pas du texte : aucune vérification d'encodage.
 BINAIRES='\.(png|jpe?g|gif|webp|ico|pdf|woff2?)$'
+
+# Un hôte fictif se prend dans un nom réservé, jamais dans un domaine qui existe
+# (standards/03 §8 quater) : la vitrine donnait des adresses de résidence sous le
+# domaine « exemple » point « fr », qui répond en DNS — un visiteur qui recopie
+# l'exemple y envoie sa saisie (coprofirst-site#96).
+# Tout nom de domaine écrit dans un fichier versionné, sous l'un des suffixes publics
+# ci-dessous, doit être un vrai domaine du site (DOMAINES_REELS, ou l'un de leurs
+# sous-domaines) ou un nom réservé de la RFC 2606 (example.com/.org/.net). Les suffixes
+# réservés de la RFC 6761 (.test, .example, .invalid, .localhost) ne sont pas dans
+# SUFFIXES : ils passent d'office. `.sh` et `.site` n'y sont pas non plus : un nom de
+# script et un attribut Python (args.site) les portent.
+SUFFIXES='fr|com|org|net|eu|io|dev|app|info|ai|cloud|be|ch|de|uk|co|me|xyz'
+# Liste blanche : chaque domaine réel que le site cite ou charge. Rien d'autre n'y entre.
+DOMAINES_REELS='coprofirst\.fr|github\.com|githubusercontent\.com|apple\.com|schema\.org|sitemaps\.org|w3\.org|gnu\.org|fsf\.org|spdx\.org|sil\.org|cnil\.fr|cloudflare\.com|indexnow\.org|llmstxt\.org|contentsignals\.org|git-scm\.com'
+RESERVES='example\.(com|org|net)'
+
+# hotes_inconnus <chemin> — fonction PURE : un domaine hors liste blanche par ligne.
+hotes_inconnus() {
+  grep -oiE "\b([a-z0-9-]+\.)+($SUFFIXES)\b" "$1" | tr 'A-Z' 'a-z' | sort -u \
+    | grep -vE "^([a-z0-9-]+\.)*($DOMAINES_REELS|$RESERVES)$"
+}
 
 # juger_fichier <chemin> <mode git> — fonction PURE : lit le fichier, n'écrit rien.
 # Écrit un écart par ligne ; rien si le fichier est conforme.
@@ -49,6 +73,13 @@ juger_fichier() {
   # Les crochets empêchent le motif de se trouver lui-même dans ce fichier.
   if [[ "$f" == *.sh || "$f" == *.py || "$f" == *.cmd || "$f" == *.mjs || "$f" == .githooks/* || "$f" == .claude/* ]]; then
     grep -qE '/[c]/Dev/|[A-Za-z]:[\\]+Dev[\\]|/Volumes/Data/[D]ev/' "$f" && echo "POSTE    $f (chemin d'un poste écrit en dur : le lire dans ~/.claude/projets.json)"
+  fi
+  # maquettes/ : archives jamais servies, qu'on ne corrige pas (CLAUDE.md du site).
+  if [[ "$f" != maquettes/* ]]; then
+    local h
+    for h in $(hotes_inconnus "$f"); do
+      echo "HOTE     $f ($h : domaine hors liste blanche — un hôte fictif se prend dans example.com, .test, .example ou .invalid ; un vrai domaine du site s'ajoute à DOMAINES_REELS)"
+    done
   fi
   # Un script Python prouve sa syntaxe par son --selftest, lancé en CI
   if [[ "$f" == *.sh || "$f" == .githooks/* ]]; then
@@ -120,6 +151,17 @@ selftest() {
   printf '#!/bin/bash\nA=/c/%s/Projet\n' "$d" > "$t/poste-bash.sh"
   printf 'racine = r"C:\\%s\\Projet"\n' "$d" > "$t/poste-win.py"
   printf 'const r = "/Volumes/Data/%s/Projet";\n' "$d" > "$t/poste-mac.mjs"
+  # Hôtes : le domaine tiers s'assemble aussi, pour que ce fichier passe son propre contrôle.
+  local tld=fr
+  printf '<li>75015-les-tilleuls.exemple.%s</li>\n' "$tld" > "$t/hote-tiers.html"
+  printf 'courriel = "a.g@exemple.%s"\n' "$tld" > "$t/hote-courriel.py"
+  printf '<li>Residence-Des-Chenes.%s</li>\n' "FR" > "$t/hote-majuscules.html"
+  printf 'https://api.github.com.evil.example/x https://coprofirst.fr.exemple.%s/\n' "$tld" > "$t/hote-imite.py"
+  printf '%s\n' '<a href="https://demo.coprofirst.fr/">démo</a> <a href="https://www.cnil.fr/">CNIL</a>' \
+    'https://raw.githubusercontent.com/x https://apps.apple.com/fr/app/x' \
+    '<li>75015-les-tilleuls.example.com</li> vous@example.org h.example.net' \
+    'residence.test site.invalid fonts.example localhost' \
+    'bash deployer.sh ; args.site ; self.site' > "$t/hote-admis.html"
   local echecs=0
   verifie() { # <attendu> <fichier> <mode>
     local obtenu; obtenu=$(juger_fichier "$t/$2" "$3" | awk '{print $1}' | tr '\n' ' ')
@@ -139,6 +181,11 @@ selftest() {
   verifie "POSTE " poste-bash.sh 100755
   verifie "POSTE " poste-win.py 100755
   verifie "POSTE " poste-mac.mjs 100644
+  verifie "HOTE " hote-tiers.html 100644
+  verifie "HOTE " hote-courriel.py 100755
+  verifie "HOTE " hote-majuscules.html 100644
+  verifie "HOTE " hote-imite.py 100755
+  verifie "" hote-admis.html 100644
   # Règles d'une page publiée
   local theme='<script src="theme.js?v=1"></script><button data-bascule-theme></button>'
   local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'"$theme"
