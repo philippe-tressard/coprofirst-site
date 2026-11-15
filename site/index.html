@@ -61,7 +61,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
    "description": "Application web libre de gestion de copropriété, du côté des résidents et du conseil syndical : signalements suivis, documents classés par profil, carnet d'entretien, badges d'accès, suivi des affaires et point avec le syndic, communauté entre voisins, assistant IA facultatif. Une installation sert une copropriété, ou plusieurs.",
    "applicationCategory": "BusinessApplication",
    "applicationSubCategory": "Gestion de copropriété",
-   "operatingSystem": "Serveur Linux avec Docker (amd64 ou arm64) ; navigateur web, installable sur téléphone",
+   "operatingSystem": "Serveur Linux avec Docker (amd64 ou arm64) ; navigateur web, installable sur téléphone ; application iOS (App Store), Android à venir",
    "softwareRequirements": "Docker et Docker Compose 2.24 ou plus récent, accès HTTPS, adresse d'envoi de courriels (SMTP)",
    "featureList": [
     "Signalements suivis jusqu'à leur résolution, kanban du conseil syndical",
@@ -116,7 +116,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
  ]
 }
 </script>
-<link rel="stylesheet" href="accueil.css?v=7195eb13">
+<link rel="stylesheet" href="accueil.css?v=486d3019">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <script src="accueil.js?v=06310979"></script>
 </head>
@@ -209,7 +209,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         <article data-contenu="communaute" class="tuile t-blanc revele"><h3>Communauté</h3><p>Idées, sondages, petites annonces — entre résidents.</p></article>
         <article data-contenu="affiches" class="tuile t-ciel revele"><h3>Affiches de hall</h3><p>Un PDF au format qui convient, prêt à punaiser.</p></article>
         <article data-contenu="fil-courriels" class="tuile large t-blanc revele"><h3>Un fil de courriels devient une affaire</h3><p>Un membre du conseil transfère le fil reçu&nbsp;: chaque message devient une suite de l'affaire, datée et signée de son auteur.</p><div class="chips" aria-hidden="true"><span>Daté</span><span>Signé</span><span>Jamais en double</span></div></article>
-        <article data-contenu="telephone" class="tuile moyenne t-sable revele"><h3>Sur le téléphone, sans magasin d'applications</h3><p>CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence.</p></article>
+        <!-- Où se sert CoproFirst : le web, l'app iPhone (APPLI_IOS de coprofirst), Android en préparation — comme le manuel utilisateur. -->
+        <article data-contenu="telephone" class="tuile moyenne t-sable revele"><h3>Sur le web, sur iPhone, bientôt sur Android</h3><p>Dans le navigateur, sur l'ordinateur comme sur le téléphone, où CoproFirst s'installe au nom et au logo de votre résidence. Sur iPhone, l'application se télécharge aussi sur l'App Store&nbsp;; celle pour Android est en préparation.</p><div class="magasins"><a class="badge-magasin" href="https://apps.apple.com/fr/app/coprofirst/id6834326392"><img src="badge-app-store-fr.svg" width="126" height="40" alt="Télécharger dans l'App Store"></a><span class="a-venir">Android · bientôt</span></div></article>
         <article data-contenu="conservation" class="tuile moyenne t-menthe revele"><h3>Ce qui est gardé, et combien de temps</h3><p>Si la résidence l'active, une affaire close perd ses pièces jointes et ses auteurs après 2, 5 ou 10 exercices selon sa catégorie, et garde son texte. Un compte inactif depuis deux ans est prévenu, puis supprimé.</p></article>
         <article data-contenu="installations" class="tuile pleine t-blanc revele multi">
           <div><h3>Une installation, une ou plusieurs copropriétés</h3><p>Chaque résidence peut avoir sa propre installation. Une installation commune en sert plusieurs, chacune dans sa base, avec ses fichiers et ses textes légaux, sans rien voir des autres.</p></div>
@@ -366,7 +367,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
         </article>
         <article class="question revele" data-contenu="competences" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Faut-il des compétences techniques&nbsp;?</h3>
-          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur.</p></div></div>
+          <div itemscope itemprop="acceptedAnswer" itemtype="https://schema.org/Answer"><div itemprop="text"><p>Pour l'installer, oui&nbsp;: administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non&nbsp;: c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur, et une application pour iPhone sur l'App Store — bientôt pour Android.</p></div></div>
         </article>
         <article class="question revele" data-contenu="donnees" itemscope itemprop="mainEntity" itemtype="https://schema.org/Question">
           <h3 itemprop="name">Où sont les données de la résidence&nbsp;?</h3>

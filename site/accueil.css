@@ -134,6 +134,13 @@ section{padding:88px 0}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:16px}
 .chips span{background:var(--voile);border-radius:99px;padding:4px 11px;font-size:.8rem;color:var(--doux)}
 .t-blanc .chips span{background:var(--creme)}
+/* Où se sert CoproFirst : le badge d'Apple, intact (charte : 40 px de haut, de l'air
+   autour), puis Android, en pointillés tant qu'il n'est qu'annoncé — comme le manuel. */
+.magasins{display:flex;flex-wrap:wrap;align-items:center;gap:12px 14px;margin-top:18px}
+.badge-magasin{display:inline-block;line-height:0;border-radius:8px;transition:transform 160ms var(--ease-out)}
+.badge-magasin img{display:block;width:126px;height:40px}
+.badge-magasin:active{transform:scale(0.97)}
+.a-venir{display:inline-flex;align-items:center;height:40px;padding:0 16px;border-radius:8px;border:1px dashed var(--doux);font-size:.86rem;font-weight:500;color:var(--doux)}
 /* Une installation, une ou plusieurs copropriétés */
 .multi{display:grid;grid-template-columns:1.3fr 1fr;gap:24px;align-items:center}
 .adresses{display:grid;gap:8px;margin:0;padding:0;list-style:none}
@@ -305,7 +312,7 @@ section{padding:88px 0}
   .illu-g i{transition:none;transform:none}
   .js .panneau:not([hidden]){animation:fondu 150ms ease}
   .onglets.copie,.imm i.allume,.jauge i{transition:none}
-  .role:active,.role:hover,.role:hover:active,.lire-suite:active,.fleche-c:active{transform:none}
+  .role:active,.role:hover,.role:hover:active,.lire-suite:active,.fleche-c:active,.badge-magasin:active{transform:none}
   .carrousel{scroll-behavior:auto}
   @keyframes fondu{from{opacity:0}to{opacity:1}}
 }

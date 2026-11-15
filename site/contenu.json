@@ -124,9 +124,9 @@
     },
     {
      "id": "telephone",
-     "titre": "Sur le téléphone, sans magasin d'applications",
+     "titre": "Sur le web, sur iPhone, bientôt sur Android",
      "textes": [
-      "CoproFirst s'installe depuis le navigateur et porte le nom et le logo de votre résidence."
+      "Dans le navigateur, sur l'ordinateur comme sur le téléphone, où CoproFirst s'installe au nom et au logo de votre résidence. Sur iPhone, l'application se télécharge aussi sur l'App Store ; celle pour Android est en préparation."
      ]
     },
     {
@@ -406,7 +406,7 @@
      "id": "competences",
      "titre": "Faut-il des compétences techniques ?",
      "textes": [
-      "Pour l'installer, oui : administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non : c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur."
+      "Pour l'installer, oui : administrer un serveur Linux, y lancer des conteneurs Docker et placer un accès HTTPS devant. Pour s'en servir, non : c'est un site web, que chacun peut installer sur son téléphone depuis le navigateur, et une application pour iPhone sur l'App Store — bientôt pour Android."
      ]
     },
     {
