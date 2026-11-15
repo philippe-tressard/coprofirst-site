@@ -377,7 +377,7 @@ def selftest():
         verifie("--ecrire, puis contrôle conforme", principal(site, ecrire=True, contrat=None) == OK and juger(site, None)[0] == OK)
         verifie("page retouchée, fichier non suivi → DIVERGE", codes(PAGE_TEST.replace("Trois temps.", "Quatre temps.")) == ["DIVERGE"])
         verifie("image absente → IMAGE", "IMAGE" in codes(PAGE_TEST.replace('src="c.jpg', 'src="d.jpg')))
-        verifie("image externe → IMAGE", "IMAGE" in codes(PAGE_TEST.replace('src="c.jpg', 'src="https://x.fr/c.jpg')))
+        verifie("image externe → IMAGE", "IMAGE" in codes(PAGE_TEST.replace('src="c.jpg', 'src="https://x.example/c.jpg')))
         verifie("identifiant en double → DOUBLON", "DOUBLON" in codes(PAGE_TEST.replace('data-contenu="panneau"', 'data-contenu="demande"')))
         verifie("identifiant mal formé → ID", "ID" in codes(PAGE_TEST.replace('data-contenu="panneau"', 'data-contenu="Panneau A"')))
         verifie("élément sans titre → TITRE", "TITRE" in codes(PAGE_TEST.replace("<h3>Demande</h3>", "")))

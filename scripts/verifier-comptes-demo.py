@@ -239,7 +239,7 @@ def selftest() -> int:
         ("compte en trop", source, _page_type(avec_intrus), "EN TROP"),
         ("arguments nommés", source.replace('"user-cs",', 'code="user-cs",')
          .replace('"PSWD-a1",', 'mot_de_passe="PSWD-a1",'), _page_type(A), ""),
-        ("autre domaine", _source_type(A, "demo.exemple.fr"), _page_type(A), "EN TROP MANQUE EN TROP MANQUE"),
+        ("autre domaine", _source_type(A, "demo.example.com"), _page_type(A), "EN TROP MANQUE EN TROP MANQUE"),
         ("source sans personnage (cas zéro)", _source_type({}), _page_type(A), "INCONNU"),
         ("source sans DOMAINE", source.replace("DOMAINE = ", "AUTRE = "), _page_type(A), "INCONNU"),
         ("adresse formée autrement", source.replace("{self.code}@", "{self.code}.x@"), _page_type(A), "INCONNU"),

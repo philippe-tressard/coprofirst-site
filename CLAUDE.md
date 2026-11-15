@@ -153,7 +153,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 `bash scripts/verifier-depot.sh` — encodage (BOM), fins de ligne (CRLF), bits
 d'exécution et syntaxe des scripts, et aucun chemin de poste écrit en dur dans un
 script ou un hook (`POSTE` : il se lit dans `~/.claude/projets.json`, comme le fait
-`.claude/env-report.sh`). Il tourne en `pre-commit`
+`.claude/env-report.sh`), et aucun domaine hors liste blanche (`HOTE`, `standards/03`
+§8 quater) : un hôte d'exemple se prend dans `example.com` (`residence.example.com`,
+comme les apps) ou `.test`/`.example`/`.invalid`, jamais dans un nom enregistrable ;
+un vrai domaine cité par le site s'ajoute à `DOMAINES_REELS`. `maquettes/` exceptées. Il tourne en `pre-commit`
 (`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
 `reuse lint`.
 

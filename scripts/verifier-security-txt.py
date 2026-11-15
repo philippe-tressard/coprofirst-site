@@ -76,10 +76,10 @@ def renouveler(texte: str, maintenant: datetime) -> str:
 
 def selftest() -> int:
     t0 = datetime(2026, 10, 22, tzinfo=timezone.utc)
-    bon = f"# commentaire: ignoré\nContact: mailto:a@b.fr\nExpires: 2027-10-01T00:00:00Z\nCanonical: {CANONIQUE}\n"
+    bon = f"# commentaire: ignoré\nContact: mailto:a@b.example\nExpires: 2027-10-01T00:00:00Z\nCanonical: {CANONIQUE}\n"
     cas = [
         ("conforme", bon, 0),
-        ("sans Contact", bon.replace("Contact: mailto:a@b.fr\n", ""), 1),
+        ("sans Contact", bon.replace("Contact: mailto:a@b.example\n", ""), 1),
         ("Contact en commentaire seulement", bon.replace("Contact:", "# Contact:"), 1),
         ("échéance dans 10 jours", bon.replace("2027-10-01", "2026-11-01"), 1),
         ("échéance passée", bon.replace("2027-10-01", "2026-01-01"), 1),
@@ -87,7 +87,7 @@ def selftest() -> int:
         ("échéance sans fuseau", bon.replace("T00:00:00Z", "T00:00:00"), 1),
         ("échéance illisible", bon.replace("2027-10-01T00:00:00Z", "bientôt"), 1),
         ("deux Expires", bon + "Expires: 2027-10-01T00:00:00Z\n", 1),
-        ("Canonical faux", bon.replace(CANONIQUE, "https://exemple.fr/security.txt"), 1),
+        ("Canonical faux", bon.replace(CANONIQUE, "https://example.com/security.txt"), 1),
     ]
     echecs = 0
     for libelle, texte, attendu in cas:
