@@ -12,6 +12,14 @@ precedence = "override"
 SPDX-FileCopyrightText = "2026 Philippe TRESSARD"
 SPDX-License-Identifier = "LicenseRef-CoproFirst-Logo"
 
+# Le badge « Télécharger dans l'App Store » : œuvre d'Apple, sans modification,
+# hors de l'AGPL (LICENSES/LicenseRef-Apple-App-Store-Badge.txt). Recopié de coprofirst.
+[[annotations]]
+path = "site/badge-app-store-fr.svg"
+precedence = "override"
+SPDX-FileCopyrightText = "Apple Inc."
+SPDX-License-Identifier = "LicenseRef-Apple-App-Store-Badge"
+
 # Les maquettes d'archive portent le code de la page ET une copie en ligne du logo.
 [[annotations]]
 path = "maquettes/*.html"
