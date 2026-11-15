@@ -233,7 +233,10 @@ dit de l'**application iPhone** (l'adresse citée par la fiche App Store) se lit
 qu'Apple ») ou un tiers déclaré dans `TIERS_ADMIS` — des dessins, jamais du code —,
 que la section nomme avec ses licences, celles de `DEPENDANCES.md` ; et ses
 clés `NS…UsageDescription` (`project.yml`) sont exactement `PERMISSIONS` du script,
-chacune nommée par la section. **Une permission ou une bibliothèque ajoutée à l'app
+chacune nommée par la section ; et la section dit « N jours », N lu dans
+`LectureGardee.joursMax` de l'app (la durée de la consultation hors ligne). Le reste de
+ce que l'app garde sur l'iPhone se tient ligne à ligne dans la fiche de coprofirst-ios
+(`confidentialite.md` §3) : un changement y fait changer la page. **Une permission ou une bibliothèque ajoutée à l'app
 fait changer la page**, puis la liste ; un tiers ou une permission retirés de l'app
 en sortent aussi. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
 notifications push y sont décrites d'après la spec de CoproFirst

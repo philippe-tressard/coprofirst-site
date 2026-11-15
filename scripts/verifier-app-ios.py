@@ -19,13 +19,19 @@
 #      project.yml sont EXACTEMENT celles de PERMISSIONS, et la section nomme chacune.
 #      Une permission ajoutée (localisation, contacts, photos…) est un écart tant
 #      que la page ne la décrit pas ; une permission retirée aussi, pour que la
-#      page et cette liste ne gardent pas une ligne qui ne sert plus.
+#      page et cette liste ne gardent pas une ligne qui ne sert plus ;
+#   3. la durée de la consultation hors ligne : la section dit « N jours », N étant
+#      `LectureGardee.joursMax` de LecturesGardees.swift (coprofirst-site#92). Le
+#      chiffre se lit dans le code, il n'est pas recopié ici.
 #
 # Ce qu'il ne couvre pas (standards/04 §12) : les notifications push, décrites par
 # la spécification de CoproFirst (specs/architecture/notifications-push.md §5) et
 # pas encore dans l'app ; le comportement du code au-delà de ces deux déclarations —
 # qu'un tiers admis ne soit que des dessins, sans code ni connexion, se relit dans le
-# dépôt de l'app (REUSE.toml, le catalogue d'images) avant de l'ajouter à TIERS_ADMIS.
+# dépôt de l'app (REUSE.toml, le catalogue d'images) avant de l'ajouter à TIERS_ADMIS ;
+# le reste de ce que l'app garde sur l'iPhone, tenu ligne à ligne par la fiche de
+# coprofirst-ios (confidentialite.md §3, verifier-confidentialite.py) : le recopier ici
+# en ferait une seconde liste.
 #
 # En CI seulement, à chaque poussée et chaque jour (.github/workflows/comptes-demo.yml) :
 # la dérive naît dans l'autre dépôt, comme pour verifier-comptes-demo.py.
@@ -35,7 +41,7 @@
 # d'avoir pu lire.
 #
 # Usage : python3 scripts/verifier-app-ios.py
-#         python3 scripts/verifier-app-ios.py --dependances X --projet Y --page Z
+#         python3 scripts/verifier-app-ios.py --dependances X --projet Y --page Z --lecture W
 #         python3 scripts/verifier-app-ios.py --selftest
 import argparse
 import html
@@ -122,6 +128,14 @@ def permissions(texte: str) -> set[str]:
     return cles
 
 
+def jours_max(texte: str) -> int:
+    """`static let joursMax = 7` → 7 : la durée de la lecture gardée hors ligne."""
+    trouve = re.findall(r"^\s*static let joursMax\s*=\s*(\d+)\s*$", texte, re.M)
+    if len(trouve) != 1:
+        raise Illisible("LecturesGardees.swift : `static let joursMax = N` introuvable ou en double (forme changée ?)")
+    return int(trouve[0])
+
+
 def section_application(texte: str) -> str:
     bloc = re.search(r'<section aria-labelledby="t-application">(.*?)</section>', texte, re.S)
     if not bloc:
@@ -129,10 +143,11 @@ def section_application(texte: str) -> str:
     return html.unescape(bloc.group(1)).replace("\xa0", " ")
 
 
-def verifier(dependances: str, projet: str, page: str) -> tuple[int, list[str]]:
+def verifier(dependances: str, projet: str, page: str, lecture: str) -> tuple[int, list[str]]:
     try:
         paquets = paquets_embarques(lire(dependances))
         cles = permissions(lire(projet))
+        jours = jours_max(lire(lecture))
         section = section_application(lire(page))
     except Illisible as e:
         return INCONNU, [str(e)]
@@ -143,6 +158,9 @@ def verifier(dependances: str, projet: str, page: str) -> tuple[int, list[str]]:
                for c in sorted(PERMISSIONS.keys() - cles)]
     ecarts += [f"la section #t-application ne nomme pas « {mot} » ({c})"
                for c, mot in PERMISSIONS.items() if c in cles and not nomme(section, mot)]
+    if not nomme(section, f"{jours} jours"):
+        ecarts.append(f"la section #t-application ne dit pas « {jours} jours » : c'est la durée de la "
+                      "lecture gardée hors ligne dans l'app (LectureGardee.joursMax)")
     return (ECART if ecarts else OK), ecarts
 
 
@@ -152,8 +170,9 @@ def selftest() -> int:
             "| apple/swift-openapi-runtime | 1 | Apache-2.0 |\n| apple/swift-http-types | t | Apache-2.0 |\n"
             + lucide + "\n## Outils\n\n| Outil |\n|---|\n| mattpolzin/OpenAPIKit |\n")
     projet = "    info:\n      properties:\n        NSCameraUsageDescription: \"x\"\n        NSFaceIDUsageDescription: \"y\"\n"
+    lecture = "enum LectureGardee {\n    static let joursMax = 7\n    static var dureeMax: TimeInterval { 1 }\n}\n"
     page = ('<section aria-labelledby="t-application"><li>La caméra</li><li>Face&nbsp;ID</li>'
-            '<li>les pictogrammes de Lucide (licences ISC et MIT)</li></section>'
+            '<li>les pictogrammes de Lucide (licences ISC et MIT)</li><li>effacée au bout de 7&nbsp;jours</li></section>'
             '<section aria-labelledby="t-droits"></section>')
     cas = [
         ("conforme (un outil de build tiers ne compte pas)", deps, projet, page, OK),
@@ -171,12 +190,18 @@ def selftest() -> int:
         ("tableau des paquets vide", "## Embarquées dans l'application\n\n| Paquet | Licence |\n|---|---|\n", projet, page, INCONNU),
         ("aucune clé de permission", deps, "    info: {}\n", page, INCONNU),
         ("page sans la section", deps, projet, '<section aria-labelledby="t-droits"></section>', INCONNU),
+        # La durée de la lecture gardée hors ligne (coprofirst-site#92) : 6e champ, la source.
+        ("durée changée dans l'app", deps, projet, page, ECART, lecture.replace("= 7", "= 14")),
+        ("page qui ne dit plus la durée", deps, projet, page.replace("7&nbsp;jours", "une semaine"), ECART),
+        ("« 17 jours » ne dit pas « 7 jours »", deps, projet, page.replace("7&nbsp;jours", "17&nbsp;jours"), ECART),
+        ("durée introuvable dans le code", deps, projet, page, INCONNU, lecture.replace("joursMax", "dureeJours")),
+        ("durée écrite deux fois dans le code", deps, projet, page, INCONNU, lecture + "    static let joursMax = 7\n"),
     ]
     echecs = 0
     with tempfile.TemporaryDirectory() as dossier:
-        for nom, d, p, h, attendu in cas:
+        for nom, d, p, h, attendu, *source in cas:
             chemins = []
-            for i, contenu in enumerate((d, p, h)):
+            for i, contenu in enumerate((d, p, h, source[0] if source else lecture)):
                 f = Path(dossier) / f"{i}.txt"
                 f.write_text(contenu, encoding="utf-8")
                 chemins.append(str(f))
@@ -184,7 +209,7 @@ def selftest() -> int:
             if obtenu != attendu:
                 echecs += 1
                 print(f"selftest ÉCHEC : {nom} — attendu {attendu}, obtenu {obtenu}")
-        obtenu, _ = verifier(str(Path(dossier) / "absent"), chemins[1], chemins[2])
+        obtenu, _ = verifier(str(Path(dossier) / "absent"), *chemins[1:])
         if obtenu != INCONNU:
             echecs += 1
             print(f"selftest ÉCHEC : source illisible — attendu {INCONNU}, obtenu {obtenu}")
@@ -196,12 +221,13 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dependances", default=DEPOT + "DEPENDANCES.md")
     parser.add_argument("--projet", default=DEPOT + "project.yml")
+    parser.add_argument("--lecture", default=DEPOT + "CoproFirst/Session/LectureGardee/LecturesGardees.swift")
     parser.add_argument("--page", default=str(PAGE))
     parser.add_argument("--selftest", action="store_true")
     args = parser.parse_args()
     if args.selftest:
         return selftest()
-    verdict, messages = verifier(args.dependances, args.projet, args.page)
+    verdict, messages = verifier(args.dependances, args.projet, args.page, args.lecture)
     for m in messages:
         print(("INCONNU : " if verdict == INCONNU else "ÉCART : ") + m)
     print("verifier-app-ios : " + {OK: "conforme", ECART: f"{len(messages)} écart(s)", INCONNU: "INCONNU"}[verdict])
