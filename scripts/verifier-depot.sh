@@ -15,7 +15,7 @@
 #     chaque session sur le Mac, 05/11/2026) ;
 #   - un nom de domaine qui n'est ni un vrai domaine du site (liste blanche) ni un nom
 #     réservé (example.com, .test, .example, .invalid) : un hôte fictif inventé est
-#     souvent le domaine d'un tiers (standards/03 §8 quater, coprofirst-site#96).
+#     souvent le domaine d'un tiers (standards/03 §8 quater, 15/11/2026).
 # Et ce que la page publiée doit à la loi et à ses visiteurs (standards/14 §3, §4, §9) :
 #   - les pages Mentions légales et Confidentialité existent ;
 #   - chaque page du site y renvoie, sans lien mort (`href="#"`), avec le même pied ;
@@ -32,7 +32,7 @@ BINAIRES='\.(png|jpe?g|gif|webp|ico|pdf|woff2?)$'
 # Un hôte fictif se prend dans un nom réservé, jamais dans un domaine qui existe
 # (standards/03 §8 quater) : la vitrine donnait des adresses de résidence sous le
 # domaine « exemple » point « fr », qui répond en DNS — un visiteur qui recopie
-# l'exemple y envoie sa saisie (coprofirst-site#96).
+# l'exemple y envoie sa saisie (15/11/2026).
 # Tout nom de domaine écrit dans un fichier versionné, sous l'un des suffixes publics
 # ci-dessous, doit être un vrai domaine du site (DOMAINES_REELS, ou l'un de leurs
 # sous-domaines) ou un nom réservé de la RFC 2606 (example.com/.org/.net). Les suffixes
