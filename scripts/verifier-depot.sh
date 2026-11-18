@@ -41,7 +41,7 @@ BINAIRES='\.(png|jpe?g|gif|webp|ico|pdf|woff2?)$'
 # script et un attribut Python (args.site) les portent.
 SUFFIXES='fr|com|org|net|eu|io|dev|app|info|ai|cloud|be|ch|de|uk|co|me|xyz'
 # Liste blanche : chaque domaine réel que le site cite ou charge. Rien d'autre n'y entre.
-DOMAINES_REELS='coprofirst\.fr|github\.com|githubusercontent\.com|apple\.com|schema\.org|sitemaps\.org|w3\.org|gnu\.org|fsf\.org|spdx\.org|sil\.org|cnil\.fr|cloudflare\.com|indexnow\.org|llmstxt\.org|contentsignals\.org|git-scm\.com'
+DOMAINES_REELS='coprofirst\.fr|github\.com|githubusercontent\.com|apple\.com|schema\.org|sitemaps\.org|w3\.org|gnu\.org|fsf\.org|spdx\.org|sil\.org|cnil\.fr|cloudflare\.com|indexnow\.org|llmstxt\.org|contentsignals\.org|git-scm\.com|google\.com'
 RESERVES='example\.(com|org|net)'
 
 # hotes_inconnus <chemin> — fonction PURE : un domaine hors liste blanche par ligne.

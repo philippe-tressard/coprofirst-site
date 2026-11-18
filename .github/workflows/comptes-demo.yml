@@ -44,6 +44,13 @@ jobs:
         run: python3 scripts/verifier-app-ios.py --selftest
       - name: confidentialite.html contre coprofirst-ios (main)
         run: python3 scripts/verifier-app-ios.py
+      # Les chiffres et libellés que supprimer-compte.html (adresse exigée par Google Play,
+      # coprofirst-site#104) et les notifications de confidentialite.html (coprofirst-site#108)
+      # recopient du serveur et des apps.
+      - name: Les faits recopiés du produit (selftest)
+        run: python3 scripts/verifier-faits-produit.py --selftest
+      - name: Les pages contre coprofirst, coprofirst-ios et coprofirst-android (main)
+        run: python3 scripts/verifier-faits-produit.py
       # Pas une concordance : une date qui passe. Sa place est dans le passage quotidien.
       - name: L'échéance de security.txt (un mois de préavis)
         run: python3 scripts/verifier-security-txt.py
