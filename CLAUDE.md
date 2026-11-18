@@ -16,7 +16,9 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 
 - **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
   `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
-  `site/mentions-legales.html`, `site/confidentialite.html`, `site/404.html` (servie
+  `site/mentions-legales.html`, `site/confidentialite.html`, `site/supprimer-compte.html`
+  (l'adresse « supprimer votre compte » que Google Play exige, utilisable sans l'app ;
+  ses sources sont nommées en tête de la page), `site/404.html` (servie
   par le Caddyfile sur toute adresse inconnue, avec le code 404 et les mêmes en-têtes
   de sécurité — `noindex`, hors du sitemap, adresses en absolu — le pied de toutes les pages aussi,
   pour qu'il tienne sur /a/b/x) ; styles partagés dans
@@ -245,6 +247,15 @@ en sortent aussi. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
 notifications push y sont décrites d'après la spec de CoproFirst
 (`specs/architecture/notifications-push.md` §5–§7), que le contrôle ne lit pas : la
 page suit cette spec quand elle change. En CI seulement, comme les comptes de la démo.
+
+`python3 scripts/verifier-faits-produit.py` — les chiffres et les libellés d'écran que
+`supprimer-compte.html` et la section `#t-notifications` de `confidentialite.html`
+recopient de CoproFirst, de coprofirst-ios et de coprofirst-android (`main`, sans jeton)
+sont ceux du code : la table `FAITS` dit la source, le motif qui en extrait **une**
+valeur, la section et la phrase. **Une page qui recopie un fait du produit l'ajoute à
+`FAITS`.** Le sens (ce qui est effacé, ce qui sonne) se relit à la main quand la source
+change. Sortie 0, 1, **2 INCONNU** ; `--selftest`, `--racine`. En CI seulement
+(`comptes-demo.yml`, chaque poussée et chaque jour), comme les comptes de la démo.
 
 `python3 scripts/verifier-security-txt.py` — `site/.well-known/security.txt` (RFC 9116 :
 où signaler une faille, renvoie aux avis de sécurité privés de coprofirst) a un Contact,

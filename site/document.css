@@ -14,7 +14,8 @@ lecture, des fiches pour les coordonnées. S'ajoute à commun.css.
 .document h3{font-size:1.12rem;margin-top:24px}
 .document p,.document li{color:var(--texte-2)}
 .document p{margin:10px 0 0;text-wrap:pretty}
-.document ul{margin:10px 0 0;padding-left:1.2em}
+.document ul,.document ol{margin:10px 0 0;padding-left:1.2em}
+.document ol li::marker{color:var(--doux);font-variant-numeric:tabular-nums}
 .document li+li{margin-top:6px}
 .document a{color:var(--lien);text-underline-offset:3px;text-decoration-color:color-mix(in srgb,currentColor 35%,transparent);transition:text-decoration-color 200ms ease}
 @media (hover:hover) and (pointer:fine){.document a:hover{text-decoration-color:currentColor}}

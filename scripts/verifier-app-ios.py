@@ -24,9 +24,10 @@
 #      `LectureGardee.joursMax` de LecturesGardees.swift (coprofirst-site#92). Le
 #      chiffre se lit dans le code, il n'est pas recopié ici.
 #
-# Ce qu'il ne couvre pas (standards/04 §12) : les notifications push, décrites par
-# la spécification de CoproFirst (specs/architecture/notifications-push.md §5) et
-# pas encore dans l'app ; le comportement du code au-delà de ces deux déclarations —
+# Ce qu'il ne couvre pas (standards/04 §12) : les notifications push, qui ont leur
+# section #t-notifications, décrite par la spécification de CoproFirst
+# (specs/architecture/notifications-push.md §5, §11, §12) et dont le texte fixe et la
+# durée se relisent par verifier-faits-produit.py ; le comportement du code au-delà de ces deux déclarations —
 # qu'un tiers admis ne soit que des dessins, sans code ni connexion, se relit dans le
 # dépôt de l'app (REUSE.toml, le catalogue d'images) avant de l'ajouter à TIERS_ADMIS ;
 # le reste de ce que l'app garde sur l'iPhone, tenu ligne à ligne par la fiche de

@@ -12,7 +12,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <script src="theme.js?v=fbbef372"></script>
 <link rel="stylesheet" href="commun.css?v=3c1adb99">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="document.css?v=0c706ac0">
+<link rel="stylesheet" href="document.css?v=55160a2b">
 <meta name="description" content="Ce que le site coprofirst.fr et l'application CoproFirst pour iPhone font — et ne font pas — de vos données.">
 <link rel="canonical" href="https://coprofirst.fr/confidentialite.html">
 <link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
@@ -65,7 +65,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <main id="contenu" class="document">
   <h1>Confidentialité</h1>
   <p class="chapo">Ce site présente CoproFirst. Il ne vous demande rien et ne cherche pas à savoir qui vous êtes. L'application pour iPhone a <a href="#t-application">sa section</a>, plus bas.</p>
-  <span class="maj">Mise à jour le 11 novembre 2026</span>
+  <span class="maj">Mise à jour le 18 novembre 2026</span>
 
   <section aria-labelledby="t-rien">
     <h2 id="t-rien">Ce que ce site ne fait pas</h2>
@@ -130,21 +130,31 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <li><strong>Un document que vous ouvrez</strong> est copié dans un dossier temporaire de l'application, chiffré par l'iPhone, pour être affiché ou partagé&nbsp;; ces copies sont effacées quand vous vous déconnectez.</li>
       <li><strong>Quelques réglages</strong>, qui ne disent rien de vous&nbsp;: l'identifiant tiré au hasard qui abonne cet iPhone aux notifications de chaque résidence (oublié à la déconnexion), le fait que Face&nbsp;ID vous a déjà été proposé, et la date à laquelle vous avez remis à plus tard l'offre de notifications.</li>
     </ul>
-    <h3>Les notifications sur le téléphone</h3>
-    <p>Elles n'existent que si votre résidence les active (elles sont coupées par défaut) et si vous les acceptez dans iOS, qui vous permet de les retirer à tout moment. Pour faire sonner votre iPhone, la résidence passe par le relais de notifications de CoproFirst, opéré par l'éditeur, puis par le service de notifications d'<strong>Apple</strong>, société américaine, qui reçoit l'identifiant de votre appareil.</p>
-    <ul>
-      <li>Le message qui part chez Apple est toujours le même&nbsp;: «&nbsp;Vous avez une nouvelle notification.&nbsp;» Il ne dit ni qui vous êtes, ni le nom ou l'adresse de votre résidence, ni de quoi il s'agit, ni combien de notifications vous attendent. L'application lit le détail auprès de votre résidence, quand vous l'ouvrez.</li>
-      <li>Pour un avis <strong>urgent</strong> seulement (une fuite, un ascenseur bloqué), le message est marqué «&nbsp;urgent&nbsp;» pour pouvoir traverser le mode Concentration&nbsp;: Apple apprend alors qu'un avis est urgent, rien de plus.</li>
-      <li>Le relais transmet et oublie&nbsp;: il ne garde aucun identifiant d'appareil, et son journal n'en contient jamais.</li>
-      <li>La résidence garde l'identifiant de votre appareil le temps de vos sessions&nbsp;: il est effacé quand vous vous déconnectez, quand votre compte est supprimé, et après 60&nbsp;jours sans que l'application l'ait renouvelé.</li>
-    </ul>
+    <p>Les notifications qui peuvent faire sonner l'iPhone ont <a href="#t-notifications">leur section</a>, juste après celle-ci.</p>
+    <p>Pour supprimer votre compte de résident, depuis l'application ou sans elle&nbsp;: <a href="supprimer-compte.html">Supprimer votre compte</a>.</p>
     <h3>Ce qu'Apple sait par ailleurs</h3>
     <p>Le téléchargement par l'App Store et, si vous l'avez accepté dans les réglages d'iOS, le partage de rapports de plantage avec les développeurs relèvent d'Apple et de sa <a href="https://www.apple.com/fr/legal/privacy/">politique de confidentialité</a>.</p>
   </section>
 
+  <section aria-labelledby="t-notifications">
+    <h2 id="t-notifications">Les notifications sur le téléphone</h2>
+    <p>Une seule notification peut faire sonner votre téléphone&nbsp;: l'<strong>alerte d'une actualité</strong> que le conseil syndical ou l'administration de votre résidence marque ⚡&nbsp;urgente, envoyée à ceux qui peuvent la lire. Toutes les autres restent dans la cloche de l'application.</p>
+    <p>Cette alerte n'arrive sur le téléphone que si votre résidence a activé les notifications (elles sont coupées par défaut) et si vous les acceptez sur le téléphone, dont les réglages permettent de les retirer à tout moment. Elle passe par le <strong>relais de notifications de CoproFirst</strong>, opéré par l'éditeur, puis par le service de notifications du système de votre téléphone, qui reçoit l'identifiant de votre appareil&nbsp;: celui d'<strong>Apple</strong> pour un iPhone, <strong><span lang="en">Firebase Cloud Messaging</span></strong> de <strong>Google</strong> pour un téléphone Android. Ce sont deux sociétés américaines.</p>
+    <ul>
+      <li>Le message est toujours le même&nbsp;: «&nbsp;Vous avez une nouvelle notification.&nbsp;» Il ne dit ni qui vous êtes, ni le nom ou l'adresse de votre résidence, ni de quoi il s'agit, ni combien de notifications vous attendent. Il ne porte qu'un identifiant tiré au hasard par l'application, qui ne signifie rien hors de votre téléphone. L'application lit le détail auprès de votre résidence, quand vous l'ouvrez.</li>
+      <li>L'alerte est marquée «&nbsp;urgente&nbsp;»&nbsp;: elle peut traverser le mode Concentration de l'iPhone, et part en priorité haute chez Google. Apple ou Google apprend ainsi qu'une alerte urgente vous attend, rien de plus.</li>
+      <li>Une montre reliée au téléphone en reprend l'alerte, sans rien recevoir de plus.</li>
+      <li>Le relais transmet et oublie&nbsp;: il ne garde aucun identifiant d'appareil, et son journal n'en contient jamais.</li>
+      <li>La résidence garde l'identifiant de votre appareil le temps de vos sessions&nbsp;: il est effacé quand vous vous déconnectez, quand votre compte est supprimé, et après 60&nbsp;jours sans que l'application l'ait renouvelé.</li>
+      <li>Le relais n'envoie rien tant que l'éditeur ne l'a pas mis en service, ni quand il le coupe&nbsp;: l'alerte reste alors dans la cloche de l'application.</li>
+    </ul>
+    <h3>Ce que Google sait par ailleurs</h3>
+    <p>Sur un téléphone Android, <span lang="en">Firebase Cloud Messaging</span>, le téléchargement par Google&nbsp;Play et, si vous l'avez accepté dans les réglages d'Android, le partage de données d'utilisation et de diagnostic relèvent de Google et de sa <a href="https://policies.google.com/privacy?hl=fr">politique de confidentialité</a>.</p>
+  </section>
+
   <section aria-labelledby="t-droits">
     <h2 id="t-droits">Vos droits</h2>
-    <p>Le responsable de traitement est l'éditeur du site, Philippe Tressard. Vous pouvez lui demander l'accès à vos données, leur rectification, leur effacement, ou vous opposer à leur traitement&nbsp;: <a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a>.</p>
+    <p>Le responsable de traitement est l'éditeur du site, Philippe Tressard. Vous pouvez lui demander l'accès à vos données, leur rectification, leur effacement, ou vous opposer à leur traitement&nbsp;: <a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a>. Votre compte de résident, lui, est tenu par votre résidence&nbsp;: la page <a href="supprimer-compte.html">Supprimer votre compte</a> dit comment le faire effacer, et ce qui en reste.</p>
     <p>Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la <abbr title="Commission nationale de l'informatique et des libertés">CNIL</abbr>&nbsp;: <a href="https://www.cnil.fr/fr/plaintes">cnil.fr/fr/plaintes</a>.</p>
   </section>
 
