@@ -1,0 +1,160 @@
+<!doctype html>
+<!--
+SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+SPDX-License-Identifier: AGPL-3.0-or-later
+-->
+<!--
+Supprimer votre compte (coprofirst-site#104) — l'adresse que Google Play exige, utilisable
+sans l'application. Chaque phrase se lit dans le code de CoproFirst (dépôt coprofirst,
+branche main) ou de ses apps ; quand la source change, la page suit :
+- ce qui est effacé et gardé : api/app/utils/demande_suppression.py (CONSEQUENCES) et
+  api/app/utils/suppression_compte.py (CONTENUS_PERSONNELS, CONTENUS_GARDES) ;
+- les étapes : front/src/lib/components/SuppressionCompte.svelte (site de la résidence),
+  SectionSuppressionCompte.swift (coprofirst-ios), SectionSuppressionCompte.kt et
+  strings_profil.xml (coprofirst-android) ;
+- le délai, l'inactivité, les journaux : api/app/utils/delais_rgpd.py,
+  api/app/utils/purge_comptes/regles.py, api/app/seed/contenus_legaux.py
+  (JOURNAL_SECURITE, CONSERVATION_COURRIELS, ANONYMISATION_CONTENUS).
+Les chiffres et les libellés d'écran sont relus chaque jour par
+scripts/verifier-faits-produit.py.
+-->
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Supprimer votre compte — CoproFirst</title>
+<link rel="icon" href="logo.svg" type="image/svg+xml">
+<script src="theme.js?v=fbbef372"></script>
+<link rel="stylesheet" href="commun.css?v=3c1adb99">
+<link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="document.css?v=55160a2b">
+<meta name="description" content="Comment supprimer votre compte CoproFirst, depuis l'application, le site de votre résidence ou par courriel — et ce qui est effacé, ce qui est gardé, combien de temps et pourquoi.">
+<link rel="canonical" href="https://coprofirst.fr/supprimer-compte.html">
+<link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="CoproFirst">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://coprofirst.fr/supprimer-compte.html">
+<meta property="og:title" content="Supprimer votre compte — CoproFirst">
+<meta property="og:description" content="Comment supprimer votre compte CoproFirst, depuis l'application, le site de votre résidence ou par courriel — et ce qui est effacé, ce qui est gardé, combien de temps et pourquoi.">
+<meta property="og:image" content="https://coprofirst.fr/partage.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="CoproFirst — La copropriété, enfin en ordre. L'application libre des copropriétés.">
+<meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">
+{
+ "@context": "https://schema.org",
+ "@type": "BreadcrumbList",
+ "itemListElement": [
+  {
+   "@type": "ListItem",
+   "position": 1,
+   "name": "Accueil",
+   "item": "https://coprofirst.fr/"
+  },
+  {
+   "@type": "ListItem",
+   "position": 2,
+   "name": "Supprimer votre compte",
+   "item": "https://coprofirst.fr/supprimer-compte.html"
+  }
+ ]
+}
+</script>
+</head>
+<body>
+<a class="evitement" href="#contenu">Aller au contenu</a>
+<header>
+  <div class="c">
+    <a class="marque" href="./" aria-label="CoproFirst, accueil">
+      <img src="logo.svg" alt="" width="38" height="38">
+      CoproFirst
+    </a>
+    <nav aria-label="Navigation principale"><button class="btn-theme" type="button" data-bascule-theme aria-pressed="true" aria-label="Thème sombre" title="Thème sombre"><svg class="i-soleil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg><svg class="i-lune" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></button><a class="btn btn-contour" href="./">← Accueil</a></nav>
+  </div>
+</header>
+
+<main id="contenu" class="document">
+  <h1>Supprimer votre compte</h1>
+  <p class="chapo">Votre compte de l'application CoproFirst (éditeur&nbsp;: Philippe Tressard) est ouvert par votre résidence, sur son propre site&nbsp;: c'est elle qui le supprime, à votre demande. Vous pouvez la faire depuis l'application, depuis le site de la résidence dans un navigateur, sans installer l'application, ou par courriel.</p>
+  <span class="maj">Mise à jour le 18 novembre 2026</span>
+
+  <section aria-labelledby="t-demander">
+    <h2 id="t-demander">Demander la suppression</h2>
+    <h3 id="t-application">Dans l'application, sur iPhone ou Android</h3>
+    <ol>
+      <li>Ouvrez l'application CoproFirst et connectez-vous à votre résidence.</li>
+      <li>Touchez «&nbsp;Plus&nbsp;», puis «&nbsp;Profil&nbsp;» (sur iPad&nbsp;: «&nbsp;Profil&nbsp;», dans la barre latérale).</li>
+      <li>Sous «&nbsp;Vos droits (RGPD)&nbsp;», à la rubrique «&nbsp;Supprimer mon compte&nbsp;», touchez «&nbsp;Demander la suppression de mon compte&nbsp;».</li>
+      <li>Lisez ce qui sera effacé et ce qui sera gardé, saisissez votre mot de passe et, si vous le voulez, un motif, puis confirmez.</li>
+    </ol>
+    <h3 id="t-site-residence">Sur le site de votre résidence, sans l'application</h3>
+    <ol>
+      <li>Connectez-vous, dans un navigateur, au site de votre résidence&nbsp;: l'adresse où vous ouvrez CoproFirst, la même que celle que demande l'application.</li>
+      <li>Ouvrez votre «&nbsp;Profil&nbsp;», puis le bloc «&nbsp;Vos droits (RGPD)&nbsp;».</li>
+      <li>Sous «&nbsp;Supprimer mon compte&nbsp;», choisissez «&nbsp;Demander la suppression de mon compte&nbsp;», lisez ce qui sera effacé, saisissez votre mot de passe et, si vous le voulez, un motif, puis «&nbsp;Confirmer la demande&nbsp;».</li>
+    </ol>
+    <h3 id="t-courriel">Par courriel, si vous ne pouvez plus vous connecter</h3>
+    <p>Écrivez au responsable de traitement de votre résidence&nbsp;: son adresse figure au point&nbsp;1 de la politique de confidentialité de son site. Si vous ne la trouvez pas, ou si votre compte est sur une installation tenue par l'éditeur de CoproFirst, écrivez à <a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a>.</p>
+    <p>Sur la démonstration publique (demo.coprofirst.fr), la demande est acceptée mais le compte n'est jamais effacé&nbsp;: ses comptes sont partagés par tous les visiteurs.</p>
+  </section>
+
+  <section aria-labelledby="t-ensuite">
+    <h2 id="t-ensuite">Ce qui se passe ensuite</h2>
+    <ul>
+      <li>Un <strong>accusé de réception</strong> vous est envoyé par courriel. Le mot de passe est exigé pour que personne ne puisse demander la suppression à votre place avec une session volée&nbsp;; si ce courriel vous surprend, retirez la demande et changez votre mot de passe.</li>
+      <li>L'administration de la résidence traite la demande <strong>sous 30&nbsp;jours au plus</strong>, et peut la traiter le jour même.</li>
+      <li>D'ici là, «&nbsp;Retirer ma demande&nbsp;», au même endroit, l'annule&nbsp;: votre compte est conservé.</li>
+      <li>Une fois traitée, la suppression est <strong>définitive</strong>, et un dernier courriel vous la confirme.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-efface">
+    <h2 id="t-efface">Ce qui est effacé</h2>
+    <p>Votre compte et vos données personnelles&nbsp;:</p>
+    <ul>
+      <li>votre profil et les liens à vos lots&nbsp;;</li>
+      <li>vos badges et vos demandes (de badge, de modification de votre profil)&nbsp;;</li>
+      <li>vos notifications, vos sessions, et les téléphones et montres enregistrés pour vous avertir&nbsp;;</li>
+      <li>vos petites annonces et vos avis sur l'application&nbsp;; un avis publié sur ce site en sort à sa mise à jour suivante&nbsp;;</li>
+      <li>vos délégations, données ou reçues, et vos mandats de gestion&nbsp;;</li>
+      <li>votre historique de navigation dans l'application (la mesure d'audience de la résidence).</li>
+    </ul>
+    <p>Ce que l'application garde de vos résidences sur le téléphone ne dépend pas de la résidence&nbsp;: «&nbsp;Oublier toutes les résidences&nbsp;», au bas du Profil de l'application, l'efface.</p>
+  </section>
+
+  <section aria-labelledby="t-garde">
+    <h2 id="t-garde">Ce qui est gardé, combien de temps, et pourquoi</h2>
+    <h3>Ce que vous avez écrit pour la copropriété, sans votre nom</h3>
+    <p>Les affaires et leurs messages, les documents publiés, les votes et les soutiens, les réponses dans les échanges, les idées, les sondages et l'évaluation des prestataires restent à la copropriété&nbsp;; votre nom y est remplacé par «&nbsp;Ancien résident&nbsp;». <strong>Pourquoi</strong>&nbsp;: c'est la mémoire de la copropriété, dont son carnet d'entretien, et retirer un vote ou un soutien changerait un résultat que d'autres ont vu. Les textes ne sont pas réécrits&nbsp;: pour faire retirer un passage qui vous identifie, écrivez au responsable de traitement de la résidence.</p>
+    <p><strong>Combien de temps</strong>&nbsp;: aussi longtemps que la copropriété les garde. Si la résidence a activé la conservation des affaires, une affaire close perd ses pièces jointes et le nom de ses auteurs après 2, 5 ou 10&nbsp;exercices selon sa catégorie.</p>
+    <h3>Les journaux et les sauvegardes</h3>
+    <ul>
+      <li>Le <strong>journal de sécurité</strong> du serveur garde la trace de la demande et de son traitement, avec le numéro du compte, jamais votre adresse ni un mot de passe. Il sert à retrouver l'origine d'un accès suspect, et se renouvelle par taille et à chaque mise à jour de l'application.</li>
+      <li>L'<strong>historique des envois de courriels</strong>, qui porte votre adresse, est gardé 90&nbsp;jours, puis supprimé automatiquement.</li>
+      <li>Les <strong>sauvegardes</strong> de la résidence contiennent votre compte jusqu'à ce qu'elles soient remplacées par de plus récentes, au rythme que fixe sa configuration (point&nbsp;5 de sa politique de confidentialité).</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="t-inactif">
+    <h2 id="t-inactif">Sans demande&nbsp;: un compte inactif</h2>
+    <p>Un compte qui reste <strong>2&nbsp;ans sans connexion</strong> reçoit un avertissement par courriel, puis il est supprimé <strong>30&nbsp;jours plus tard</strong>, de la même façon, sauf si vous vous êtes reconnecté entre-temps.</p>
+  </section>
+
+  <section aria-labelledby="t-qui">
+    <h2 id="t-qui">Qui répond de vos données</h2>
+    <p>Votre compte vit sur le site de votre résidence, pas chez l'éditeur de l'application&nbsp;: la politique de confidentialité de la résidence, que l'application ouvre depuis votre profil, fait foi. Ce que ce site et l'application font de vos données est décrit dans la page <a href="confidentialite.html">Confidentialité</a>. Si vous estimez que vos droits ne sont pas respectés, vous pouvez adresser une réclamation à la <abbr title="Commission nationale de l'informatique et des libertés">CNIL</abbr>&nbsp;: <a href="https://www.cnil.fr/fr/plaintes">cnil.fr/fr/plaintes</a>.</p>
+  </section>
+</main>
+
+<footer>
+  <div class="c">
+    <p class="pied-marque"><img src="/logo.svg" alt="" width="32" height="32"><span><b>CoproFirst</b><span class="sr"> — </span><small>Demande de marque n° 5307183 · <span>Licence AGPL-3.0-or-later</span></small></span></p>
+    <nav aria-label="Liens de pied de page"><a href="mailto:contact@coprofirst.fr">contact@coprofirst.fr</a><a href="https://github.com/philippe-tressard/coprofirst">Code source</a><a href="/mentions-legales.html">Mentions légales</a><a href="/confidentialite.html">Confidentialité</a></nav>
+  </div>
+</footer>
+</body>
+</html>
