@@ -21,7 +21,7 @@
 #      que la page ne la décrit pas ; une permission retirée aussi, pour que la
 #      page et cette liste ne gardent pas une ligne qui ne sert plus ;
 #   3. la durée de la consultation hors ligne : la section dit « N jours », N étant
-#      `LectureGardee.joursMax` de LecturesGardees.swift (coprofirst-site#92). Le
+#      `LectureGardee.joursMax` de HorsLigne.swift (coprofirst-site#92). Le
 #      chiffre se lit dans le code, il n'est pas recopié ici.
 #
 # Ce qu'il ne couvre pas (standards/04 §12) : les notifications push, qui ont leur
@@ -133,7 +133,7 @@ def jours_max(texte: str) -> int:
     """`static let joursMax = 7` → 7 : la durée de la lecture gardée hors ligne."""
     trouve = re.findall(r"^\s*static let joursMax\s*=\s*(\d+)\s*$", texte, re.M)
     if len(trouve) != 1:
-        raise Illisible("LecturesGardees.swift : `static let joursMax = N` introuvable ou en double (forme changée ?)")
+        raise Illisible("HorsLigne.swift : `static let joursMax = N` introuvable ou en double (forme changée ?)")
     return int(trouve[0])
 
 
@@ -161,7 +161,7 @@ def verifier(dependances: str, projet: str, page: str, lecture: str) -> tuple[in
                for c, mot in PERMISSIONS.items() if c in cles and not nomme(section, mot)]
     if not nomme(section, f"{jours} jours"):
         ecarts.append(f"la section #t-application ne dit pas « {jours} jours » : c'est la durée de la "
-                      "lecture gardée hors ligne dans l'app (LectureGardee.joursMax)")
+                      "lecture gardée hors ligne dans l'app (LectureGardee.joursMax, HorsLigne.swift)")
     return (ECART if ecarts else OK), ecarts
 
 
@@ -222,7 +222,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--dependances", default=DEPOT + "DEPENDANCES.md")
     parser.add_argument("--projet", default=DEPOT + "project.yml")
-    parser.add_argument("--lecture", default=DEPOT + "CoproFirst/Session/LectureGardee/LecturesGardees.swift")
+    parser.add_argument("--lecture", default=DEPOT + "CoproFirst/Session/LectureGardee/HorsLigne.swift")
     parser.add_argument("--page", default=str(PAGE))
     parser.add_argument("--selftest", action="store_true")
     args = parser.parse_args()
