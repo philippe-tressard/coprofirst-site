@@ -248,8 +248,22 @@ notifications push y sont décrites d'après la spec de CoproFirst
 (`specs/architecture/notifications-push.md` §5–§7), que le contrôle ne lit pas : la
 page suit cette spec quand elle change. En CI seulement, comme les comptes de la démo.
 
+`python3 scripts/verifier-app-android.py` — la même section `#t-application`, **commune
+aux deux apps** avec leurs écarts déclarés (« Sur iPhone… », « Sur Android… » ; décision
+du coordinateur, coprofirst-site#110 : pas une section par app), est aussi la politique
+que cite la fiche Google Play. Le contrôle la confronte à `philippe-tressard/coprofirst-android`
+(`main`) : les `<uses-permission>` des manifestes du téléphone **et** de la montre sont
+exactement `PERMISSIONS`, chacune nommée ; chaque `<application>` refuse la sauvegarde
+et le trafic en clair (`MANIFESTE`) ; chaque composant de `app/src/main/tiers/composants.json`
+(l'équivalent Android de `DEPENDANCES.md`) est déclaré dans `TIERS_ADMIS` avec ses
+licences et nommé par la section ; la section dit « pas encore en service » tant que
+`LiaisonMontre.ACTIF` est éteint, et plus après. La fiche de l'app
+(`docs/play-store/securite-des-donnees.md`) est la source du sens des phrases, que le
+contrôle ne lit pas. Ce que les deux contrôles partagent vit dans `scripts/section_apps.py`.
+Sortie 0, 1, **2 INCONNU** ; `--selftest`. En CI seulement, comme les comptes de la démo.
+
 `python3 scripts/verifier-faits-produit.py` — les chiffres et les libellés d'écran que
-`supprimer-compte.html` et la section `#t-notifications` de `confidentialite.html`
+`supprimer-compte.html` et les sections `#t-notifications` et `#t-application` de `confidentialite.html`
 recopient de CoproFirst, de coprofirst-ios et de coprofirst-android (`main`, sans jeton)
 sont ceux du code : la table `FAITS` dit la source, le motif qui en extrait **une**
 valeur, la section et la phrase. **Une page qui recopie un fait du produit l'ajoute à

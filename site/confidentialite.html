@@ -13,7 +13,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <link rel="stylesheet" href="commun.css?v=3c1adb99">
 <link rel="preload" href="polices/fraunces-latin-opsz-normal.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="document.css?v=55160a2b">
-<meta name="description" content="Ce que le site coprofirst.fr et l'application CoproFirst pour iPhone font — et ne font pas — de vos données.">
+<meta name="description" content="Ce que le site coprofirst.fr et les applications CoproFirst pour iPhone et Android font — et ne font pas — de vos données.">
 <link rel="canonical" href="https://coprofirst.fr/confidentialite.html">
 <link rel="icon" href="apple-touch-icon.png" type="image/png" sizes="192x192">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
@@ -22,7 +22,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <meta property="og:locale" content="fr_FR">
 <meta property="og:url" content="https://coprofirst.fr/confidentialite.html">
 <meta property="og:title" content="Confidentialité — CoproFirst">
-<meta property="og:description" content="Ce que le site coprofirst.fr et l'application CoproFirst pour iPhone font — et ne font pas — de vos données.">
+<meta property="og:description" content="Ce que le site coprofirst.fr et les applications CoproFirst pour iPhone et Android font — et ne font pas — de vos données.">
 <meta property="og:image" content="https://coprofirst.fr/partage.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
@@ -64,8 +64,8 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 <main id="contenu" class="document">
   <h1>Confidentialité</h1>
-  <p class="chapo">Ce site présente CoproFirst. Il ne vous demande rien et ne cherche pas à savoir qui vous êtes. L'application pour iPhone a <a href="#t-application">sa section</a>, plus bas.</p>
-  <span class="maj">Mise à jour le 18 novembre 2026</span>
+  <p class="chapo">Ce site présente CoproFirst. Il ne vous demande rien et ne cherche pas à savoir qui vous êtes. Les applications pour iPhone et Android ont <a href="#t-application">leur section</a>, plus bas.</p>
+  <span class="maj">Mise à jour le 22 novembre 2026</span>
 
   <section aria-labelledby="t-rien">
     <h2 id="t-rien">Ce que ce site ne fait pas</h2>
@@ -110,30 +110,47 @@ SPDX-License-Identifier: AGPL-3.0-or-later
   </section>
 
   <section aria-labelledby="t-application">
-    <h2 id="t-application">L'application CoproFirst pour iPhone</h2>
-    <p>L'application ouvre l'espace de <strong>votre résidence</strong>&nbsp;: elle se connecte directement au site de la résidence, dont vous saisissez l'adresse ou scannez le QR code (il n'y a pas d'annuaire des résidences). Ce que vous y lisez et y écrivez est conservé par la résidence, pas par l'application ni par l'éditeur. Son responsable de traitement, ses règles et le refus de ses statistiques de navigation sont dans sa propre politique de confidentialité, que l'application ouvre depuis votre profil (Vos droits).</p>
-    <p>Son accueil lit aussi le texte de présentation de coprofirst.fr, une fois par lancement, sans cookie ni identifiant&nbsp;: c'est une visite de ce site, et ce qu'en dit <a href="#t-technique">«&nbsp;Ce qui passe malgré tout par le réseau&nbsp;»</a> vaut aussi pour l'application. La dernière lecture de ce texte est gardée sur l'iPhone, pour l'afficher hors ligne.</p>
-    <h3>Ce que l'application ne fait pas</h3>
+    <h2 id="t-application">Les applications CoproFirst pour iPhone et Android</h2>
+    <p>Les deux applications ouvrent l'espace de <strong>votre résidence</strong>&nbsp;: elles se connectent directement au site de la résidence, dont vous saisissez l'adresse ou scannez le QR code (il n'y a pas d'annuaire des résidences). Ce que vous y lisez et y écrivez est conservé par la résidence, pas par l'application ni par l'éditeur. Son responsable de traitement, ses règles et le refus de ses statistiques de navigation sont dans sa propre politique de confidentialité, que l'application ouvre depuis votre profil (Vos droits). Sur Android, ces statistiques comptent les écrans vus et la seule classe de l'appareil (téléphone, tablette, montre…), jamais son modèle ni un identifiant, et rien ne part si vous les avez refusées.</p>
+    <p>Leur accueil lit aussi le texte de présentation de coprofirst.fr (le fichier <code>contenu.json</code>), une fois par lancement, sans cookie ni identifiant&nbsp;: c'est une visite de ce site, et ce qu'en dit <a href="#t-technique">«&nbsp;Ce qui passe malgré tout par le réseau&nbsp;»</a> vaut aussi pour les applications. La dernière lecture de ce texte est gardée sur le téléphone, pour l'afficher hors ligne.</p>
+    <h3>Ce que les applications ne font pas</h3>
     <ul class="rien">
-      <li>Aucune mesure d'audience pour l'éditeur, aucun traceur, aucune publicité, aucun code d'un tiers autre qu'Apple.</li>
+      <li>Aucune mesure d'audience pour l'éditeur, aucune publicité, aucune bibliothèque de mesure ni de rapport de plantage.</li>
       <li>Aucun compte chez l'éditeur&nbsp;: vous vous connectez avec le compte que la résidence vous a ouvert.</li>
     </ul>
-    <p>Les pictogrammes de son fil d'activité viennent de Lucide, une collection libre (licences ISC et MIT)&nbsp;: ce sont des dessins embarqués dans l'application, qui n'exécutent rien et ne se connectent à rien. Leurs licences sont reproduites dans l'application (Plus, puis À&nbsp;propos).</p>
-    <h3>Ce qui reste sur votre iPhone</h3>
+    <h3>Le code qu'elles embarquent</h3>
+    <p><strong>Sur iPhone</strong>, aucun code d'un tiers autre qu'Apple. Les pictogrammes du fil d'activité viennent de Lucide, une collection libre (licences ISC et MIT)&nbsp;: ce sont des dessins embarqués dans l'application, qui n'exécutent rien et ne se connectent à rien.</p>
+    <p><strong>Sur Android</strong>, des bibliothèques libres, qui ne se connectent d'elles-mêmes à aucun service&nbsp;: Android Jetpack, Kotlin, kotlinx.coroutines, kotlinx.serialization, OkHttp, Okio, Guava ListenableFuture, JSpecify, ZXing (qui lit le QR code sur le téléphone), AutoValue, javax.inject et Error Prone, toutes sous licence Apache-2.0 (OkHttp aussi sous MPL-2.0)&nbsp;; les mêmes pictogrammes Lucide (ISC et MIT) et le logo WhatsApp de Simple Icons (CC0-1.0), des dessins eux aussi. Deux bibliothèques seulement parlent à <strong>Google</strong>&nbsp;: <span lang="en">Firebase Cloud Messaging</span> (Apache-2.0), pour les <a href="#t-notifications">notifications</a>, et Google Play services (propriétaire, sous la licence du SDK Android), pour les notifications et le lien avec une montre. Aucune autre bibliothèque de Google&nbsp;: ni Firebase Analytics, ni Crashlytics, ni publicité.</p>
+    <p>Chaque application reproduit ces licences (Plus, puis À&nbsp;propos).</p>
+    <h3>Ce qu'elles demandent au téléphone</h3>
     <ul>
-      <li><strong>La liste des résidences ouvertes</strong> sur cet iPhone (leur adresse et leur nom) et le thème choisi.</li>
-      <li><strong>Pour chaque résidence, votre courriel et votre profil</strong>&nbsp;: le courriel de votre dernière connexion, pour pré-remplir la suivante, et ce que la résidence dit de vous (votre statut, vos rôles, le libellé de votre logement). Ils vont au Trousseau de l'iPhone après chaque connexion, que Face&nbsp;ID soit activé ou non, sans être synchronisés avec iCloud ni envoyés ailleurs. La déconnexion les garde&nbsp;; «&nbsp;Oublier toutes les résidences&nbsp;», dans votre profil, les efface.</li>
-      <li><strong>Votre session</strong>, en mémoire seulement&nbsp;: elle n'est gardée que si vous activez Face&nbsp;ID. Elle va alors au Trousseau de l'iPhone, protégée par Face&nbsp;ID, jamais synchronisée avec iCloud&nbsp;; elle en est retirée quand vous vous déconnectez.</li>
-      <li><strong>La dernière lecture de votre résidence</strong>, si vous avez activé Face&nbsp;ID, pour la relire sans réseau&nbsp;: le fil, les affaires avec leurs messages et leur historique, votre profil, l'annuaire, et les documents et photos déjà ouverts. Rien de l'administration ni de l'Espace CS, aucun mot de passe ni jeton. Elle reste dans l'iPhone, chiffrée, hors des sauvegardes iCloud et de l'ordinateur, et ne part nulle part. Hors ligne, on la consulte sans pouvoir agir. Elle est effacée quand vous vous déconnectez (comme par «&nbsp;Oublier toutes les résidences&nbsp;»), quand la résidence refuse votre session, et au bout de 7&nbsp;jours sans être renouvelée en ligne.</li>
-      <li><strong>Face&nbsp;ID</strong> est vérifié par iOS&nbsp;: l'application ne reçoit jamais votre visage, seulement la réponse.</li>
-      <li><strong>La caméra</strong> ne sert qu'à lire le QR code de votre fiche d'arrivée&nbsp;; l'image n'est ni enregistrée ni envoyée.</li>
-      <li><strong>Un document que vous ouvrez</strong> est copié dans un dossier temporaire de l'application, chiffré par l'iPhone, pour être affiché ou partagé&nbsp;; ces copies sont effacées quand vous vous déconnectez.</li>
-      <li><strong>Quelques réglages</strong>, qui ne disent rien de vous&nbsp;: l'identifiant tiré au hasard qui abonne cet iPhone aux notifications de chaque résidence (oublié à la déconnexion), le fait que Face&nbsp;ID vous a déjà été proposé, et la date à laquelle vous avez remis à plus tard l'offre de notifications.</li>
+      <li><strong>La caméra</strong> ne sert qu'à lire le QR code de votre fiche d'arrivée&nbsp;; l'image n'est ni enregistrée ni envoyée. Sur Android, elle n'est pas exigée&nbsp;: sans elle, l'adresse se saisit.</li>
+      <li><strong>Face&nbsp;ID</strong> sur iPhone, <strong>la biométrie</strong> sur Android (empreinte ou visage) sont vérifiés par le système&nbsp;: l'application ne reçoit jamais votre visage ni votre empreinte, seulement la réponse.</li>
+      <li>Sur Android, aussi&nbsp;: <strong>Internet</strong>, pour parler au site de votre résidence, en HTTPS seulement (le trafic en clair est refusé)&nbsp;; <strong>l'état du réseau</strong>, pour savoir si vous êtes hors ligne, sans rien transmettre&nbsp;; et la permission d'<strong>afficher des notifications</strong>, demandée seulement après «&nbsp;Activer&nbsp;» dans la cloche, jamais au lancement. <span lang="en">Firebase Cloud Messaging</span> y ajoute de quoi recevoir ses messages, même écran éteint. Aucune autre&nbsp;: ni localisation, ni contacts, ni photos, ni stockage partagé. L'application de la montre ne demande qu'Internet.</li>
     </ul>
-    <p>Les notifications qui peuvent faire sonner l'iPhone ont <a href="#t-notifications">leur section</a>, juste après celle-ci.</p>
+    <h3>Ce qui reste sur votre téléphone</h3>
+    <ul>
+      <li><strong>La liste des résidences ouvertes</strong> sur ce téléphone (leur adresse et leur nom) et le thème choisi.</li>
+      <li><strong>Pour chaque résidence, votre courriel et votre profil</strong>&nbsp;: le courriel de votre dernière connexion, pour pré-remplir la suivante, et ce que la résidence dit de vous (votre statut, vos rôles et, sur iPhone, le libellé de votre logement). Sur iPhone, ils vont au Trousseau après chaque connexion, que Face&nbsp;ID soit activé ou non, sans être synchronisés avec iCloud ni envoyés ailleurs. Sur Android, ils sont chiffrés par une clé du Keystore d'Android, qui ne quitte jamais le téléphone. La déconnexion les garde&nbsp;; «&nbsp;Oublier toutes les résidences&nbsp;» les efface.</li>
+      <li><strong>Votre session</strong>, en mémoire seulement, sauf si vous choisissez de la garder. Sur iPhone, elle n'est gardée que si vous activez Face&nbsp;ID&nbsp;: elle va alors au Trousseau, protégée par Face&nbsp;ID, jamais synchronisée avec iCloud. Sur Android 11 et suivants, elle est chiffrée par une clé du Keystore qui ne s'ouvre qu'après la biométrie, ou après le code du téléphone s'il n'a pas de biométrie&nbsp;; un téléphone sans verrouillage ne la protège pas, et l'application vous le dit avant de la garder. Sur Android 8 à 10, aucune session n'est gardée. Elle est retirée quand vous vous déconnectez.</li>
+      <li><strong>La dernière lecture de votre résidence</strong>, si votre session est gardée, pour la relire sans réseau&nbsp;: le fil, les affaires avec leurs messages et leur historique, votre profil, l'annuaire, et les documents et photos déjà ouverts. Rien de l'administration ni de l'Espace CS, aucun mot de passe ni jeton. Elle reste dans le téléphone, chiffrée, hors des sauvegardes (iCloud et l'ordinateur pour un iPhone), et ne part nulle part. Hors ligne, on la consulte sans pouvoir agir. Elle est effacée quand vous vous déconnectez (comme par «&nbsp;Oublier toutes les résidences&nbsp;»), quand la résidence refuse votre session, et au bout de 7&nbsp;jours sans être renouvelée en ligne.</li>
+      <li><strong>Un document que vous ouvrez</strong> est copié dans un dossier temporaire de l'application, pour être affiché ou partagé&nbsp;: chiffré par l'iPhone, ou dans le cache de l'application sur Android, qu'aucune autre ne lit, sauf celle à qui vous le confiez pour l'afficher, le temps de l'ouverture. Ces copies sont effacées quand vous vous déconnectez, et aussi à chaque lancement sur Android.</li>
+      <li><strong>Quelques réglages</strong>, qui ne disent rien de vous&nbsp;: l'identifiant tiré au hasard qui abonne ce téléphone aux notifications de chaque résidence (oublié à la déconnexion), le fait que Face&nbsp;ID ou la session gardée vous a déjà été proposé, et le fait que vous avez remis à plus tard l'offre de notifications. Sur Android, aussi l'identifiant de la montre reliée à chaque résidence et, sur un téléphone pliable, la page où vous avez refermé la résidence, effacée quand elle se ferme.</li>
+    </ul>
+    <p>Sur Android, rien de tout cela n'entre dans une sauvegarde du téléphone ni ne passe à un nouvel appareil.</p>
+    <h3 id="t-montre">La montre Wear&nbsp;OS, reliée au téléphone Android</h3>
+    <p>Ce lien n'est <strong>pas encore en service</strong>&nbsp;: d'ici là, la montre ne se relie pas, ne garde rien et n'appelle rien&nbsp;; elle invite seulement à ouvrir l'application sur le téléphone. Quand il le sera&nbsp;:</p>
+    <ul>
+      <li>À l'ouverture d'une résidence, si une montre joignable porte l'application, le téléphone demande à la résidence un <strong>jeton de montre</strong>. Ce jeton ne lit que la cloche, vos notifications, rien d'autre&nbsp;; il expire au bout de 30&nbsp;jours, le téléphone le renouvelle, et il le retire quand vous vous déconnectez.</li>
+      <li>Le téléphone le transmet à la montre, avec l'adresse et le nom de la résidence, par le <span lang="en">Data Layer</span> de Google Play services, que seule l'application CoproFirst, de même signature, peut lire. Google Play services peut faire passer cet envoi par les serveurs de Google&nbsp;: la fiche Google Play le déclare donc comme un identifiant d'appareil partagé avec Google, pour l'acheminement seulement.</li>
+      <li>La montre garde ce jeton, chiffré par une clé du Keystore, et la dernière lecture de la cloche, chiffrée de même, pour l'afficher hors ligne&nbsp;; rien n'entre dans une sauvegarde. Sa tuile et sa complication ne montrent que le nombre de nouvelles alertes, sans leur contenu.</li>
+      <li>«&nbsp;Continuer sur le téléphone&nbsp;», sur la montre, ne fait passer au téléphone que l'adresse d'une page de la résidence, sans rien de son contenu.</li>
+    </ul>
+    <p>Les notifications qui peuvent faire sonner le téléphone ont <a href="#t-notifications">leur section</a>, juste après celle-ci.</p>
     <p>Pour supprimer votre compte de résident, depuis l'application ou sans elle&nbsp;: <a href="supprimer-compte.html">Supprimer votre compte</a>.</p>
-    <h3>Ce qu'Apple sait par ailleurs</h3>
-    <p>Le téléchargement par l'App Store et, si vous l'avez accepté dans les réglages d'iOS, le partage de rapports de plantage avec les développeurs relèvent d'Apple et de sa <a href="https://www.apple.com/fr/legal/privacy/">politique de confidentialité</a>.</p>
+    <h3>Ce qu'Apple et Google savent par ailleurs</h3>
+    <p>Sur iPhone, le téléchargement par l'App Store et, si vous l'avez accepté dans les réglages d'iOS, le partage de rapports de plantage avec les développeurs relèvent d'Apple et de sa <a href="https://www.apple.com/fr/legal/privacy/">politique de confidentialité</a>.</p>
+    <p>Sur Android, le téléchargement par Google&nbsp;Play, Google Play services, <span lang="en">Firebase Cloud Messaging</span> et, si vous l'avez accepté dans les réglages d'Android, le partage de données d'utilisation et de diagnostic relèvent de Google et de sa <a href="https://policies.google.com/privacy?hl=fr">politique de confidentialité</a>.</p>
   </section>
 
   <section aria-labelledby="t-notifications">
@@ -143,13 +160,12 @@ SPDX-License-Identifier: AGPL-3.0-or-later
     <ul>
       <li>Le message est toujours le même&nbsp;: «&nbsp;Vous avez une nouvelle notification.&nbsp;» Il ne dit ni qui vous êtes, ni le nom ou l'adresse de votre résidence, ni de quoi il s'agit, ni combien de notifications vous attendent. Il ne porte qu'un identifiant tiré au hasard par l'application, qui ne signifie rien hors de votre téléphone. L'application lit le détail auprès de votre résidence, quand vous l'ouvrez.</li>
       <li>L'alerte est marquée «&nbsp;urgente&nbsp;»&nbsp;: elle peut traverser le mode Concentration de l'iPhone, et part en priorité haute chez Google. Apple ou Google apprend ainsi qu'une alerte urgente vous attend, rien de plus.</li>
-      <li>Une montre reliée au téléphone en reprend l'alerte, sans rien recevoir de plus.</li>
+      <li>Une montre reliée au téléphone en reprend l'alerte, sans rien en recevoir de plus. Ce qu'une montre Wear&nbsp;OS lit d'elle-même est dit avec <a href="#t-montre">l'application Android</a>.</li>
       <li>Le relais transmet et oublie&nbsp;: il ne garde aucun identifiant d'appareil, et son journal n'en contient jamais.</li>
       <li>La résidence garde l'identifiant de votre appareil le temps de vos sessions&nbsp;: il est effacé quand vous vous déconnectez, quand votre compte est supprimé, et après 60&nbsp;jours sans que l'application l'ait renouvelé.</li>
       <li>Le relais n'envoie rien tant que l'éditeur ne l'a pas mis en service, ni quand il le coupe&nbsp;: l'alerte reste alors dans la cloche de l'application.</li>
     </ul>
-    <h3>Ce que Google sait par ailleurs</h3>
-    <p>Sur un téléphone Android, <span lang="en">Firebase Cloud Messaging</span>, le téléchargement par Google&nbsp;Play et, si vous l'avez accepté dans les réglages d'Android, le partage de données d'utilisation et de diagnostic relèvent de Google et de sa <a href="https://policies.google.com/privacy?hl=fr">politique de confidentialité</a>.</p>
+    <p>Ce qu'Apple et Google savent par ailleurs est dit avec <a href="#t-application">les applications</a>.</p>
   </section>
 
   <section aria-labelledby="t-droits">
