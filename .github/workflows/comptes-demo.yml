@@ -44,6 +44,13 @@ jobs:
         run: python3 scripts/verifier-app-ios.py --selftest
       - name: confidentialite.html contre coprofirst-ios (main)
         run: python3 scripts/verifier-app-ios.py
+      # La même section, commune aux deux apps, est celle de la fiche Google Play : une
+      # permission, un composant tiers ou la liaison de la montre allumée la rendent fausse
+      # sans commit ici (coprofirst-site#110).
+      - name: L'app Android (selftest)
+        run: python3 scripts/verifier-app-android.py --selftest
+      - name: confidentialite.html contre coprofirst-android (main)
+        run: python3 scripts/verifier-app-android.py
       # Les chiffres et libellés que supprimer-compte.html (adresse exigée par Google Play,
       # coprofirst-site#104) et les notifications de confidentialite.html (coprofirst-site#108)
       # recopient du serveur et des apps.

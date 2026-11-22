@@ -21,7 +21,7 @@
 # et gardé (CONSEQUENCES, CONTENUS_GARDES de CoproFirst), et ce qui sonne sur un
 # téléphone (porte.TYPE_POUSSE, l'alerte d'une actualité ⚡), se relisent à la main
 # quand ces sources changent : le commentaire de tête de supprimer-compte.html les
-# nomme. L'app iOS a son propre contrôle (verifier-app-ios.py).
+# nomme. Les apps ont leur propre contrôle (verifier-app-ios.py, verifier-app-android.py).
 #
 # En CI seulement, à chaque poussée et chaque jour (.github/workflows/comptes-demo.yml) :
 # la dérive naît dans l'autre dépôt, comme pour verifier-comptes-demo.py.
@@ -98,6 +98,15 @@ FAITS = (
          r'^CORPS = "([^"]+)"$', CONFID, "t-notifications", "« {} »"),
     Fait("abandon de l'identifiant d'un appareil", SERVEUR, "api/app/utils/push/appareils.py",
          r"^ABANDON_JOURS = (\d+)$", CONFID, "t-notifications", "après {} jours"),
+    # Les applications (coprofirst-site#110) : la section est commune, une durée d'Android
+    # qui s'écarterait de celle de l'iPhone (verifier-app-ios.py) devrait y être dite.
+    Fait("Android : durée de la lecture gardée hors ligne", ANDROID,
+         "partage-android/src/main/kotlin/fr/coprofirst/app/session/LecturesGardees.kt",
+         r"^\s*const val JOURS_MAX = (\d+)L$", CONFID, "t-application", "au bout de {} jours"),
+    # Ancré sur le bloc « montre » : la portée « ecran » suit avec la même écriture.
+    Fait("jeton de montre : durée", SERVEUR, "api/app/auth/jetons_appareil.py",
+         r'"montre": Portee\((?:(?!Portee\()[\s\S])*?duree=timedelta\(days=(\d+)\)', CONFID,
+         "t-application", "expire au bout de {} jours"),
 )
 
 
