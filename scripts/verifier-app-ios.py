@@ -5,6 +5,10 @@
 # verifier-app-ios.py — ce que site/confidentialite.html dit de l'application
 # iPhone (section #t-application, coprofirst-site#43) est-il encore vrai ?
 #
+# Depuis coprofirst-site#110, la section est commune à l'iPhone et à Android, écarts
+# déclarés : verifier-app-android.py la confronte à l'autre app, et ce qui leur est
+# commun (section, mots, tiers, permissions, selftest) vit dans section_apps.py.
+#
 # La page est l'adresse de confidentialité que cite la fiche App Store. Deux de ses
 # affirmations se lisent dans le dépôt de l'app (philippe-tressard/coprofirst-ios,
 # public, branche main) et deviendraient fausses sans que rien d'autre ne le dise :
@@ -45,18 +49,13 @@
 #         python3 scripts/verifier-app-ios.py --dependances X --projet Y --page Z --lecture W
 #         python3 scripts/verifier-app-ios.py --selftest
 import argparse
-import html
 import re
 import sys
-import tempfile
-from pathlib import Path
 
 from lecture_distante import Illisible, lire
+from section_apps import ECART, INCONNU, OK, PAGE, conclure, ecarts_des_permissions, ecarts_des_tiers, nomme, rejouer, section_application
 
 DEPOT = "https://raw.githubusercontent.com/philippe-tressard/coprofirst-ios/main/"
-RACINE = Path(__file__).resolve().parent.parent
-PAGE = RACINE / "site" / "confidentialite.html"
-OK, ECART, INCONNU = 0, 1, 2
 
 # Chaque permission que l'app demande, et le mot qui la nomme dans la section.
 PERMISSIONS = {
@@ -72,11 +71,6 @@ TIERS_ADMIS = {
     # l'app, Plus › À propos › Composants tiers (relu dans coprofirst-ios le 11/11/2026).
     "Lucide": {"ISC", "MIT"},
 }
-
-
-def nomme(section: str, mot: str) -> bool:
-    """Le mot entier figure dans la section (« MIT » n'est pas dans « LIMITE »)."""
-    return re.search(rf"(?<!\w){re.escape(mot)}(?!\w)", section) is not None
 
 
 def licences(cellule: str) -> set[str]:
@@ -101,25 +95,10 @@ def paquets_embarques(texte: str) -> list[tuple[str, str]]:
     return [(c[0], c[rang]) for c in cellules[2:]]
 
 
-def ecarts_des_tiers(paquets: list[tuple[str, str]], section: str) -> list[str]:
-    ecarts, vus = [], set()
-    for paquet, cellule in paquets:
-        if paquet.startswith("apple/"):
-            continue
-        nom = paquet.split(" ", 1)[0]
-        if nom not in TIERS_ADMIS:
-            ecarts.append(f"paquet embarqué hors d'Apple, non déclaré : {paquet} — le décrire dans "
-                          "#t-application (la page dit « aucun code d'un tiers autre qu'Apple »), puis dans TIERS_ADMIS")
-            continue
-        vus.add(nom)
-        if licences(cellule) != TIERS_ADMIS[nom]:
-            ecarts.append(f"licences de {nom} : DEPENDANCES.md dit « {cellule} », TIERS_ADMIS et la page "
-                          f"disent {', '.join(sorted(TIERS_ADMIS[nom]))}")
-        ecarts += [f"la section #t-application ne nomme pas « {mot} » ({nom}, embarqué par l'app)"
-                   for mot in [nom, *sorted(TIERS_ADMIS[nom])] if not nomme(section, mot)]
-    ecarts += [f"{nom} n'est plus embarqué par l'app : le retirer de TIERS_ADMIS et de la page"
-               for nom in sorted(TIERS_ADMIS.keys() - vus)]
-    return ecarts
+def tiers(paquets: list[tuple[str, str]]) -> list[tuple[str, set[str]]]:
+    """Hors d'Apple : (premier mot du paquet, licences). La page dit « aucun code d'un
+    tiers autre qu'Apple » : tout autre paquet est un écart tant qu'il n'est pas déclaré."""
+    return [(p.split(" ", 1)[0], licences(c)) for p, c in paquets if not p.startswith("apple/")]
 
 
 def permissions(texte: str) -> set[str]:
@@ -137,13 +116,6 @@ def jours_max(texte: str) -> int:
     return int(trouve[0])
 
 
-def section_application(texte: str) -> str:
-    bloc = re.search(r'<section aria-labelledby="t-application">(.*?)</section>', texte, re.S)
-    if not bloc:
-        raise Illisible("confidentialite.html : section #t-application introuvable")
-    return html.unescape(bloc.group(1)).replace("\xa0", " ")
-
-
 def verifier(dependances: str, projet: str, page: str, lecture: str) -> tuple[int, list[str]]:
     try:
         paquets = paquets_embarques(lire(dependances))
@@ -152,13 +124,8 @@ def verifier(dependances: str, projet: str, page: str, lecture: str) -> tuple[in
         section = section_application(lire(page))
     except Illisible as e:
         return INCONNU, [str(e)]
-    ecarts = ecarts_des_tiers(paquets, section)
-    ecarts += [f"permission {c} demandée par l'app, absente de PERMISSIONS et de la page"
-               for c in sorted(cles - PERMISSIONS.keys())]
-    ecarts += [f"permission {c} retirée de l'app : la retirer de PERMISSIONS et de la page"
-               for c in sorted(PERMISSIONS.keys() - cles)]
-    ecarts += [f"la section #t-application ne nomme pas « {mot} » ({c})"
-               for c, mot in PERMISSIONS.items() if c in cles and not nomme(section, mot)]
+    ecarts = ecarts_des_tiers(tiers(paquets), TIERS_ADMIS, section, "TIERS_ADMIS (verifier-app-ios.py)")
+    ecarts += ecarts_des_permissions(cles, PERMISSIONS, section)
     if not nomme(section, f"{jours} jours"):
         ecarts.append(f"la section #t-application ne dit pas « {jours} jours » : c'est la durée de la "
                       "lecture gardée hors ligne dans l'app (LectureGardee.joursMax, HorsLigne.swift)")
@@ -198,24 +165,8 @@ def selftest() -> int:
         ("durée introuvable dans le code", deps, projet, page, INCONNU, lecture.replace("joursMax", "dureeJours")),
         ("durée écrite deux fois dans le code", deps, projet, page, INCONNU, lecture + "    static let joursMax = 7\n"),
     ]
-    echecs = 0
-    with tempfile.TemporaryDirectory() as dossier:
-        for nom, d, p, h, attendu, *source in cas:
-            chemins = []
-            for i, contenu in enumerate((d, p, h, source[0] if source else lecture)):
-                f = Path(dossier) / f"{i}.txt"
-                f.write_text(contenu, encoding="utf-8")
-                chemins.append(str(f))
-            obtenu, _ = verifier(*chemins)
-            if obtenu != attendu:
-                echecs += 1
-                print(f"selftest ÉCHEC : {nom} — attendu {attendu}, obtenu {obtenu}")
-        obtenu, _ = verifier(str(Path(dossier) / "absent"), *chemins[1:])
-        if obtenu != INCONNU:
-            echecs += 1
-            print(f"selftest ÉCHEC : source illisible — attendu {INCONNU}, obtenu {obtenu}")
-    print(f"verifier-app-ios --selftest : {len(cas) + 1 - echecs}/{len(cas) + 1} cas")
-    return 1 if echecs else 0
+    return rejouer("verifier-app-ios", [(nom, attendu, d, p, h, source[0] if source else lecture)
+                                        for nom, d, p, h, attendu, *source in cas], verifier)
 
 
 def main() -> int:
@@ -228,12 +179,7 @@ def main() -> int:
     args = parser.parse_args()
     if args.selftest:
         return selftest()
-    verdict, messages = verifier(args.dependances, args.projet, args.page, args.lecture)
-    for m in messages:
-        print(("INCONNU : " if verdict == INCONNU else "ÉCART : ") + m)
-    print("verifier-app-ios : " + {OK: "conforme", ECART: f"{len(messages)} écart(s)", INCONNU: "INCONNU"}[verdict])
-    return verdict
-
+    return conclure("verifier-app-ios", *verifier(args.dependances, args.projet, args.page, args.lecture))
 
 if __name__ == "__main__":
     sys.exit(main())
