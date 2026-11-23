@@ -36,6 +36,7 @@ SELFTESTS_SEULS=(
   "python3 scripts/verifier-avis.py --selftest"
   "python3 scripts/recuperer-avis.py --selftest"
   "python3 scripts/lecture_distante.py --selftest"
+  "bash scripts/verifier-public.sh --selftest"
 )
 
 code=0

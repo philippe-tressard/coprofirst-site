@@ -40,7 +40,7 @@ celle du robot de version et celles de Dependabot comprises — dès que leurs c
 sont verts sur une tête à jour et qu'il n'y a pas de régression fonctionnelle, puis
 **je déploie** (`bash deploiement/deployer.sh`, `--garder-avis` sans nouvel export des
 avis) depuis le poste qui a la clé de l'instance, et je vérifie ce qui est servi
-(`deployer.sh --verifier`, puis l'URL publique). Contrepartie : **compte rendu après**
+(`deployer.sh --verifier` : l'origine, puis ce que reçoit le public). Contrepartie : **compte rendu après**
 (version, ce qui a changé). Restent à Philippe : une décision produit ou de
 formulation commerciale, un export des avis à installer, un geste qu'un hook refuse.
 Ne pas fermer puis rouvrir la PR « version » à la main : son défaut doit se voir
