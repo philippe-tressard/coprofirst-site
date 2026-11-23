@@ -26,7 +26,12 @@
 #      page et cette liste ne gardent pas une ligne qui ne sert plus ;
 #   3. la durée de la consultation hors ligne : la section dit « N jours », N étant
 #      `LectureGardee.joursMax` de HorsLigne.swift (coprofirst-site#92). Le
-#      chiffre se lit dans le code, il n'est pas recopié ici.
+#      chiffre se lit dans le code, il n'est pas recopié ici ;
+#   4. les appareils : chaque plateforme de project.yml autre que l'iPhone (watchOS,
+#      tvOS) est nommée par la section (« Apple Watch », « Apple TV ») ; et la
+#      liaison iPhone ↔ Apple Watch : tant que `LiaisonMontre.active` (MessageLiaison.swift)
+#      est éteint, le bloc « Apple Watch » dit « pas encore en service » ; allumé, il ne le
+#      dit plus — comme Wear OS côté Android (coprofirst-site#124).
 #
 # Ce qu'il ne couvre pas (standards/04 §12) : les notifications push, qui ont leur
 # section #t-notifications, décrite par la spécification de CoproFirst
@@ -46,14 +51,15 @@
 # d'avoir pu lire.
 #
 # Usage : python3 scripts/verifier-app-ios.py
-#         python3 scripts/verifier-app-ios.py --dependances X --projet Y --page Z --lecture W
+#         python3 scripts/verifier-app-ios.py --dependances X --projet Y --page Z --lecture W --liaison V
 #         python3 scripts/verifier-app-ios.py --selftest
 import argparse
 import re
 import sys
 
 from lecture_distante import Illisible, lire
-from section_apps import ECART, INCONNU, OK, PAGE, conclure, ecarts_des_permissions, ecarts_des_tiers, nomme, rejouer, section_application
+from section_apps import (ECART, INCONNU, OK, PAGE, conclure, ecarts_de_liaison, ecarts_des_permissions,
+                          ecarts_des_tiers, nomme, rejouer, section_application)
 
 DEPOT = "https://raw.githubusercontent.com/philippe-tressard/coprofirst-ios/main/"
 
@@ -71,6 +77,9 @@ TIERS_ADMIS = {
     # l'app, Plus › À propos › Composants tiers (relu dans coprofirst-ios le 11/11/2026).
     "Lucide": {"ISC", "MIT"},
 }
+
+# Chaque plateforme de project.yml autre que l'iPhone, et le mot du <h3> qui la décrit.
+APPAREILS = {"watchOS": "Apple Watch", "tvOS": "Apple TV"}
 
 
 def licences(cellule: str) -> set[str]:
@@ -116,19 +125,39 @@ def jours_max(texte: str) -> int:
     return int(trouve[0])
 
 
-def verifier(dependances: str, projet: str, page: str, lecture: str) -> tuple[int, list[str]]:
+def plateformes(texte: str) -> set[str]:
+    return set(re.findall(r"^\s*platform:\s*(\w+)\s*$", texte, re.M))
+
+
+def liaison_active(texte: str) -> bool:
+    trouve = re.findall(r"^\s*static let active = (true|false)\s*$", texte, re.M)
+    if len(trouve) != 1:
+        raise Illisible("MessageLiaison.swift : `static let active = …` introuvable ou en double (forme changée ?)")
+    return trouve[0] == "true"
+
+
+def verifier(dependances: str, projet: str, page: str, lecture: str, liaison: str) -> tuple[int, list[str]]:
     try:
         paquets = paquets_embarques(lire(dependances))
-        cles = permissions(lire(projet))
+        texte_projet = lire(projet)
+        cles = permissions(texte_projet)
         jours = jours_max(lire(lecture))
+        active = liaison_active(lire(liaison))
         section = section_application(lire(page))
     except Illisible as e:
         return INCONNU, [str(e)]
+    cibles = plateformes(texte_projet)
     ecarts = ecarts_des_tiers(tiers(paquets), TIERS_ADMIS, section, "TIERS_ADMIS (verifier-app-ios.py)")
     ecarts += ecarts_des_permissions(cles, PERMISSIONS, section)
     if not nomme(section, f"{jours} jours"):
         ecarts.append(f"la section #t-application ne dit pas « {jours} jours » : c'est la durée de la "
                       "lecture gardée hors ligne dans l'app (LectureGardee.joursMax, HorsLigne.swift)")
+    ecarts += [f"project.yml construit pour {p} : la section #t-application ne nomme pas « {mot} »"
+               for p, mot in APPAREILS.items() if p in cibles and not nomme(section, mot)]
+    if "watchOS" in cibles:
+        ecarts += ecarts_de_liaison(section, "Apple Watch", active, "LiaisonMontre.active")
+    ecarts += [f"plateforme {p} de project.yml, absente de APPAREILS (verifier-app-ios.py) et de la page"
+               for p in sorted(cibles - APPAREILS.keys() - {"iOS"})]
     return (ECART if ecarts else OK), ecarts
 
 
@@ -137,10 +166,14 @@ def selftest() -> int:
     deps = ("# Dépendances\n\n## Embarquées dans l'application\n\n| Paquet | Version | Licence |\n|---|---|---|\n"
             "| apple/swift-openapi-runtime | 1 | Apache-2.0 |\n| apple/swift-http-types | t | Apache-2.0 |\n"
             + lucide + "\n## Outils\n\n| Outil |\n|---|\n| mattpolzin/OpenAPIKit |\n")
-    projet = "    info:\n      properties:\n        NSCameraUsageDescription: \"x\"\n        NSFaceIDUsageDescription: \"y\"\n"
+    projet = ("    platform: iOS\n    info:\n      properties:\n        NSCameraUsageDescription: \"x\"\n"
+              "        NSFaceIDUsageDescription: \"y\"\n    platform: watchOS\n    platform: tvOS\n")
+    eteinte = "enum LiaisonMontre {\n    static let active = false\n}\n"
     lecture = "enum LectureGardee {\n    static let joursMax = 7\n    static var dureeMax: TimeInterval { 1 }\n}\n"
     page = ('<section aria-labelledby="t-application"><li>La caméra</li><li>Face&nbsp;ID</li>'
-            '<li>les pictogrammes de Lucide (licences ISC et MIT)</li><li>effacée au bout de 7&nbsp;jours</li></section>'
+            '<li>les pictogrammes de Lucide (licences ISC et MIT)</li><li>effacée au bout de 7&nbsp;jours</li>'
+            '<h3>La montre Wear&nbsp;OS</h3><p>Ailleurs.</p><h3>L\'Apple&nbsp;Watch</h3><p>Lien&nbsp;: pas encore en service.</p>'
+            '<p>L\'Apple&nbsp;TV n\'est pas publiée.</p></section>'
             '<section aria-labelledby="t-droits"></section>')
     cas = [
         ("conforme (un outil de build tiers ne compte pas)", deps, projet, page, OK),
@@ -164,9 +197,22 @@ def selftest() -> int:
         ("« 17 jours » ne dit pas « 7 jours »", deps, projet, page.replace("7&nbsp;jours", "17&nbsp;jours"), ECART),
         ("durée introuvable dans le code", deps, projet, page, INCONNU, lecture.replace("joursMax", "dureeJours")),
         ("durée écrite deux fois dans le code", deps, projet, page, INCONNU, lecture + "    static let joursMax = 7\n"),
+        # La montre et l'Apple TV (coprofirst-site#124) : 7e champ, le drapeau de la liaison.
+        ("liaison allumée, bloc qui dit « pas encore »", deps, projet, page, ECART, lecture, eteinte.replace("false", "true")),
+        ("liaison éteinte, bloc qui ne le dit plus", deps, projet, page.replace("pas encore en service", "reliée"), ECART),
+        ("liaison allumée et bloc à jour", deps, projet, page.replace("pas encore en service", "reliée"), OK,
+         lecture, eteinte.replace("false", "true")),
+        ("« pas encore » dit pour Wear OS seulement", deps, projet,
+         page.replace("pas encore en service", "reliée").replace("Ailleurs", "Lien : pas encore en service"), ECART),
+        ("montre embarquée, page sans bloc Apple Watch", deps, projet, page.replace("Apple&nbsp;Watch", "montre"), ECART),
+        ("Apple TV construite, page qui ne la nomme pas", deps, projet, page.replace("Apple&nbsp;TV", "télé"), ECART),
+        ("plateforme inconnue (visionOS)", deps, projet + "    platform: visionOS\n", page, ECART),
+        ("sans cible watchOS, le drapeau ne juge rien", deps, projet.replace("    platform: watchOS\n", ""),
+         page.replace("pas encore en service", "reliée"), OK),
+        ("drapeau introuvable", deps, projet, page, INCONNU, lecture, "enum LiaisonMontre {}"),
     ]
-    return rejouer("verifier-app-ios", [(nom, attendu, d, p, h, source[0] if source else lecture)
-                                        for nom, d, p, h, attendu, *source in cas], verifier)
+    return rejouer("verifier-app-ios", [(nom, attendu, d, p, h, *(list(sources) + [lecture, eteinte][len(sources):]))
+                                        for nom, d, p, h, attendu, *sources in cas], verifier)
 
 
 def main() -> int:
@@ -174,12 +220,13 @@ def main() -> int:
     parser.add_argument("--dependances", default=DEPOT + "DEPENDANCES.md")
     parser.add_argument("--projet", default=DEPOT + "project.yml")
     parser.add_argument("--lecture", default=DEPOT + "CoproFirst/Session/LectureGardee/HorsLigne.swift")
+    parser.add_argument("--liaison", default=DEPOT + "CoproFirst/Fonctions/Notifications/Montre/MessageLiaison.swift")
     parser.add_argument("--page", default=str(PAGE))
     parser.add_argument("--selftest", action="store_true")
     args = parser.parse_args()
     if args.selftest:
         return selftest()
-    return conclure("verifier-app-ios", *verifier(args.dependances, args.projet, args.page, args.lecture))
+    return conclure("verifier-app-ios", *verifier(args.dependances, args.projet, args.page, args.lecture, args.liaison))
 
 if __name__ == "__main__":
     sys.exit(main())

@@ -240,7 +240,9 @@ qu'Apple ») ou un tiers déclaré dans `TIERS_ADMIS` — des dessins, jamais du
 que la section nomme avec ses licences, celles de `DEPENDANCES.md` ; et ses
 clés `NS…UsageDescription` (`project.yml`) sont exactement `PERMISSIONS` du script,
 chacune nommée par la section ; et la section dit « N jours », N lu dans
-`LectureGardee.joursMax` de l'app (la durée de la consultation hors ligne). Le reste de
+`LectureGardee.joursMax` de l'app (la durée de la consultation hors ligne) ; et la section
+nomme chaque plateforme de `project.yml` (Apple Watch, Apple TV), le bloc « Apple Watch »
+disant « pas encore en service » tant que `LiaisonMontre.active` est éteint. Le reste de
 ce que l'app garde sur l'iPhone se tient ligne à ligne dans la fiche de coprofirst-ios
 (`confidentialite.md` §3) : un changement y fait changer la page. **Une permission ou une bibliothèque ajoutée à l'app
 fait changer la page**, puis la liste ; un tiers ou une permission retirés de l'app
