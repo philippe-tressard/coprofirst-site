@@ -1,0 +1,5 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Les outils Python de la CI, en versions exactes : Dependabot les monte (dependabot.yml).
+reuse==6.2.0

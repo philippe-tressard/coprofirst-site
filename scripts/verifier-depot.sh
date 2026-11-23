@@ -23,6 +23,11 @@
 #     une page, ni par une feuille de style, ni par un script, ni par un SVG ; et la
 #     politique de sécurité du contenu (CSP) du Caddyfile ne nomme que le site ;
 #   - ni « ® » (la marque n'est qu'une demande), ni balisage d'avis (Review, Rating).
+# Et ce qui tient les dépendances à jour (standards/07 §7 bis, coprofirst-site#127) :
+#   - .github/dependabot.yml nomme chaque écosystème du dépôt (docker si un Dockerfile,
+#     github-actions si un workflow, pip si un requirements*.txt) ;
+#   - l'image Caddy ne s'écrit qu'au FROM du Dockerfile : un workflow la lit, il ne la
+#     recopie pas (Dependabot ne monterait que l'une des deux).
 # Lit l'INDEX git : en pre-commit, c'est ce qui va partir ; en CI, ce qui est parti.
 #
 # Usage : bash scripts/verifier-depot.sh            (sortie non nulle = écart)
@@ -112,6 +117,25 @@ juger_csp() {
     done
   done < <(tr ';' '\n' <<< "$1")
   grep -q 'default-src' <<< "$1" || echo "CSP      (default-src absent : une source non nommée serait admise)"
+  return 0
+}
+
+# juger_dependances <racine> — fonction PURE : Dependabot couvre chaque écosystème, et
+# aucun workflow ne recopie l'image du Dockerfile.
+juger_dependances() {
+  local r="$1" d="$1/.github/dependabot.yml" eco
+  for eco in docker github-actions pip; do
+    case "$eco" in
+      docker) [ -n "$(find "$r" -name Dockerfile -not -path '*/.git/*' -not -path '*/maquettes/*' | head -1)" ] || continue ;;
+      github-actions) grep -qs 'uses:' "$r"/.github/workflows/*.yml || continue ;;
+      pip) [ -n "$(find "$r" -name 'requirements*.txt' -not -path '*/.git/*' | head -1)" ] || continue ;;
+    esac
+    grep -qsE "package-ecosystem: *\"?$eco\"?" "$d" \
+      || echo "DEPENDANCES .github/dependabot.yml ne suit pas « $eco » (présent dans le dépôt)"
+  done
+  grep -lsE 'caddy:[0-9]' "$r"/.github/workflows/*.yml | while read -r f; do
+    echo "DEPENDANCES ${f#"$r"/} recopie l'image Caddy : la lire au FROM de deploiement/Dockerfile"
+  done
   return 0
 }
 
@@ -345,6 +369,27 @@ selftest() {
   csp "CSP " "default-src 'self'; img-src 'self' data: *"
   csp "CSP " "script-src 'self'"
   csp "CSP " ""
+  # Dependabot et l'image Caddy (coprofirst-site#127) : un dépôt jetable par cas.
+  depend() { # <attendu> <racine>
+    local obtenu; obtenu=$(juger_dependances "$2" | awk '{print $1}' | tr '\n' ' ')
+    if [ "$obtenu" = "$1" ]; then echo "  ok      dépendances ${2##*/} → «$1»"; else echo "  ÉCHEC   dépendances ${2##*/} → «${obtenu}», attendu «$1»"; echecs=$((echecs + 1)); fi
+  }
+  local r
+  for r in complet sans-docker sans-dependabot recopie; do
+    mkdir -p "$t/$r/deploiement" "$t/$r/.github/workflows"
+    printf 'FROM caddy:2@sha256:0\n' > "$t/$r/deploiement/Dockerfile"
+    printf 'steps:\n  - uses: actions/checkout@0\n  - run: docker run "$(sed -n s/^FROM.//p deploiement/Dockerfile)"\n' > "$t/$r/.github/workflows/ci.yml"
+    printf 'updates:\n  - package-ecosystem: docker\n  - package-ecosystem: "github-actions"\n' > "$t/$r/.github/dependabot.yml"
+  done
+  printf 'updates:\n  - package-ecosystem: github-actions\n' > "$t/sans-docker/.github/dependabot.yml"
+  rm "$t/sans-dependabot/.github/dependabot.yml"
+  printf '  - run: docker run caddy:2@sha256:0 caddy validate\n' >> "$t/recopie/.github/workflows/ci.yml"
+  depend "" "$t/complet"
+  depend "DEPENDANCES " "$t/sans-docker"
+  depend "DEPENDANCES DEPENDANCES " "$t/sans-dependabot"
+  depend "DEPENDANCES " "$t/recopie"
+  printf 'reuse==1\n' > "$t/complet/.github/requirements-ci.txt"
+  depend "DEPENDANCES " "$t/complet"
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
@@ -362,7 +407,7 @@ nb=$(git ls-files | wc -l)
 ecarts=$(git ls-files -s | while read -r mode _ _ f; do
            juger_fichier "$f" "$mode"
            [[ "$f" == site/* && -f "$f" ]] && juger_publie "$f"
-         done; juger_site; juger_csp "$(csp_du_caddyfile)")
+         done; juger_site; juger_csp "$(csp_du_caddyfile)"; juger_dependances "$racine")
 if [ -n "$ecarts" ]; then
   echo "$ecarts"
   echo "verifier-depot : $(echo "$ecarts" | wc -l) écart(s) sur $nb fichiers"
