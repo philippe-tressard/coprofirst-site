@@ -21,8 +21,9 @@
 #      licences exactes, et la section nomme l'un et les autres. Un composant neuf est un
 #      écart tant qu'un humain n'a pas relu à quoi il se connecte ; un composant retiré
 #      aussi ;
-#   4. la liaison téléphone ↔ montre : tant que `LiaisonMontre.ACTIF` est éteint, la
-#      section dit « pas encore en service » ; allumé, elle ne le dit plus. Le drapeau
+#   4. la liaison téléphone ↔ montre : tant que `LiaisonMontre.ACTIF` est éteint, le
+#      bloc « Wear OS » de la section (son <h3>) dit « pas encore en service » ; allumé,
+#      il ne le dit plus. Le bloc de l'Apple Watch ne compte pas (coprofirst-site#124). Le drapeau
 #      attend lui-même que cette page décrive la montre (sa condition 3).
 #
 # Les durées (lecture gardée hors ligne, jeton de montre) se lisent par
@@ -52,10 +53,10 @@ import re
 import sys
 
 from lecture_distante import Illisible, lire
-from section_apps import ECART, INCONNU, OK, PAGE, conclure, ecarts_des_permissions, ecarts_des_tiers, nomme, rejouer, section_application
+from section_apps import (ECART, INCONNU, OK, PAGE, conclure, ecarts_de_liaison, ecarts_des_permissions,
+                          ecarts_des_tiers, nomme, rejouer, section_application)
 
 DEPOT = "https://raw.githubusercontent.com/philippe-tressard/coprofirst-android/main/"
-EN_SERVICE = "pas encore en service"
 
 # Chaque permission des deux manifestes, et le mot qui la nomme dans la section.
 PERMISSIONS = {
@@ -152,10 +153,7 @@ def verifier(app: str, montre: str, liste: str, liaison: str, page: str) -> tupl
                for a, (_, m) in MANIFESTE.items() if not nomme(section, m)]
     ecarts += ecarts_des_tiers(tiers, TIERS_ADMIS, section, "TIERS_ADMIS (verifier-app-android.py)",
                                mot=mot, libelle=lambda l: LIBELLES.get(l, l))
-    if active and nomme(section, EN_SERVICE):
-        ecarts.append(f"la liaison avec la montre est en service (LiaisonMontre.ACTIF) : la section dit encore « {EN_SERVICE} »")
-    if not active and not nomme(section, EN_SERVICE):
-        ecarts.append(f"la liaison avec la montre est éteinte (LiaisonMontre.ACTIF) : la section ne dit pas « {EN_SERVICE} »")
+    ecarts += ecarts_de_liaison(section, "Wear OS", active, "LiaisonMontre.ACTIF")
     return (ECART if ecarts else OK), ecarts
 
 
@@ -170,7 +168,8 @@ def selftest() -> int:
     eteinte = "object LiaisonMontre {\n    const val ACTIF: Boolean = false\n}\n"
     page = ('<section aria-labelledby="t-application"><p>Internet, la caméra, en HTTPS, hors de toute sauvegarde.</p>'
             '<p>OkHttp (Apache-2.0, MPL-2.0), Google Play services (licence du SDK Android).</p>'
-            '<p>La montre&nbsp;: pas encore en service.</p></section>')
+            '<h3>La montre Wear&nbsp;OS</h3><p>Le lien&nbsp;: pas encore en service.</p>'
+            '<h3>L\'Apple Watch</h3><p>Ailleurs.</p></section>')
     global PERMISSIONS, TIERS_ADMIS
     reelles = PERMISSIONS, TIERS_ADMIS
     PERMISSIONS = {"android.permission.INTERNET": "Internet", "android.permission.CAMERA": "caméra"}
@@ -204,6 +203,9 @@ def selftest() -> int:
          eteinte.replace("false", "true"), page),
         ("liaison éteinte, page qui ne le dit pas", ECART, tel, montre, tiers, eteinte,
          page.replace("pas encore en service", "en service")),
+        ("« pas encore » dit pour l'Apple Watch seulement", ECART, tel, montre, tiers, eteinte,
+         page.replace("pas encore en service", "relié").replace("Ailleurs", "Lien : pas encore en service")),
+        ("page sans bloc Wear OS", ECART, tel, montre, tiers, eteinte, page.replace("Wear&nbsp;OS", "connectée")),
         ("liaison allumée et page à jour", OK, tel, montre, tiers, eteinte.replace("false", "true"),
          page.replace("pas encore en service", "en service")),
         ("pas un manifeste", INCONNU, "<?xml?>", montre, tiers, eteinte, page),
