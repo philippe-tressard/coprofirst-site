@@ -64,6 +64,12 @@ jobs:
         run: python3 scripts/verifier-contrat-apps.py --selftest
       - name: CONTRAT_APP contre coprofirst-ios et coprofirst-android (main)
         run: python3 scripts/verifier-contrat-apps.py
+      # Un identifiant SPDX, un texte : la licence du logo est celle de coprofirst, au
+      # paragraphe des fichiers couverts près (coprofirst-site#125).
+      - name: La licence du logo (selftest)
+        run: python3 scripts/verifier-licence-logo.py --selftest
+      - name: LicenseRef-CoproFirst-Logo contre coprofirst (main)
+        run: python3 scripts/verifier-licence-logo.py
       # Pas une concordance : une date qui passe. Sa place est dans le passage quotidien.
       - name: L'échéance de security.txt (un mois de préavis)
         run: python3 scripts/verifier-security-txt.py
