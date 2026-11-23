@@ -21,6 +21,8 @@ RACINE = Path(__file__).resolve().parent.parent
 PAGE = RACINE / "site" / "confidentialite.html"
 ANCRE = "t-application"
 OK, ECART, INCONNU = 0, 1, 2
+# Ce que le bloc d'une montre dit tant que sa liaison est éteinte.
+EN_SERVICE = "pas encore en service"
 
 
 def nomme(section: str, mot: str) -> bool:
@@ -34,6 +36,30 @@ def section_application(texte: str) -> str:
     if not bloc:
         raise Illisible(f"confidentialite.html : section #{ANCRE} introuvable")
     return html.unescape(bloc.group(1)).replace("\xa0", " ")
+
+
+def bloc(section: str, mot: str) -> str | None:
+    """Le bloc de la section qui commence au <h3> nommant `mot` et finit au <h3> suivant ;
+    None s'il n'y en a pas. Deux montres, deux blocs : le « pas encore en service » de
+    l'une ne vaut pas pour l'autre (coprofirst-site#124)."""
+    for morceau in re.split(r"(?=<h3)", section):
+        titre = morceau.split("</h3>", 1)[0] if morceau.startswith("<h3") else ""
+        if titre and nomme(re.sub(r"<[^>]+>", "", titre), mot):
+            return morceau
+    return None
+
+
+def ecarts_de_liaison(section: str, montre: str, active: bool, drapeau: str) -> list[str]:
+    """La montre a son bloc (un <h3> qui la nomme) ; liaison éteinte, il dit EN_SERVICE ;
+    allumée, il ne le dit plus."""
+    texte = bloc(section, montre)
+    if texte is None:
+        return [f"la section #{ANCRE} n'a pas de bloc (<h3>) qui nomme « {montre} »"]
+    if active and nomme(texte, EN_SERVICE):
+        return [f"la liaison avec l'{montre} est en service ({drapeau}) : son bloc dit encore « {EN_SERVICE} »"]
+    if not active and not nomme(texte, EN_SERVICE):
+        return [f"la liaison avec l'{montre} est éteinte ({drapeau}) : son bloc ne dit pas « {EN_SERVICE} »"]
+    return []
 
 
 def ecarts_des_tiers(paquets, admis: dict[str, set[str]], section: str, liste: str,
