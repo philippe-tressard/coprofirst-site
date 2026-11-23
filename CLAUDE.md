@@ -53,7 +53,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
   tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
   réservé à la démo. Le Caddyfile est validé à la construction de l'image (un
-  Caddyfile invalide laisse l'ancien conteneur servir) et en CI. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
+  Caddyfile invalide laisse l'ancien conteneur servir) et en CI, avec l'image lue au
+  `FROM` du `Dockerfile` (sa seule écriture). Dependabot propose chaque lundi l'image
+  Caddy, les actions et `reuse` (`.github/dependabot.yml`, exigé par `verifier-depot.sh`) :
+  une telle PR fusionnée appelle un déploiement. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
   seulement, plus `site/avis.json` qui n'est pas versionné — voir Avis
   d'utilisateurs —, puis comparaison octet par octet de ce qui est servi ;
   `--verifier` pour le seul contrôle). Jamais de geste à la main sur le serveur.

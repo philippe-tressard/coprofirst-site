@@ -1,0 +1,44 @@
+# SPDX-FileCopyrightText: 2026 Philippe TRESSARD
+# SPDX-License-Identifier: AGPL-3.0-or-later
+#
+# Dependabot — les montées de l'image Caddy, des actions et des outils de la CI
+# (coprofirst-site#127, standards/07 §7 bis). Comme dans les autres dépôts du produit :
+# mineures et correctives groupées ; une MAJEURE arrive seule, dans sa PR. Chaque PR
+# passe par la même CI (main est protégée) ; fusionnée, elle appelle un déploiement
+# (deploiement/deployer.sh), sans quoi le serveur garde l'ancienne image.
+# verifier-depot.sh exige un bloc par écosystème présent dans le dépôt.
+version: 2
+updates:
+  # L'image du site (deploiement/Dockerfile), épinglée par étiquette ET empreinte :
+  # Dependabot propose l'étiquette suivante, ou la même republiée (nouvelle empreinte).
+  - package-ecosystem: docker
+    directory: /deploiement
+    schedule:
+      interval: weekly
+      day: monday
+    commit-message:
+      prefix: "chore(deps)"
+
+  # Les actions des workflows, épinglées par SHA.
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      actions-mineures:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: "chore(ci)"
+
+  # Les outils Python de la CI (reuse), versions exactes.
+  - package-ecosystem: pip
+    directory: /.github
+    schedule:
+      interval: weekly
+      day: monday
+    groups:
+      outils-mineurs:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: "chore(ci)"
