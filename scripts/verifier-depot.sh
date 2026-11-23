@@ -19,7 +19,10 @@
 # Et ce que la page publiée doit à la loi et à ses visiteurs (standards/14 §3, §4, §9) :
 #   - les pages Mentions légales et Confidentialité existent ;
 #   - chaque page du site y renvoie, sans lien mort (`href="#"`), avec le même pied ;
-#   - aucune ressource chargée depuis un autre site (police, script, traceur).
+#   - aucune ressource chargée depuis un autre site (police, script, traceur) : ni par
+#     une page, ni par une feuille de style, ni par un script, ni par un SVG ; et la
+#     politique de sécurité du contenu (CSP) du Caddyfile ne nomme que le site ;
+#   - ni « ® » (la marque n'est qu'une demande), ni balisage d'avis (Review, Rating).
 # Lit l'INDEX git : en pre-commit, c'est ce qui va partir ; en CI, ce qui est parti.
 #
 # Usage : bash scripts/verifier-depot.sh            (sortie non nulle = écart)
@@ -48,6 +51,68 @@ RESERVES='example\.(com|org|net)'
 hotes_inconnus() {
   grep -oiE "\b([a-z0-9-]+\.)+($SUFFIXES)\b" "$1" | tr 'A-Z' 'a-z' | sort -u \
     | grep -vE "^([a-z0-9-]+\.)*($DOMAINES_REELS|$RESERVES)$"
+}
+
+# Ressource tierce (standards/14 §4 : ni police externe ni traceur, donc pas de bandeau).
+# Une page la charge par une balise (juger_page) ; une feuille par url() ou @import ;
+# un SVG par href ; un script par tout appel réseau — fetch, import, sendBeacon,
+# WebSocket, .src = — d'une adresse absolue : un script du site n'a aucune raison d'en
+# écrire une (un lien vit dans la page). Les coches de commun.css, en URI data:, portent
+# « http://www.w3.org » dans leur texte sans rien charger : les motifs les épargnent.
+# Jusqu'au 23/11/2026, seules les pages étaient lues (coprofirst-site#121).
+TIERS_CSS='url\([[:space:]]*["'"'"']?(https?:)?//|@import[[:space:]]+(url\()?[[:space:]]*["'"'"']?(https?:)?//'
+TIERS_JS='["'"'"'`](https?:)?//[a-z0-9]'
+TIERS_SVG='href="(https?:)?//'
+# La marque n'est qu'une demande (n° 5307183) : « ® » serait une fausse mention
+# d'enregistrement. Le jour où elle est enregistrée (rendez-vous coprofirst#1804),
+# MARQUE_ENREGISTREE passe à oui et la règle tombe.
+MARQUE_ENREGISTREE=non
+SYMBOLE_R='®|&reg;|&#0*174;|&#x0*ae;'
+# Les avis sont choisis par l'éditeur parmi les 4 et 5 étoiles : une note balisée
+# tromperait les moteurs (CLAUDE.md, Référencement). Aucun type ni propriété d'avis.
+BALISES_AVIS='[Aa]ggregateRating|reviewCount|ratingValue|reviewRating|schema\.org/(Review|Rating)\b|"(Review|Rating)"'
+
+# juger_publie <chemin> — fonction PURE : ce qu'un fichier servi (site/) ne doit pas
+# porter, quel que soit son type. Un écart par ligne.
+juger_publie() {
+  local f="$1"
+  case "$f" in
+    *.css) grep -Eiq "$TIERS_CSS" "$f" && echo "TIERS    $f (url() ou @import vers un autre site)" ;;
+    *.js|*.mjs) grep -Eiq "$TIERS_JS" "$f" && echo "TIERS    $f (adresse absolue dans un script : tout chargement reste sur le site)" ;;
+    *.svg) grep -Eiq "$TIERS_SVG" "$f" && echo "TIERS    $f (href vers un autre site)" ;;
+  esac
+  [[ "$f" =~ $BINAIRES ]] && return 0
+  if [ "$MARQUE_ENREGISTREE" = non ]; then
+    grep -Eiq "$SYMBOLE_R" "$f" && echo "MARQUE   $f (® : la marque n'est qu'une demande, n° 5307183)"
+  fi
+  grep -Eq "$BALISES_AVIS" "$f" && echo "AVIS     $f (balisage d'avis ou de note : jamais sur ces avis choisis)"
+  return 0
+}
+
+# csp_du_caddyfile — la valeur de Content-Security-Policy que pose le Caddyfile.
+csp_du_caddyfile() { sed -n 's/.*Content-Security-Policy "\(.*\)".*/\1/p' deploiement/Caddyfile | head -1; }
+
+# juger_csp <valeur> — fonction PURE : la politique ne nomme que le site lui-même. Toute
+# source autre que 'self' et 'none' est un écart, sauf deux, déclarées : 'unsafe-inline'
+# dans style-src (les attributs style= des pages) et data: dans img-src (les coches de
+# commun.css). Une CSP élargie avec le CSS laisserait passer ce que TIERS refuse.
+juger_csp() {
+  [ -n "$1" ] || { echo "CSP      (aucune politique dans le Caddyfile)"; return 0; }
+  local d nom s
+  local -a sources
+  while IFS= read -r d; do
+    read -r nom d <<< "$d"
+    [ -n "${nom:-}" ] || continue
+    read -r -a sources <<< "$d"
+    for s in ${sources[@]+"${sources[@]}"}; do
+      case "$nom:$s" in
+        *:"'self'"|*:"'none'"|style-src:"'unsafe-inline'"|img-src:data:) ;;
+        *) echo "CSP      $nom $s (admis : 'self', 'none' ; 'unsafe-inline' en style-src, data: en img-src)" ;;
+      esac
+    done
+  done < <(tr ';' '\n' <<< "$1")
+  grep -q 'default-src' <<< "$1" || echo "CSP      (default-src absent : une source non nommée serait admise)"
+  return 0
 }
 
 # juger_fichier <chemin> <mode git> — fonction PURE : lit le fichier, n'écrit rien.
@@ -233,6 +298,53 @@ selftest() {
   page "" capture-paire.html
   page "CAPTURE " capture-sans-sombre.html
   page "CAPTURE " capture-sans-lazy.html
+  # Fichiers servis : feuilles, scripts, SVG (coprofirst-site#121), marque, avis.
+  publie() { # <attendu> <fichier>
+    local obtenu; obtenu=$(juger_publie "$t/$2" | awk '{print $1}' | tr '\n' ' ')
+    if [ "$obtenu" = "$1" ]; then echo "  ok      $2 → «$1»"; else echo "  ÉCHEC   $2 → «${obtenu}», attendu «$1»"; echecs=$((echecs + 1)); fi
+  }
+  printf '%s\n' ".a{background:url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg'%3E\")}" '.b{background:url(captures/a.jpg)}' > "$t/coche.css"
+  printf '%s\n' '@import url("https://tiers.example/x.css");' > "$t/import.css"
+  printf '%s\n' '@import "//tiers.example/x.css";' > "$t/import-nu.css"
+  printf '%s\n' '@font-face{font-family:F;src:url(https://cdn.example/f.woff2)}' > "$t/police.css"
+  printf '%s\n' "const r = await fetch('avis.json', { cache: 'no-cache' }); // https://exemple sans guillemet" > "$t/local.js"
+  printf '%s\n' 'fetch("https://tiers.example/collect");' > "$t/collecte.js"
+  printf '%s\n' "navigator.sendBeacon(\`//tiers.example/b\`, d);" > "$t/balise.js"
+  printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><path d="M0 0"/></svg>' > "$t/logo.svg"
+  printf '%s\n' '<svg xmlns="http://www.w3.org/2000/svg"><image href="https://tiers.example/i.png"/></svg>' > "$t/image-tierce.svg"
+  printf '%s\n' '<p>CoproFirst — demande de marque n° 5307183</p>' > "$t/marque.html"
+  printf '%s\n' '<p>CoproFirst®</p>' > "$t/marque-r.html"
+  printf '%s\n' '<p>CoproFirst&reg;</p>' > "$t/marque-entite.html"
+  printf '%s\n' '{"@type": "AggregateRating", "ratingValue": 5}' > "$t/note.json"
+  printf '%s\n' '<div itemscope itemtype="https://schema.org/Review">' > "$t/avis-micro.html"
+  printf '%s\n' '{"@type": ["Thing", "Review"]}' > "$t/avis-ld.html"
+  publie "" coche.css
+  publie "TIERS " import.css
+  publie "TIERS " import-nu.css
+  publie "TIERS " police.css
+  publie "" local.js
+  publie "TIERS " collecte.js
+  publie "TIERS " balise.js
+  publie "" logo.svg
+  publie "TIERS " image-tierce.svg
+  publie "" marque.html
+  publie "MARQUE " marque-r.html
+  publie "MARQUE " marque-entite.html
+  publie "AVIS " note.json
+  publie "AVIS " avis-micro.html
+  publie "AVIS " avis-ld.html
+  # La CSP : celle du Caddyfile passe ; chaque élargissement est refusé.
+  csp() { # <attendu> <valeur>
+    local obtenu; obtenu=$(juger_csp "$2" | awk '{print $1}' | tr '\n' ' ')
+    if [ "$obtenu" = "$1" ]; then echo "  ok      csp « ${2:0:40}… » → «$1»"; else echo "  ÉCHEC   csp « $2 » → «${obtenu}», attendu «$1»"; echecs=$((echecs + 1)); fi
+  }
+  local base="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'"
+  csp "" "$base"
+  csp "CSP " "$base; font-src 'self' https://cdn.example"
+  csp "CSP " "default-src 'self'; script-src 'self' 'unsafe-inline'"
+  csp "CSP " "default-src 'self'; img-src 'self' data: *"
+  csp "CSP " "script-src 'self'"
+  csp "CSP " ""
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
@@ -241,11 +353,16 @@ if [ "${1:-}" = "--selftest" ]; then selftest; exit $?; fi
 
 racine=$(git rev-parse --show-toplevel 2>/dev/null) || { echo "INCONNU : pas un dépôt git"; exit 2; }
 cd "$racine" || exit 2
+# --csp : la politique du Caddyfile, que verifier-service.sh compare à celle servie.
+if [ "${1:-}" = "--csp" ]; then csp_du_caddyfile; exit 0; fi
 nb=$(git ls-files | wc -l)
 # Cas zéro : un index vide ne prouve rien (standards/04 §2)
 [ "$nb" -gt 0 ] || { echo "INCONNU : aucun fichier dans l'index — rien n'a été vérifié"; exit 2; }
 
-ecarts=$(git ls-files -s | while read -r mode _ _ f; do juger_fichier "$f" "$mode"; done; juger_site)
+ecarts=$(git ls-files -s | while read -r mode _ _ f; do
+           juger_fichier "$f" "$mode"
+           [[ "$f" == site/* && -f "$f" ]] && juger_publie "$f"
+         done; juger_site; juger_csp "$(csp_du_caddyfile)")
 if [ -n "$ecarts" ]; then
   echo "$ecarts"
   echo "verifier-depot : $(echo "$ecarts" | wc -l) écart(s) sur $nb fichiers"
