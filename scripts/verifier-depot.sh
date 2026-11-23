@@ -139,6 +139,25 @@ juger_dependances() {
   return 0
 }
 
+# juger_consignes <racine> — fonction PURE : le CLAUDE.md du projet reste court (il est
+# chargé à chaque session : standards/13 §1, coprofirst-site#129) et dit qui fusionne et
+# qui déploie ; aucun workflow ni script ne donne ces gestes à une autre personne que
+# celle qu'il nomme (coprofirst-site#120 : deux consignes contraires lues à la suite).
+PLAFOND_CLAUDE_MD=10000
+juger_consignes() {
+  local r="$1" c="$1/CLAUDE.md" taille
+  [ -f "$c" ] || { echo "CONSIGNE CLAUDE.md absent"; return 0; }
+  taille=$(wc -c < "$c" | tr -d ' ')
+  [ "$taille" -le "$PLAFOND_CLAUDE_MD" ] \
+    || echo "CONSIGNE CLAUDE.md : $taille octets, plafond $PLAFOND_CLAUDE_MD — le détail va dans l'en-tête des scripts"
+  grep -q '^## Fusion et déploiement' "$c" || echo "CONSIGNE CLAUDE.md : aucune section « Fusion et déploiement »"
+  grep -lsiE '(fusion|déploiement)[^.]*((restent?|revient) à|reste celle de) [[:upper:]][[:lower:]]+' \
+      "$r"/.github/workflows/*.yml "$r"/scripts/*.sh "$r"/scripts/*.py | while read -r f; do
+    echo "CONSIGNE ${f#"$r"/} attribue la fusion ou le déploiement à une personne : renvoyer à CLAUDE.md"
+  done
+  return 0
+}
+
 # juger_branchement <racine> — fonction PURE : chaque scripts/verifier-* est lancé par
 # scripts/controles.sh ou par un workflow. Un contrôle écrit et jamais lancé ne protège
 # rien (standards/05 §2 ; coprofirst-site#130).
@@ -414,6 +433,18 @@ selftest() {
   : > "$t/branche/scripts/verifier-c.py"
   obtenu=$(juger_branchement "$t/branche" | awk '{print $1}' | tr '\n' ' ')
   [ "$obtenu" = "BRANCHE " ] && echo "  ok      contrôle jamais lancé → «BRANCHE »" || { echo "  ÉCHEC   contrôle jamais lancé → «$obtenu»"; echecs=$((echecs + 1)); }
+  # Consignes (coprofirst-site#120, coprofirst-site#129).
+  mkdir -p "$t/consignes/scripts" "$t/consignes/.github/workflows"
+  printf '## Fusion et déploiement\nCourt.\n' > "$t/consignes/CLAUDE.md"
+  obtenu=$(juger_consignes "$t/consignes" | awk '{print $1}' | tr '\n' ' ')
+  [ "$obtenu" = "" ] && echo "  ok      consignes conformes → «»" || { echo "  ÉCHEC   consignes conformes → «$obtenu»"; echecs=$((echecs + 1)); }
+  printf '# La fusion et le déploiement restent à %s.\n' "Bob" > "$t/consignes/.github/workflows/v.yml"
+  head -c 10001 /dev/zero | tr '\0' 'x' >> "$t/consignes/CLAUDE.md"
+  obtenu=$(juger_consignes "$t/consignes" | awk '{print $1}' | tr '\n' ' ')
+  [ "$obtenu" = "CONSIGNE CONSIGNE " ] && echo "  ok      CLAUDE.md trop long, fusion donnée à Bob → «$obtenu»" || { echo "  ÉCHEC   trop long, Bob → «$obtenu»"; echecs=$((echecs + 1)); }
+  printf 'rien\n' > "$t/consignes/CLAUDE.md"
+  obtenu=$(juger_consignes "$t/consignes" | awk '{print $1}' | tr '\n' ' ')
+  [ "$obtenu" = "CONSIGNE CONSIGNE " ] && echo "  ok      sans section de fusion → «$obtenu»" || { echo "  ÉCHEC   sans section → «$obtenu»"; echecs=$((echecs + 1)); }
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
@@ -431,7 +462,7 @@ nb=$(git ls-files | wc -l)
 ecarts=$(git ls-files -s | while read -r mode _ _ f; do
            juger_fichier "$f" "$mode"
            [[ "$f" == site/* && -f "$f" ]] && juger_publie "$f"
-         done; juger_site; juger_csp "$(csp_du_caddyfile)"; juger_dependances "$racine"; juger_branchement "$racine")
+         done; juger_site; juger_csp "$(csp_du_caddyfile)"; juger_dependances "$racine"; juger_branchement "$racine"; juger_consignes "$racine")
 if [ -n "$ecarts" ]; then
   echo "$ecarts"
   echo "verifier-depot : $(echo "$ecarts" | wc -l) écart(s) sur $nb fichiers"
