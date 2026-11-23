@@ -19,17 +19,13 @@
 // jamais recopié ici — verifier-comptes-demo.py garde la page juste. Les données de
 // la démo sont fictives.
 //
-// Il faut playwright-core et un Chrome ou un Edge installé. playwright-core est pris
-// dans PLAYWRIGHT_CORE (chemin du paquet) ou, à défaut, dans le clone voisin de
-// CoproFirst (../5hostachy/front/node_modules/playwright-core), qui l'installe pour
-// ses tests de navigateur : ce site n'a pas de dépendance npm à lui.
+// Il faut playwright-core et un navigateur : où ils se cherchent, scripts/navigateur.mjs.
 // Sortie : 0 = images écrites ; 2 = INCONNU (outil absent, connexion refusée, écran
 // introuvable) — aucune image n'est alors remplacée.
-// Navigateur : Chrome, puis Edge, puis le Chromium que Playwright installe.
-import { createRequire } from 'node:module';
-import { readFileSync, writeFileSync, mkdirSync, existsSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { chargerPlaywright, lancer } from './navigateur.mjs';
 
 const RACINE = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const SORTIE = join(RACINE, 'site', 'captures');
@@ -60,23 +56,9 @@ function compteDeLaPage() {
   return { adresse: codes[0], motDePasse: codes[1] };
 }
 
-function chargerPlaywright() {
-  const chemin = process.env.PLAYWRIGHT_CORE || resolve(RACINE, '..', '5hostachy', 'front', 'node_modules', 'playwright-core');
-  if (!existsSync(join(chemin, 'package.json'))) inconnu(`playwright-core introuvable (${chemin}) — variable PLAYWRIGHT_CORE`);
-  return createRequire(join(chemin, 'package.json'))(chemin);
-}
-
-async function lancer(chromium) {
-  for (const channel of ['chrome', 'msedge']) {
-    try { return await chromium.launch({ channel }); } catch { /* essayer le suivant */ }
-  }
-  try { return await chromium.launch(); } catch { /* le Chromium de Playwright, s'il est installé */ }
-  inconnu('ni Chrome, ni Edge, ni le Chromium de Playwright ne se lancent');
-}
-
 const compte = compteDeLaPage();
-const { chromium } = chargerPlaywright();
-const navigateur = await lancer(chromium);
+const { chromium } = chargerPlaywright(RACINE, inconnu);
+const navigateur = await lancer(chromium, inconnu);
 const images = [];
 let version = null;
 try {

@@ -7,7 +7,9 @@
 #
 # Un commentaire cite son ticket pour dire d'où vient une décision. Le 24/10/2026,
 # les 32 tickets terminés ont été supprimés de GitHub : une soixantaine de renvois
-# du dépôt, CLAUDE.md compris, ne menaient plus nulle part. Deux règles :
+# du dépôt, CLAUDE.md compris, ne menaient plus nulle part. Depuis le 30/10/2026, un
+# ticket terminé se FERME et reste (CLAUDE.md, « Tickets ») : un renvoi à un ticket
+# fermé est conforme — l'API le sert en 200, comme un ouvert. Deux règles :
 #   1. HORS LIGNE (pre-commit, CI) : un renvoi s'écrit qualifié, coprofirst-site#N.
 #      Un renvoi nu (un dièse suivi d'un ou deux chiffres) est refusé : il ne se
 #      vérifie pas, et se confond avec coprofirst#N, le dépôt de l'application.
@@ -133,6 +135,7 @@ def selftest() -> int:
             "/pull/2", f" https://github.com/{DEPOT}/pull/2"), {12, 2}),
         ("autre dépôt", f"coprofirst{d}2174 github.com/philippe-tressard/coprofirst/issues/9", set()),
     ]
+    # 200 : ouvert OU fermé — un ticket fermé et gardé est un renvoi valide.
     statuts = [(200, OK), (404, ECART), (410, ECART), (403, INCONNU), (429, INCONNU), (500, INCONNU)]
     echecs = 0
     for nom, texte, attendu in nus:

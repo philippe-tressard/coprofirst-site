@@ -5,336 +5,133 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 # CLAUDE.md — CoproFirst-Site
 
-## ⚠️ Socle commun d'abord
+Ce fichier ne contient que l'instanciation CoproFirst-Site du socle commun
+(`~/.claude/standards/`, routage : `~/.claude/CLAUDE.md` §1) : il ne le redit pas, il
+y renvoie. Le détail de chaque contrôle est dans l'**en-tête de son script**.
+**Toute modification d'écran suit la skill globale `emil-design-eng`** (demande du
+12/10/2026).
 
-Bonnes pratiques valables pour tous les projets : `~/.claude/standards/`
-(routage : `~/.claude/CLAUDE.md` §1). Ce fichier ne contient que l'instanciation
-CoproFirst-Site. **Toute modification d'écran suit la skill globale
-`emil-design-eng`** — demandé explicitement par l'utilisateur (12/10/2026).
+## Après toute modification — les gestes que la CI exige
 
-## Stack et état
+| Vous avez modifié… | Lancer, puis committer le résultat |
+|---|---|
+| un CSS, un JS ou une capture | `python3 scripts/empreintes.py --ecrire` (cache de 4 h de Cloudflare) |
+| `site/index.html` (texte, empreinte, version) | `python3 scripts/contenu-accueil.py --ecrire` |
+| une page | avancer son `lastmod` dans `site/sitemap.xml` |
+| ajouté une page | la déclarer dans `sitemap.xml` et `llms.txt`, balises de tête recopiées d'une voisine |
+| une couleur | `python3 scripts/verifier-css.py` (contrastes des quatre modes) |
+| une phrase qui recopie un fait du produit | l'ajouter à `FAITS` (`verifier-faits-produit.py`) |
+| une démo d'une autre version | `node scripts/generer-captures.mjs`, puis les empreintes |
+| le gabarit de l'image de partage | `node scripts/generer-image-partage.mjs` |
+| l'échéance de `security.txt` approche | `python3 scripts/verifier-security-txt.py --renouveler`, jamais à la main |
 
-- **Site statique** : HTML, CSS et JavaScript sans dépendance ni étape de build.
-  `site/index.html` (accueil), `site/demo.html` (comptes de la démo),
-  `site/mentions-legales.html`, `site/confidentialite.html`, `site/supprimer-compte.html`
-  (l'adresse « supprimer votre compte » que Google Play exige, utilisable sans l'app ;
-  ses sources sont nommées en tête de la page), `site/404.html` (servie
-  par le Caddyfile sur toute adresse inconnue, avec le code 404 et les mêmes en-têtes
-  de sécurité — `noindex`, hors du sitemap, adresses en absolu — le pied de toutes les pages aussi,
-  pour qu'il tienne sur /a/b/x) ; styles partagés dans
-  `site/commun.css` (jetons de couleur : thème **sombre par défaut**, clair au
-  choix du visiteur par l'interrupteur de l'en-tête, sans égard pour le thème de son
-  système — demande du 21/10/2026 ; `site/theme.js`, chargé dans `<head>` avant la
-  feuille, pose `data-theme` et mémorise le choix dans `localStorage`
-  `coprofirst-theme`, ce que dit `confidentialite.html` ; `verifier-depot.sh` exige
-  script et interrupteur dans chaque page. Une surface s'écrit `var(--carte)`, un
-  texte bleu `var(--lien)`, jamais `#fff` ni `--bleu` en dur), ceux des pages de texte dans
-  `site/document.css`, ceux de l'accueil dans `site/accueil.css`, les scripts
-  dans `site/accueil.js` et `site/demo.js` (pas de script en ligne : la CSP n'admet
-  que `'self'`). Le héros montre des **captures réelles** de la démo, une par thème
-  (`*-sombre.jpg` : la page montre celle de son thème, la variante cachée est
-  `loading="lazy"` pour ne pas être téléchargée — `verifier-depot.sh` exige la paire et
-  le `lazy`)
-  (`site/captures/`, refaites par `node scripts/generer-captures.mjs` quand la
-  démo a changé de version — le script affiche la version photographiée, lue au
-  pied de l'application : la démo suit sa **vague** de distribution, pas la
-  dernière release (coprofirst#2210 : une mineure de recul, rodée 7 jours),
-  et peut donc servir une version de plusieurs jours en retard) et la **dernière version publiée** (la PR « version » que le robot
-  ouvre chaque heure, `version-produit.yml` — jamais à la main). Un site
-  sans build recopie l'en-tête et le pied dans chaque page : `verifier-depot.sh`
-  exige que les pieds soient identiques.
-- **Domaine** : `coprofirst.fr`, acheté le 13/10/2026. **Contact public** :
-  `contact@coprofirst.fr`, un alias vérifié le 13/10/2026 (courriel reçu), au pied
-  de la page. **Démo** :
-  `demo.coprofirst.fr` — un sous-domaine, parce qu'il ne coûte rien de plus et ne
-  demande aucune modification de l'application (arbitrage du 12/10/2026 :
-  « possible techniquement sans surcoût »).
-- **Hébergement** : Oracle Cloud (instance `coprofirst-demo`, Paris), comme la démo.
-  En ligne depuis le 13/10/2026 : conteneur Caddy sur `127.0.0.1:8080`, derrière le
-  tunnel Cloudflare (`coprofirst.fr`, `www` redirigé par Caddy) ; le port 80 est
-  réservé à la démo. Le Caddyfile est validé à la construction de l'image (un
-  Caddyfile invalide laisse l'ancien conteneur servir) et en CI, avec l'image lue au
-  `FROM` du `Dockerfile` (sa seule écriture). Dependabot propose chaque lundi l'image
-  Caddy, les actions et `reuse` (`.github/dependabot.yml`, exigé par `verifier-depot.sh`) :
-  une telle PR fusionnée appelle un déploiement. **Déployer** : `bash deploiement/deployer.sh` (HEAD poussé
-  seulement, plus `site/avis.json` qui n'est pas versionné — voir Avis
-  d'utilisateurs —, puis comparaison octet par octet de ce qui est servi ;
-  `--verifier` pour le seul contrôle). Jamais de geste à la main sur le serveur.
-- **Dépôt** : `philippe-tressard/coprofirst-site`, **public**, sous
-  AGPL-3.0-or-later comme l'application (accord de l'utilisateur, 13/10/2026).
-  Les commits portent l'adresse *noreply* de GitHub, réglée dans la configuration
-  **locale** du clone : l'adresse globale du poste est personnelle, et GitHub
-  refuse de la publier (GH007).
-- `maquettes/` garde les dix propositions qui ont mené à la page ; `E` est la
-  version retenue. Ce sont des archives : on ne les corrige pas.
+`scripts/controles.sh` porte la liste des contrôles hors réseau : le `pre-commit`
+(`git config core.hooksPath .githooks`, une fois par clone) et la CI l'appellent ; la
+CI y ajoute `reuse lint`, `verifier-service.sh` (Docker) et, chaque jour, la
+concordance avec le produit et les apps (`comptes-demo.yml`). Un `scripts/verifier-*`
+que rien ne lance est refusé ; ce fichier ne dépasse pas 10 000 octets
+(`verifier-depot.sh`).
+
+## Fusion et déploiement
+
+Décisions de Philippe du 11/11/2026 (fusion, registre `fusion: claude`) et du 13/11/2026
+(déploiement), confirmées le 18/11 : **je fusionne** les PR de ce dépôt —
+celle du robot de version et celles de Dependabot comprises — dès que leurs checks
+sont verts sur une tête à jour et qu'il n'y a pas de régression fonctionnelle, puis
+**je déploie** (`bash deploiement/deployer.sh`, `--garder-avis` sans nouvel export des
+avis) depuis le poste qui a la clé de l'instance, et je vérifie ce qui est servi
+(`deployer.sh --verifier`, puis l'URL publique). Contrepartie : **compte rendu après**
+(version, ce qui a changé). Restent à Philippe : une décision produit ou de
+formulation commerciale, un export des avis à installer, un geste qu'un hook refuse.
+Ne pas fermer puis rouvrir la PR « version » à la main : son défaut doit se voir
+(`scripts/proposer-version.sh`). Jamais de geste à la main sur le serveur. La cible du
+déploiement vit dans la configuration SSH du poste (alias `coprofirst-site`), jamais
+dans ce dépôt public : sans l'alias, `deployer.sh` rend INCONNU.
+
+## Tickets
+
+Un ticket terminé se **ferme**, avec sa preuve en commentaire ; il n'est pas supprimé.
+Un renvoi à un ticket de ce dépôt s'écrit `coprofirst-site#N` (`verifier-renvois.py`
+refuse le dièse nu ; `--en-ligne` rend rouge un renvoi à un ticket supprimé).
+
+## Le site
+
+- **Statique**, sans dépendance ni build : `site/*.html` (accueil, démo, mentions
+  légales, confidentialité, `supprimer-compte.html` — l'adresse exigée par Google Play —,
+  `404.html`), feuilles `commun.css`, `document.css`, `accueil.css`, scripts
+  `theme.js`, `accueil.js`, `demo.js`. Aucun script en ligne : la CSP n'admet que
+  `'self'`. L'en-tête et le pied se recopient dans chaque page (`verifier-depot.sh`
+  exige des pieds identiques).
+- **Thème sombre par défaut**, clair au choix du visiteur, sans égard pour le thème du
+  système (21/10/2026) : `theme.js`, chargé dans `<head>`, mémorisé dans `localStorage`
+  (`coprofirst-theme`). Une surface s'écrit `var(--carte)`, un texte bleu `var(--lien)`,
+  jamais `#fff` ni `--bleu` en dur.
+- **Captures réelles** de la démo dans le héros, une par thème (la variante cachée est
+  `loading="lazy"`). La démo suit sa vague de distribution : la version photographiée
+  se lit au pied de l'application, que `generer-captures.mjs` affiche.
+- **Version affichée** : la dernière release de CoproFirst, écrite par la PR « version »
+  que le robot ouvre chaque heure (`version-produit.yml`) — jamais à la main.
+- **Domaine** `coprofirst.fr` ; **contact public** `contact@coprofirst.fr` ; **démo**
+  `demo.coprofirst.fr`, un sous-domaine (12/10/2026).
+- **Hébergement** : Oracle Cloud (instance `coprofirst-demo`, Paris), conteneur Caddy
+  sur `127.0.0.1:8080` derrière le tunnel Cloudflare ; le port 80 est à la démo. Le
+  Caddyfile est validé à la construction de l'image et en CI, avec l'image lue au
+  `FROM` du `Dockerfile` (sa seule écriture, que Dependabot monte).
+- **Dépôt public**, AGPL-3.0-or-later (13/10/2026). Les commits portent l'adresse
+  *noreply* de GitHub, réglée dans la configuration locale du clone (GH007).
+- `maquettes/` : les propositions qui ont mené à la page (`E` retenue). Archives
+  jamais servies : on ne les corrige pas.
 
 ## Ce qui est propre à ce projet
 
-- **Le produit décrit est CoproFirst**, dont le code vit dans le répertoire que
-  `~/.claude/projets.json` déclare pour 5Hostachy sur le poste courant (dépôt
-  `philippe-tressard/coprofirst`). Toute affirmation sur une
-  fonctionnalité se vérifie dans son `README.md` ou son manuel avant d'être écrite
-  ici. Vocabulaire de l'application : « Bailleur (mandataire) » pour l'agence ou
-  le gestionnaire, « Aidant » pour la délégation en lecture.
-- **Marque** : « CoproFirst — demande de marque n° 5307183 », jamais ® tant
-  qu'elle n'est pas enregistrée (`MARQUE.md` de coprofirst). Le logo est sous
-  `LicenseRef-CoproFirst-Logo`, hors de l'AGPL : il reste dans son fichier, jamais
-  recopié en ligne dans le HTML. Le texte de cette licence est celui de coprofirst, au
-  paragraphe des fichiers couverts près (`verifier-licence-logo.py`, CI quotidienne) :
-  il change là-bas, puis se recopie. `verifier-depot.sh` refuse « ® » dans `site/`
-  tant que `MARQUE_ENREGISTREE=non`.
-- **Avis d'utilisateurs** (depuis le 20/10/2026 ; les
-  témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
-  ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
-  `avis-coprofirst-AAAA-MM-JJ.json`, installé en `site/avis.json`). Il n'est
-  **pas versionné** (`.gitignore`) : un accord retiré ne doit pas survivre dans
-  l'historique public. `deploiement/deployer.sh` va chercher **seul** le plus
-  récent des `avis-coprofirst-*.json` des Téléchargements (`(1)` compris,
-  `scripts/recuperer-avis.py`), le vérifie dans un fichier temporaire, l'installe,
-  puis **efface les exports** des Téléchargements (copies de données
-  personnelles) ; `--export CHEMIN` impose un fichier. Il l'envoie avec le commit,
-  après `scripts/verifier-avis.py`, et **refuse sans lui** (`--garder-avis` reprend
-  celui déjà en ligne, pour un déploiement d'un autre poste). Depuis PowerShell ou
-  d'un double-clic : `.\deploiement\deployer.cmd` (mêmes options), qui cherche Git
-  Bash ; il est en CRLF (`.gitattributes`), ce que `verifier-depot.sh` exige. À refaire **après chaque
-  export** : un auteur qui retire son accord ne sort du site qu'au redéploiement.
-  `accueil.js` les rend ; sans avis valide, la section et son lien restent masqués,
-  **jamais** d'exemple à la place. Durée maximale de publication : **deux ans**
-  après la date de l'avis, tenue à l'affichage et refusée au déploiement. Un nom de
-  résidence dans le texte est admis ; le nom complet d'une personne, non (il se
-  relit avant de retenir l'avis). La mention sous la section (L111-7-2, D111-17 du
-  Code de la consommation) et `confidentialite.html#t-avis` disent comment ils
-  sont choisis : les changer ensemble. Un texte long est coupé à cinq lignes avec
-  « Lire la suite » (choix de Philippe, 20/10/2026) : le bouton ne paraît que si
-  le texte déborde, jamais dans les copies `inert` de la boucle, et une carte
-  dépliée met le défilement en pause.
-- **Le mot du créateur** (section IA de l'accueil) : l'avis de l'éditeur, écrit en
-  dur dans `index.html`, **jamais** parmi les avis d'utilisateurs (pratique
-  commerciale trompeuse) — `verifier-avis.py` refuse un avis signé « Philippe T. »
-  dans l'export : ne pas le retenir dans l'application (choix du 20/10/2026).
-- **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau de
-  consentement (`standards/14` §4). Un ajout de ce type rouvre la question. La
-  police des titres, **Fraunces** (OFL-1.1), est servie par le site lui-même
-  (`site/polices/`, déclarée dans `REUSE.toml` et créditée aux mentions légales).
-- **Référencement** : le site est ouvert à tous les robots, moteurs **et** assistants
-  IA, entraînement compris (`site/robots.txt`, demande du 15/10/2026). Les données
-  structurées ne balisent **jamais** les avis (`Review`, `AggregateRating`) : ce
-  sont des avis sur son propre produit, choisis par l'éditeur parmi les 4 et 5
-  étoiles — une note moyenne tirée d'eux tromperait, et Google écarte ces avis
-  « auto-publiés » (décision du 20/10/2026).
-  La FAQ de l'accueil porte son balisage schema.org en microdonnées, sur le texte
-  visible : aucune copie à tenir à jour. L'image de partage se refait par
-  `bash scripts/generer-image-partage.sh`. ⚠️ Cloudflare sert aussi son propre
-  `robots.txt` géré (préambule *Content Signals*) et peut bloquer les robots IA à
-  la périphérie, quoi que dise le fichier du dépôt : cela se règle dans son tableau
-  de bord, pas ici.
-
-- **Analyse de sécurité Cloudflare** (*Security Insights*, 22/10/2026) — réglé dans le
-  tableau de bord de la zone : double authentification du compte, **TLS 1.2 minimum**,
-  **Toujours utiliser HTTPS** (la démo servait sa connexion en `http://`), DMARC
-  `p=none` par *DMARC Management* (rapports chez Cloudflare) ; `security.txt` dans le
-  dépôt. **Refusé, à ne pas réactiver** au prochain scan : *Bot Fight Mode* (il
-  mettrait au défi les instances qui s'inscrivent sur `registre.coprofirst.fr`, de
-  serveur à serveur, ainsi que `deployer.sh --verifier` et `generer-captures.mjs`),
-  *Labyrinthe IA* (contraire à l'ouverture aux robots), *Turnstile* (aucun formulaire),
-  **HSTS de Cloudflare** (Caddy et la démo envoient le leur). DKIM s'active chez OVH,
-  à faire avant de passer DMARC en `quarantine`. `registre.coprofirst.fr` : son API
-  porte HSTS, pas le 404 de la règle fourre-tout du **tunnel** : une règle de
-  transformation d'en-tête de réponse de la zone (« registre — en-têtes de sécurité »,
-  `http.host eq "registre.coprofirst.fr"`) pose HSTS et `nosniff` sur tout l'hôte.
-
-- **La démo** est ouverte depuis le 14/10/2026. On y entre **par le formulaire de
-  connexion** de `demo.coprofirst.fr`, avec trois comptes publics (CS,
-  copropriétaire, locataire) que publie `site/demo.html` ; l'administrateur n'en est
-  pas un (coprofirst#1932). Ces identifiants viennent de
-  `api/app/demo/personnages.py` de CoproFirst : **s'ils y changent, `demo.html` doit
-  suivre** — `scripts/verifier-comptes-demo.py` le vérifie chaque jour en CI (voir
-  Contrôles).
-
+- **Le produit décrit est CoproFirst** (dépôt `philippe-tressard/coprofirst`, son
+  répertoire dans `~/.claude/projets.json`) : toute affirmation sur une fonctionnalité
+  se vérifie dans son `README.md` avant d'être écrite ici. Vocabulaire : « Bailleur
+  (mandataire) » pour l'agence ou le gestionnaire, « Aidant » pour la délégation en
+  lecture.
+- **Marque** : « CoproFirst — demande de marque n° 5307183 », jamais ® tant qu'elle
+  n'est pas enregistrée (`verifier-depot.sh`, `MARQUE_ENREGISTREE`). Le logo est sous
+  `LicenseRef-CoproFirst-Logo`, hors de l'AGPL : il reste dans son fichier, jamais en
+  ligne dans le HTML ; le texte de sa licence est celui de coprofirst, au paragraphe
+  des fichiers couverts près (`verifier-licence-logo.py`) — il change là-bas.
+- **Avis d'utilisateurs** : seulement l'export de l'onglet ⭐ Avis de l'application
+  (`site/avis.json`, **jamais versionné** : un accord retiré ne survit pas dans
+  l'historique public). `deployer.sh` installe seul le dernier export des
+  Téléchargements puis l'efface, et refuse sans lui (`--garder-avis` reprend celui en
+  ligne) — **redéployer après chaque export**. Sans avis valide, la section reste
+  masquée, **jamais** d'exemple. Publication **deux ans** au plus après la date de
+  l'avis ; un nom de résidence admis, le nom complet d'une personne non. La mention
+  sous la section (L111-7-2, D111-17 du Code de la consommation) et
+  `confidentialite.html#t-avis` disent comment ils sont choisis : les changer ensemble.
+  Jamais balisés `Review` ni `AggregateRating` (avis choisis parmi les 4 et 5 étoiles,
+  20/10/2026 ; `verifier-depot.sh` le refuse).
+- **Le mot du créateur** (section IA de l'accueil) est écrit en dur dans `index.html`,
+  **jamais** parmi les avis d'utilisateurs (`verifier-avis.py` refuse « Philippe T. »).
+- **Aucune police externe, aucun traceur** : c'est ce qui dispense de bandeau
+  (`standards/14` §4) ; un ajout rouvre la question. `verifier-depot.sh` lit pages,
+  feuilles, scripts, SVG et la CSP du Caddyfile. Fraunces (OFL-1.1) est servie par le
+  site (`site/polices/`).
+- **Référencement** : ouvert à tous les robots, assistants IA compris (`robots.txt`,
+  15/10/2026). ⚠️ Cloudflare sert aussi son propre `robots.txt` géré et peut bloquer
+  les robots IA à la périphérie : cela se règle dans son tableau de bord.
+- **Cloudflare, *Security Insights*** (22/10/2026) : réglés — double authentification,
+  TLS 1.2 minimum, « Toujours utiliser HTTPS », DMARC `p=none`, `security.txt` ; une
+  règle de transformation de la zone pose HSTS et `nosniff` sur
+  `registre.coprofirst.fr`. **Refusés, à ne pas réactiver** : *Bot Fight Mode* (il
+  défierait les instances qui s'inscrivent au registre, `deployer.sh --verifier` et
+  `generer-captures.mjs`), *Labyrinthe IA*, *Turnstile* (aucun formulaire), HSTS de
+  Cloudflare (Caddy et la démo envoient le leur). DKIM s'active chez OVH avant de
+  passer DMARC en `quarantine`.
+- **La démo** (ouverte le 14/10/2026) : trois comptes publics (CS, copropriétaire,
+  locataire) publiés par `site/demo.html`, repris de `api/app/demo/personnages.py` de
+  CoproFirst ; l'administrateur n'en est pas un. `verifier-comptes-demo.py` les
+  compare chaque jour.
+- **Les apps** lisent `site/contenu.json`, projection de `index.html` : un
+  `data-contenu` ne se renomme ni ne se retire sans ticket dans coprofirst-ios et
+  coprofirst-android (`CONTRAT_APP`). `confidentialite.html#t-application`, commune aux
+  deux apps, est la politique que citent l'App Store et Google Play : une permission,
+  une bibliothèque ou une montre ajoutée à une app la fait changer
+  (`verifier-app-ios.py`, `verifier-app-android.py`).
 - **Mentions légales** : éditeur particulier, **à titre non professionnel**, sans
-  adresse publiée (LCEN — choix de l'utilisateur, 13/10/2026 : l'adresse est
-  connue de l'hébergeur). Si CoproFirst devient une activité commerciale, l'adresse
-  doit y figurer. Contact : `contact@coprofirst.fr`, jamais l'adresse personnelle.
-
-## Contrôles
-
-`bash scripts/verifier-depot.sh` — encodage (BOM), fins de ligne (CRLF), bits
-d'exécution et syntaxe des scripts, et aucun chemin de poste écrit en dur dans un
-script ou un hook (`POSTE` : il se lit dans `~/.claude/projets.json`, comme le fait
-`.claude/env-report.sh`), et aucun domaine hors liste blanche (`HOTE`, `standards/03`
-§8 quater) : un hôte d'exemple se prend dans `example.com` (`residence.example.com`,
-comme les apps) ou `.test`/`.example`/`.invalid`, jamais dans un nom enregistrable ;
-un vrai domaine cité par le site s'ajoute à `DOMAINES_REELS`. `maquettes/` exceptées. Il tourne en `pre-commit`
-(`git config core.hooksPath .githooks`, à armer une fois par clone) et en CI, avec
-`reuse lint`.
-
-`bash scripts/verifier-service.sh` — construit l'image, la démarre et l'interroge :
-en-têtes de sécurité sur la page et la 404, corps octet pour octet ceux du dépôt,
-compression gzip/zstd quand le navigateur l'accepte (jamais sans `Accept-Encoding` :
-`deployer.sh --verifier` compare les octets bruts), redirection de `www`. Le
-Caddyfile pose ses en-têtes en `defer` : `encode` ne compresse pas une réponse qui
-porte déjà `no-transform`. **En CI seulement** (Docker) ; sur le poste, INCONNU.
-
-`python3 scripts/verifier-referencement.py` — chaque page a son adresse canonique
-(`https://coprofirst.fr/…`), ses balises Open Graph, un `<h1>` et aucun `noindex` ;
-ses blocs JSON-LD se lisent ; `site/sitemap.xml` liste **exactement** les pages, et
-chaque `lastmod` est au moins la date du dernier commit de sa page — une page
-modifiée et pas encore committée compte pour aujourd'hui (**l'avancer** quand on
-modifie une page) ; pour un commit de **squash** (« (#N) »), c'est la date du dernier
-commit de la PR qui touche la page (lue dans `refs/pull/N/head`), si la page est
-celle de la PR : une PR verte fusionnée le lendemain ne rend plus `main` rouge. PR
-introuvable : INCONNU. Les règles de date sont dans `scripts/dates_pages.py` ;
-`robots.txt` désigne le sitemap et ne ferme aucun robot ; les liens de `llms.txt`
-mènent à des fichiers du site. Les pages d'erreur (`PAGES_D_ERREUR` : `404.html`) sont
-nommées, et suivent la règle inverse : `noindex` obligatoire, ni canonique ni sitemap. En `pre-commit` et en CI, avec `--selftest`. **Une page
-ajoutée** se déclare donc dans le sitemap (et dans `llms.txt`), avec ses balises de
-tête recopiées d'une page voisine.
-
-`python3 scripts/verifier-avis.py` — `site/avis.json` a la forme de l'export
-(clés en **liste blanche** : une donnée ajoutée côté application ne part pas sans
-décision), des notes de 4 ou 5, des dates de moins de deux ans, des auteurs
-« Prénom N. » autres que l'éditeur, et aucun courriel ni téléphone dans un texte.
-Sortie 0 conforme, 1 écart, 2 INCONNU ; `--selftest`, `--fichier`. Le fichier n'étant
-pas versionné, c'est `deployer.sh` qui le lance (avant l'envoi, puis sur ce que le
-serveur sert) ; la CI ne joue que le `--selftest`. Ses règles de forme et la durée
-sont aussi celles de `avisValide` dans `site/accueil.js`.
-
-`python3 scripts/recuperer-avis.py --selftest` — le choix de l'export par
-`deployer.sh` : le plus récent gagne, `(1)` compris ; identique, rien n'est
-installé ; refusé ou plus ancien, `site/avis.json` reste intact et l'export est
-gardé ; jamais d'autre fichier effacé. En CI.
-
-`python3 scripts/empreintes.py` — chaque `href="…css"`, `src="…js"` et
-`src="…jpg"` (captures) des pages porte `?v=` + les 8 premiers caractères du sha256 du fichier : Cloudflare fait
-garder CSS et JS **4 h** par le navigateur (le HTML 5 min), et sans empreinte un
-déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
-20/10/2026). **Après toute modification d'un CSS, d'un JS ou d'une capture :**
-`python3 scripts/empreintes.py --ecrire`. En `pre-commit` et en CI, avec
-`--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
-celui du commit.
-
-`python3 scripts/contenu-accueil.py` — `site/contenu.json`, que lisent les apps
-iOS et Android (sans WebView), est la projection de
-`index.html` : la page reste la seule source. Ce qui part, elle le déclare par
-`data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
-installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios et
-coprofirst-android. `CONTRAT_APP` (même script) fige les `id` et les champs que les
-apps lisent : en retirer ou renommer un fait échouer le contrôle, et `--ecrire`
-refuse d'écrire un tel fichier ; `scripts/verifier-contrat-apps.py` (CI, chaque jour)
-le compare aux `ContenuVitrine.idsRequis` des deux apps. Les
-règles d'extraction et le format sont dans la docstring du script. **Après toute
-modification de `index.html`** (texte, empreinte d'une capture, version du
-produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »
-(`proposer-version.sh`) le lance seule. En `pre-commit` et en CI, avec `--selftest`.
-
-`python3 scripts/verifier-comptes-demo.py` — les identifiants et mots de passe des
-listes `.identifiants` de `site/demo.html` sont exactement ceux de
-`api/app/demo/personnages.py` de CoproFirst (branche `main`, lu sur
-raw.githubusercontent.com sans jeton). Sortie 0 conforme, 1 écart, **2 INCONNU**
-(source injoignable, page ou source illisible) ; `--selftest`, `--source`, `--page`.
-**En CI seulement** (`.github/workflows/comptes-demo.yml`, à chaque poussée et
-chaque jour à 06:17 UTC), pas en pre-commit : la dérive naît dans l'autre dépôt, et
-le réseau ne doit pas conditionner un commit. Il compare la page au code de `main`,
-pas à la démo déployée. ⚠️ GitHub suspend un workflow planifié après 60 jours sans
-activité du dépôt.
-
-`python3 scripts/verifier-app-ios.py` — ce que `confidentialite.html#t-application`
-dit de l'**application iPhone** (l'adresse citée par la fiche App Store) se lit dans
-`philippe-tressard/coprofirst-ios` (`main`) : chaque paquet **embarqué** de son
-`DEPENDANCES.md` est un `apple/…` (la page dit « aucun code d'un tiers autre
-qu'Apple ») ou un tiers déclaré dans `TIERS_ADMIS` — des dessins, jamais du code —,
-que la section nomme avec ses licences, celles de `DEPENDANCES.md` ; et ses
-clés `NS…UsageDescription` (`project.yml`) sont exactement `PERMISSIONS` du script,
-chacune nommée par la section ; et la section dit « N jours », N lu dans
-`LectureGardee.joursMax` de l'app (la durée de la consultation hors ligne) ; et la section
-nomme chaque plateforme de `project.yml` (Apple Watch, Apple TV), le bloc « Apple Watch »
-disant « pas encore en service » tant que `LiaisonMontre.active` est éteint. Le reste de
-ce que l'app garde sur l'iPhone se tient ligne à ligne dans la fiche de coprofirst-ios
-(`confidentialite.md` §3) : un changement y fait changer la page. **Une permission ou une bibliothèque ajoutée à l'app
-fait changer la page**, puis la liste ; un tiers ou une permission retirés de l'app
-en sortent aussi. Sortie 0, 1, **2 INCONNU** ; `--selftest`. Les
-notifications push y sont décrites d'après la spec de CoproFirst
-(`specs/architecture/notifications-push.md` §5–§7), que le contrôle ne lit pas : la
-page suit cette spec quand elle change. En CI seulement, comme les comptes de la démo.
-
-`python3 scripts/verifier-app-android.py` — la même section `#t-application`, **commune
-aux deux apps** avec leurs écarts déclarés (« Sur iPhone… », « Sur Android… » ; décision
-du coordinateur, coprofirst-site#110 : pas une section par app), est aussi la politique
-que cite la fiche Google Play. Le contrôle la confronte à `philippe-tressard/coprofirst-android`
-(`main`) : les `<uses-permission>` des manifestes du téléphone **et** de la montre sont
-exactement `PERMISSIONS`, chacune nommée ; chaque `<application>` refuse la sauvegarde
-et le trafic en clair (`MANIFESTE`) ; chaque composant de `app/src/main/tiers/composants.json`
-(l'équivalent Android de `DEPENDANCES.md`) est déclaré dans `TIERS_ADMIS` avec ses
-licences et nommé par la section ; la section dit « pas encore en service » tant que
-`LiaisonMontre.ACTIF` est éteint, et plus après. La fiche de l'app
-(`docs/play-store/securite-des-donnees.md`) est la source du sens des phrases, que le
-contrôle ne lit pas. Ce que les deux contrôles partagent vit dans `scripts/section_apps.py`.
-Sortie 0, 1, **2 INCONNU** ; `--selftest`. En CI seulement, comme les comptes de la démo.
-
-`python3 scripts/verifier-faits-produit.py` — les chiffres et les libellés d'écran que
-`supprimer-compte.html` et les sections `#t-notifications` et `#t-application` de `confidentialite.html`
-recopient de CoproFirst, de coprofirst-ios et de coprofirst-android (`main`, sans jeton)
-sont ceux du code : la table `FAITS` dit la source, le motif qui en extrait **une**
-valeur, la section et la phrase. **Une page qui recopie un fait du produit l'ajoute à
-`FAITS`.** Le sens (ce qui est effacé, ce qui sonne) se relit à la main quand la source
-change. Sortie 0, 1, **2 INCONNU** ; `--selftest`, `--racine`. En CI seulement
-(`comptes-demo.yml`, chaque poussée et chaque jour), comme les comptes de la démo.
-
-`python3 scripts/verifier-security-txt.py` — `site/.well-known/security.txt` (RFC 9116 :
-où signaler une faille, renvoie aux avis de sécurité privés de coprofirst) a un Contact,
-un Canonical exact et un seul `Expires`, à moins d'un an et à plus de **30 jours** :
-**`--renouveler`** le repousse d'un an (jamais à la main). En `pre-commit`, en CI avec
-`--selftest`, et **chaque jour** dans `comptes-demo.yml` — l'échéance arrive sans commit.
-
-`python3 scripts/verifier-css.py` — les jetons de couleur de `commun.css` se lisent
-dans les **quatre modes** (sombre, clair, chacun en contraste élevé —
-`prefers-contrast: more`) : chaque jeton de texte à 4,5:1 sur
-chaque fond, `--bord` à 3:1 en contraste élevé ; et un élément déplacé au survol et à
-l'appui a sa règle `:hover:active` qui compose les deux ; un `backdrop-filter`
-(l'en-tête translucide) a son fond plein sous `prefers-reduced-transparency`. **Une couleur qui
-change se mesure là.** En `pre-commit` et en CI, avec `--selftest`.
-
-`python3 scripts/version-produit.py` — l'élément `<li data-version-produit>` du
-héros affiche la dernière **release** de CoproFirst (celle que le canal
-Urgence installe aussitôt — pas le dernier commit de `main` ; les autres vagues la
-reçoivent plus tard, coprofirst#2210), datée à l'heure de
-Paris. Sortie 0 conforme, 1 écart, **2 INCONNU** ; `--ecrire`, `--selftest`,
-`--source` ; `--ecrire` avance aussi le `lastmod` de l'accueil. CoproFirst publie
-une **dizaine de releases par jour** (coprofirst-site#51) : la comparaison ne tourne
-plus sur les PR, qu'elle rendait rouges sans rapport avec elles. Le workflow
-`version-produit.yml` lance chaque heure `bash scripts/proposer-version.sh`, qui
-écrit la page depuis `main` et ouvre ou met à jour la PR « version » (branche
-`auto/version-produit`, refaite depuis `main`, CI de la PR approuvée par le robot).
-**La fusion et le déploiement restent à Philippe** : la PR ouverte est le signal du
-retard. Il exige le réglage *Allow GitHub Actions to create and approve pull
-requests* du dépôt. Le site peut décrire une fonction de `main` pas encore publiée :
-la version affichée reste la dernière publiée. `scripts/lecture_distante.py` est la lecture commune des contrôles en ligne : trois
-essais sur une erreur passagère (5xx, 429, limite de débit), le `GH_TOKEN` de la CI
-n'y part qu'à `api.github.com` (sans lui, l'IP partagée du runner épuise la limite
-anonyme), `--selftest` en CI. `proposer-version.sh` tente de même chaque appel à
-GitHub trois fois : un ticket « CI rouge » ne s'ouvre plus pour une erreur de GitHub
-qu'une relance efface. Les runs `pull_request` de la PR du robot **attendent une
-approbation** (politique « first_time_contributors », qui couvre `github-actions[bot]`) :
-le script approuve ceux-là seulement (sa branche, son commit, ce dépôt) et **relit les
-checks sur la PR** jusqu'à y voir `depot` et `comptes`, sinon le passage échoue. Une
-relance par `workflow_dispatch` ne compte pas : la PR ignore ces suites. Ne pas fermer
-et rouvrir la PR à la main : le défaut doit se voir (coprofirst-site#63).
-
-`python3 scripts/verifier-renvois.py` — un renvoi à un ticket de ce dépôt s'écrit
-**`coprofirst-site#N`**, jamais nu : un dièse suivi d'un ou deux chiffres est refusé
-(`maquettes/` exceptées). `--en-ligne` vérifie sur l'API de GitHub que chaque ticket
-cité existe encore (410 supprimé, 404 inconnu : écart ; limite de débit : INCONNU).
-Les tickets terminés sont **supprimés** de GitHub, pas seulement fermés (choix de
-Philippe, 24/10/2026) : une décision se justifie donc dans le commentaire et le
-message de commit, pas par un renvoi à un ticket fermé. Hors ligne en `pre-commit` et
-en CI ; `--en-ligne` à chaque poussée et chaque jour (`comptes-demo.yml`).
-
-`python3 scripts/signaler-echec-ci.py` — le **dernier pas** de chaque job de CI
-(`if: failure()`, `--signaler`) : un rouge sur `main` ou au passage planifié ouvre
-un ticket « CI rouge : <workflow> », ou le commente s'il est déjà ouvert (au plus
-toutes les 12 h : `version-produit.yml` passe chaque heure) ; sur une PR ou une autre
-branche, rien — la branche du robot de version comprise. Le courriel de GitHub n'avait rien fait voir en sept
-jours de rouge (23 au 30/10/2026). Ce ticket se ferme à la main, avec le passage
-revenu au vert. `--verifier` refuse un job sans ce pas final ou un workflow sans
-`issues: write` : **un workflow ajouté le reçoit**. En `pre-commit` et en CI, avec
-`--selftest` (gh simulé : la commande part, dédoublonnée, même sans étiquette).
+  adresse publiée (LCEN, 13/10/2026 : l'hébergeur la connaît). Si CoproFirst devient
+  une activité commerciale, l'adresse doit y figurer. Jamais l'adresse personnelle.
