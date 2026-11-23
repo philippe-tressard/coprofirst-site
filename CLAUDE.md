@@ -79,7 +79,10 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
 - **Marque** : « CoproFirst — demande de marque n° 5307183 », jamais ® tant
   qu'elle n'est pas enregistrée (`MARQUE.md` de coprofirst). Le logo est sous
   `LicenseRef-CoproFirst-Logo`, hors de l'AGPL : il reste dans son fichier, jamais
-  recopié en ligne dans le HTML.
+  recopié en ligne dans le HTML. Le texte de cette licence est celui de coprofirst, au
+  paragraphe des fichiers couverts près (`verifier-licence-logo.py`, CI quotidienne) :
+  il change là-bas, puis se recopie. `verifier-depot.sh` refuse « ® » dans `site/`
+  tant que `MARQUE_ENREGISTREE=non`.
 - **Avis d'utilisateurs** (depuis le 20/10/2026 ; les
   témoignages fictifs sont retirés) : `site/avis.json` est l'export de l'onglet
   ⭐ Avis de l'application (« Exporter les avis retenus pour coprofirst.fr »,
