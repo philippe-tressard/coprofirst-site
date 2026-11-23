@@ -44,7 +44,9 @@ avis) depuis le poste qui a la clé de l'instance, et je vérifie ce qui est ser
 (version, ce qui a changé). Restent à Philippe : une décision produit ou de
 formulation commerciale, un export des avis à installer, un geste qu'un hook refuse.
 Ne pas fermer puis rouvrir la PR « version » à la main : son défaut doit se voir
-(`scripts/proposer-version.sh`). Jamais de geste à la main sur le serveur.
+(`scripts/proposer-version.sh`). Jamais de geste à la main sur le serveur. La cible du
+déploiement vit dans la configuration SSH du poste (alias `coprofirst-site`), jamais
+dans ce dépôt public : sans l'alias, `deployer.sh` rend INCONNU.
 
 ## Tickets
 

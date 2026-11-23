@@ -172,6 +172,16 @@ juger_branchement() {
   return 0
 }
 
+# ipv4_publiques <chemin> — fonction PURE : chaque adresse IPv4 qui n'est ni de boucle
+# locale, ni privée (RFC 1918), ni 0.0.0.0. Une adresse publique dans ce dépôt public
+# désigne une machine — l'origine du site derrière Cloudflare, par exemple : la cible
+# du déploiement vit dans la configuration SSH du poste (deploiement/deployer.sh).
+ipv4_publiques() {
+  grep -oE '(^|[^0-9.])([0-9]{1,3}\.){3}[0-9]{1,3}([^0-9.]|$)' "$1" | grep -oE '([0-9]{1,3}\.){3}[0-9]{1,3}' \
+    | awk -F. '$1<=255 && $2<=255 && $3<=255 && $4<=255 \
+        && !($1==127 || $1==10 || $1==0 || ($1==192 && $2==168) || ($1==172 && $2>=16 && $2<=31))' | sort -u
+}
+
 # juger_fichier <chemin> <mode git> — fonction PURE : lit le fichier, n'écrit rien.
 # Écrit un écart par ligne ; rien si le fichier est conforme.
 juger_fichier() {
@@ -199,6 +209,9 @@ juger_fichier() {
   # maquettes/ : archives jamais servies, qu'on ne corrige pas (CLAUDE.md du site).
   if [[ "$f" != maquettes/* ]]; then
     local h
+    for h in $(ipv4_publiques "$f"); do
+      echo "IPV4     $f (adresse publique $h : une cible se nomme dans la configuration SSH du poste, pas ici)"
+    done
     for h in $(hotes_inconnus "$f"); do
       echo "HOTE     $f ($h : domaine hors liste blanche — un hôte fictif se prend dans example.com, .test, .example ou .invalid ; un vrai domaine du site s'ajoute à DOMAINES_REELS)"
     done
@@ -308,6 +321,11 @@ selftest() {
   verifie "HOTE " hote-majuscules.html 100644
   verifie "HOTE " hote-imite.py 100755
   verifie "" hote-admis.html 100644
+  # Adresses IPv4 : publique refusée ; boucle locale, privées et versions admises.
+  printf 'curl http://127.0.0.1:8080/ 192.168.1.2 10.0.0.1 172.16.0.1 0.0.0.0 v2.11.7 1.2.3.4.5\n' > "$t/ip-admises.sh"
+  printf 'HOTE=ubuntu@%s.%s.113.10\n' 203 0 > "$t/ip-publique.sh"
+  verifie "" ip-admises.sh 100755
+  verifie "IPV4 " ip-publique.sh 100755
   # Règles d'une page publiée
   local theme='<script src="theme.js?v=1"></script><button data-bascule-theme></button>'
   local liens='<a href="mentions-legales.html">M</a><a href="confidentialite.html">C</a>'"$theme"
