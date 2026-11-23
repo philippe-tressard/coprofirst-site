@@ -4,7 +4,6 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 
 Styles de la page d'accueil, sortis de index.html le 21/10/2026 (la page
 dépassait 500 lignes). Couleurs par jetons de commun.css, thème sombre compris.
-Les numéros #N renvoient aux tickets de coprofirst-site (maquettes/F-ameliorations).
 */
 /* Survol : seulement ce qui se clique. Une tuile ou une bulle ne bouge plus. */
 @media (hover:hover) and (pointer:fine){

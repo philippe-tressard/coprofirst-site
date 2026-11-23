@@ -19,28 +19,18 @@ page `demo.html` en publie les trois comptes publics.
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
 | `site/contenu.json` | le contenu de l'accueil en JSON, lu par les applications iOS et Android : **extrait** de `index.html` par `scripts/contenu-accueil.py --ecrire`, jamais écrit à la main. Ce qui part, la page le déclare (`data-contenu="<id>"`) ; l'identifiant est un contrat avec les apps (`scripts/verifier-contrat-apps.py`) |
 | `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
-| `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
+| `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires ; la seconde est aussi la politique de confidentialité des apps iPhone et Android |
+| `site/supprimer-compte.html` | comment un résident fait supprimer son compte, avec ou sans l'app (l'adresse qu'exige Google Play) |
 | `site/404.html` | la page des adresses inconnues, servie avec le code 404 par le Caddyfile (`noindex`, hors du sitemap) |
-| `site/commun.css`, `site/document.css`, `site/accueil.css`, `site/accueil.js`, `site/demo.js` | styles partagés (jetons de couleur, thèmes clair et sombre), styles des pages de texte et de l'accueil, scripts de l'accueil et de la page Démo |
+| `site/*.css`, `site/*.js` | styles partagés (jetons de couleur, thèmes clair et sombre), des pages de texte et de l'accueil ; `theme.js` (le thème choisi), les scripts de l'accueil et de la page Démo |
 | `site/polices/` | Fraunces, la police des titres, servie par le site (SIL Open Font License 1.1, `LICENSES/OFL-1.1.txt`) |
 | `site/captures/` | les captures réelles de la démonstration montrées par l'accueil — refaites par `scripts/generer-captures.mjs` |
 | `site/logo.svg` | le logo de CoproFirst (licence propre, voir plus bas) |
 | `site/robots.txt`, `site/sitemap.xml`, `site/llms.txt` | ce que lisent les moteurs de recherche et les assistants IA : tout le site leur est ouvert |
 | `site/partage.png`, `site/apple-touch-icon.png` | l'image des aperçus de lien (Open Graph), l'icône des écrans d'accueil |
 | `deploiement/` | le conteneur Caddy qui sert le site, et `deployer.sh` |
-| `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles |
-| `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
-| `scripts/verifier-service.sh` | construit l'image du site, la démarre et l'interroge : en-têtes de sécurité, 404, compression, octets identiques au dépôt (CI : Docker) |
-| `scripts/verifier-referencement.py` | balises de tête (canonique, Open Graph, JSON-LD), sitemap, robots.txt, llms.txt — complets et cohérents |
-| `scripts/generer-image-partage.mjs` | refait `site/partage.png` à partir de `scripts/image-partage.html` (même navigateur que les captures : `scripts/navigateur.mjs`) |
-| `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main ; `--selftest` en pre-commit (bash et sed du poste) |
-| `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
-| `scripts/version-produit.py` | la version affichée par l'accueil est-elle la dernière release de CoproFirst ? `--ecrire` la met à jour |
-| `scripts/proposer-version.sh` | chaque heure (`version-produit.yml`), ouvre ou met à jour la PR « version » : la dernière release écrite dans l'accueil |
-| `scripts/verifier-app-ios.py` | ce que `confidentialite.html` dit de l'app iPhone (paquets embarqués, permissions) est-il vrai dans son dépôt ? (CI, chaque jour) |
-| `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright, et Chrome, Edge ou le Chromium de Playwright (`scripts/navigateur.mjs`) |
-| `scripts/contenu-accueil.py` | `site/contenu.json` rend-il `index.html` tel qu'il est ? `--ecrire` le réécrit (pre-commit, CI) |
-| `scripts/empreintes.py` | l'adresse de chaque CSS, JS et capture porte l'empreinte de son contenu (`--ecrire`) |
+| `scripts/` | un script par contrôle ou par geste, chacun décrit par son **en-tête** (usage, ce qu'il vérifie, ce qu'il ne couvre pas) ; `controles.sh` lance ceux qui tournent hors réseau |
+| `maquettes/` | les maquettes qui ont mené à la page, archivées telles quelles, jamais servies |
 
 Pour voir le site : `python -m http.server -d site`, puis http://localhost:8000.
 
@@ -58,28 +48,18 @@ bash deploiement/deployer.sh --verifier  # compare ce qui est servi au dépôt
 ## Contrôles
 
 ```bash
-git config core.hooksPath .githooks && git config pull.ff only
-bash scripts/verifier-depot.sh --selftest
-bash scripts/verifier-depot.sh
+git config core.hooksPath .githooks && git config pull.ff only   # une fois par clone
+bash scripts/controles.sh --selftest   # les contrôles hors réseau, leurs selftests d'abord
 python -m reuse lint
-python3 scripts/verifier-referencement.py --selftest
-python3 scripts/verifier-referencement.py
-python3 scripts/signaler-echec-ci.py --selftest
-python3 scripts/signaler-echec-ci.py --verifier   # chaque job de CI finit par l'alerte d'échec
-python3 scripts/contenu-accueil.py --selftest
-python3 scripts/contenu-accueil.py
-python3 scripts/verifier-comptes-demo.py --selftest
-python3 scripts/verifier-comptes-demo.py   # réseau : lit personnages.py sur GitHub
-python3 scripts/version-produit.py --selftest
-python3 scripts/version-produit.py         # réseau : lit la dernière release sur GitHub
-python3 scripts/verifier-app-ios.py --selftest
-python3 scripts/verifier-app-ios.py        # réseau : lit le dépôt de l'app iOS sur GitHub
-bash scripts/proposer-version.sh --selftest
 ```
 
-Les contrôles marqués « réseau » ne tournent pas en pre-commit : ils lisent le dépôt de CoproFirst ou de son app, où
-naît la dérive, et la CI les lance chaque jour. Ils sortent en **2 (INCONNU)** si la
-source est injoignable ou illisible — jamais en vert faute d'avoir comparé.
+`scripts/controles.sh` porte **la** liste des contrôles hors réseau : le `pre-commit`
+l'appelle, la CI aussi (`.github/workflows/ci.yml`, avec `reuse lint` et
+`verifier-service.sh`, qui exige Docker). Les contrôles en ligne — la concordance du
+site avec CoproFirst et ses apps, la version affichée — tournent à chaque poussée et
+chaque jour (`comptes-demo.yml`, `version-produit.yml`) : ils sortent en
+**2 (INCONNU)** si la source est injoignable, jamais en vert faute d'avoir comparé.
+`verifier-depot.sh` refuse un `scripts/verifier-*` que rien ne lance.
 
 ## Licences
 

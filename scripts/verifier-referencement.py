@@ -37,6 +37,7 @@ import argparse
 import json
 import re
 import struct
+import subprocess
 import sys
 import tempfile
 import xml.etree.ElementTree as ET
@@ -246,8 +247,68 @@ def derniers_commits(site: Path, lastmods: dict):
     return {adresses[n]: d for n, d in dates.items()}, inconnus
 
 
+MAJ = re.compile(r'<span class="maj">[^<]*</span>')
+
+
+def texte_du_main(html: str):
+    """Le <main> d'une page, sans sa date visible, espaces ramenés à un ; None sans <main>."""
+    bloc = re.search(r"<main\b.*?</main>", html, re.S)
+    return re.sub(r"\s+", " ", MAJ.sub("", bloc.group(0))) if bloc else None
+
+
+def ecart_de_date_visible(nom: str, avant: str, apres: str):
+    """Un changement du <main> d'une page qui affiche « Mise à jour le … » change aussi
+    cette date (coprofirst-site#130 : un mois de retard aux mentions légales). Un
+    changement hors du <main> — une empreinte de CSS — ne la demande pas."""
+    date_apres = MAJ.search(apres)
+    if not date_apres or texte_du_main(avant) == texte_du_main(apres):
+        return None
+    date_avant = MAJ.search(avant)
+    if date_avant and date_avant.group(0) == date_apres.group(0):
+        return f"MAJ      {nom} : le texte de la page a changé, pas sa date visible ({date_apres.group(0)})"
+    return None
+
+
+def dates_visibles(site: Path):
+    """Les écarts de date visible : la page du disque contre son dernier commit si elle
+    est modifiée, sinon son dernier commit contre la version d'avant. None si git ne
+    répond pas."""
+    env = dates_pages.env_git()
+    if env is None:
+        return None
+    ecarts = []
+    for page in sorted(site.glob("*.html")):
+        def git(*a):
+            return subprocess.run(["git", *a], cwd=page.parent, env=env, capture_output=True, text=True)
+        actuel = page.read_text(encoding="utf-8")
+        if not MAJ.search(actuel):
+            continue
+        if git("status", "--porcelain", "--", page.name).stdout.strip():
+            avant = git("show", f"HEAD:./{page.name}").stdout
+        else:
+            shas = git("log", "-2", "--format=%H", "--", page.name).stdout.split()
+            if len(shas) < 2:
+                continue
+            avant = git("show", f"{shas[1]}:./{page.name}").stdout
+        ecart = ecart_de_date_visible(page.name, avant, actuel)
+        if ecart:
+            ecarts.append(ecart)
+    return ecarts
+
+
 def selftest() -> int:
     echecs = 0
+    # La date visible suit le texte du <main> (coprofirst-site#130).
+    page = '<head><link href="a.css?v={v}"></head><main><span class="maj">Mise à jour le {d}</span><p>{t}</p></main>'
+    for libelle, avant, apres, attendu in [
+        ("texte changé, date avancée", page.format(v=1, d="1er mai", t="a"), page.format(v=1, d="2 mai", t="b"), False),
+        ("texte changé, date oubliée", page.format(v=1, d="1er mai", t="a"), page.format(v=1, d="1er mai", t="b"), True),
+        ("empreinte seule, date intacte", page.format(v=1, d="1er mai", t="a"), page.format(v=2, d="1er mai", t="a"), False),
+        ("page sans date visible", "<main><p>a</p></main>", "<main><p>b</p></main>", False),
+    ]:
+        obtenu = ecart_de_date_visible("p.html", avant, apres) is not None
+        print(f"  {'ok    ' if obtenu == attendu else 'ÉCHEC '}  {libelle} → écart {obtenu}")
+        echecs += obtenu != attendu
     for libelle, lastmods, commits, attendu in [
         ("lastmod à jour", {"a": "2026-10-15"}, {"a": "2026-10-15"}, 0),
         ("lastmod plus récent que le commit", {"a": "2026-10-16"}, {"a": "2026-10-15"}, 0),
@@ -349,6 +410,11 @@ def main() -> int:
         return 2
     commits, inconnus = lus
     ecarts += juger_lastmod(lastmods, commits)
+    visibles = dates_visibles(site)
+    if visibles is None:
+        print("INCONNU : git ne répond pas — les dates visibles n'ont pas été vérifiées")
+        return 2
+    ecarts += visibles
     if ecarts or inconnus:
         print("\n".join(ecarts + inconnus))
     if ecarts:

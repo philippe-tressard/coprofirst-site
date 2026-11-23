@@ -4,22 +4,6 @@
 #
 # Armé une fois par clone : git config core.hooksPath .githooks
 racine="$(git rev-parse --show-toplevel)"
-bash "$racine/scripts/verifier-depot.sh" || exit 1
-# Le référencement lit l'arbre de travail, pas l'index : un fichier modifié mais non
-# indexé est jugé tel qu'il est sur le disque. La CI, elle, juge ce qui est parti.
-python3 "$racine/scripts/verifier-referencement.py" || exit 1
-# Chaque CSS et JS appelé avec l'empreinte de son contenu (cache de 4 h de Cloudflare).
-python3 "$racine/scripts/empreintes.py" || exit 1
-# contenu.json (lu par l'app iOS) extrait de index.html, jamais retouché à part.
-python3 "$racine/scripts/contenu-accueil.py" || exit 1
-# Contrastes des jetons (quatre modes), survol et appui composés.
-python3 "$racine/scripts/verifier-css.py" || exit 1
-# security.txt : champs exigés et échéance (le passage quotidien est en CI).
-python3 "$racine/scripts/verifier-security-txt.py" || exit 1
-# Renvois aux tickets : qualifiés (coprofirst-site#N) ; leur existence est en CI.
-python3 "$racine/scripts/verifier-renvois.py" || exit 1
-# Chaque job de CI finit par l'alerte d'échec (un ticket ouvert).
-python3 "$racine/scripts/signaler-echec-ci.py" --verifier || exit 1
-# signaler-indexnow.sh lancé par son shebang : le bash et le sed du poste, que la CI
-# (Ubuntu, GNU) ne verrait pas (coprofirst-site#128).
-"$racine/scripts/signaler-indexnow.sh" --selftest || exit 1
+# La liste des contrôles hors réseau vit dans scripts/controles.sh, que la CI appelle
+# aussi (coprofirst-site#130). Le référencement y lit l'arbre de travail, pas l'index.
+bash "$racine/scripts/controles.sh" || exit 1
