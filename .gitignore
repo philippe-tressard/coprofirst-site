@@ -11,3 +11,7 @@ site/avis.json
 # Le bytecode de Python : un contrôle qui importe lecture_distante.py le crée avant
 # reuse lint, en CI.
 __pycache__/
+# Les réglages personnels de Claude Code et ses copies de travail : jamais versionnés
+# (standards/13 §1), comme dans les autres dépôts du produit.
+.claude/settings.local.json
+.claude/worktrees/

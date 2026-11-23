@@ -8,6 +8,13 @@
 #
 #   bash scripts/signaler-indexnow.sh            après un déploiement
 #   bash scripts/signaler-indexnow.sh --essai    affiche la requête, n'envoie rien
+#   scripts/signaler-indexnow.sh --selftest      juge la requête d'essai (pre-commit)
+#
+# Exige : bash 3.2 (celui du Mac) ou plus, sed BSD ou GNU, curl. Ni `mapfile` ni
+# `sed '\?'` (extensions GNU) : sur le Mac, ils envoyaient des adresses entourées de
+# leurs balises, ou rien (coprofirst-site#128). Le --selftest se lance par le shebang
+# en pre-commit, pour être joué par le bash et le sed du poste : la CI (Ubuntu, GNU)
+# ne verrait pas le défaut.
 #
 # ⚠️ Envoie la liste des adresses du site à api.indexnow.org : un geste vers un
 # tiers, à lancer à la main, jamais depuis la CI ni depuis deployer.sh.
@@ -27,13 +34,27 @@ done
 [ -n "$cle" ] || { echo "INCONNU : aucune clé IndexNow (site/<32 hex>.txt) dans le dépôt" >&2; exit 2; }
 
 # Les adresses : celles du sitemap, qui est vérifié contre les pages du site
-mapfile -t adresses < <(grep -o '<loc>[^<]*</loc>' site/sitemap.xml | sed 's#</\?loc>##g')
+adresses=()
+while IFS= read -r a; do adresses+=("$a"); done < <(grep -o '<loc>[^<]*</loc>' site/sitemap.xml | sed -E 's#</?loc>##g')
 [ "${#adresses[@]}" -gt 0 ] || { echo "INCONNU : sitemap.xml ne liste aucune adresse" >&2; exit 2; }
 
 liste=$(printf '"%s",' "${adresses[@]}")
 corps="{\"host\":\"coprofirst.fr\",\"key\":\"$cle\",\"keyLocation\":\"https://coprofirst.fr/$cle.txt\",\"urlList\":[${liste%,}]}"
 
 if [ "${1:-}" = "--essai" ]; then echo "$corps"; exit 0; fi
+
+# --selftest : chaque adresse de la requête est une adresse nue du site, et il y en a
+# autant que de <loc> dans le sitemap. Rien n'est envoyé.
+if [ "${1:-}" = "--selftest" ]; then
+  attendu=$(grep -o '<loc>' site/sitemap.xml | wc -l | tr -d ' ')
+  urls=$(printf '%s' "$corps" | sed -E 's/.*"urlList":\[(.*)\]\}$/\1/' | tr ',' '\n')
+  bonnes=$(printf '%s\n' "$urls" | grep -cE '^"https://coprofirst\.fr/[^"<>]*"$' || true)
+  if [ "$bonnes" = "$attendu" ] && [ "$(printf '%s\n' "$urls" | wc -l | tr -d ' ')" = "$attendu" ]; then
+    echo "signaler-indexnow --selftest : OK ($attendu adresses, bash $BASH_VERSION)"; exit 0
+  fi
+  echo "signaler-indexnow --selftest : ÉCHEC — $bonnes adresse(s) nue(s) sur $attendu attendue(s) :" >&2
+  printf '%s\n' "$urls" | head -3 >&2; exit 1
+fi
 
 # La clé doit être EN LIGNE avant l'envoi, sinon les moteurs rejettent la demande
 curl -fsS "https://coprofirst.fr/$cle.txt" | grep -qx "$cle" \
