@@ -118,7 +118,7 @@ CoproFirst-Site. **Toute modification d'écran suit la skill globale
   « auto-publiés » (décision du 20/10/2026).
   La FAQ de l'accueil porte son balisage schema.org en microdonnées, sur le texte
   visible : aucune copie à tenir à jour. L'image de partage se refait par
-  `bash scripts/generer-image-partage.sh`. ⚠️ Cloudflare sert aussi son propre
+  `node scripts/generer-image-partage.mjs`. ⚠️ Cloudflare sert aussi son propre
   `robots.txt` géré (préambule *Content Signals*) et peut bloquer les robots IA à
   la périphérie, quoi que dise le fichier du dépôt : cela se règle dans son tableau
   de bord, pas ici.

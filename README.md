@@ -32,13 +32,13 @@ page `demo.html` en publie les trois comptes publics.
 | `scripts/verifier-depot.sh` | encodage, fins de ligne, bits d'exécution, syntaxe des scripts |
 | `scripts/verifier-service.sh` | construit l'image du site, la démarre et l'interroge : en-têtes de sécurité, 404, compression, octets identiques au dépôt (CI : Docker) |
 | `scripts/verifier-referencement.py` | balises de tête (canonique, Open Graph, JSON-LD), sitemap, robots.txt, llms.txt — complets et cohérents |
-| `scripts/generer-image-partage.sh` | refait `site/partage.png` à partir de `scripts/image-partage.html` |
-| `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main |
+| `scripts/generer-image-partage.mjs` | refait `site/partage.png` à partir de `scripts/image-partage.html` (même navigateur que les captures : `scripts/navigateur.mjs`) |
+| `scripts/signaler-indexnow.sh` | après un déploiement, annonce les pages du sitemap aux moteurs IndexNow (Bing…) — envoi à un tiers, à la main ; `--selftest` en pre-commit (bash et sed du poste) |
 | `scripts/verifier-comptes-demo.py` | les comptes de `demo.html` sont-ils ceux de `personnages.py` de CoproFirst ? (CI, chaque jour) |
 | `scripts/version-produit.py` | la version affichée par l'accueil est-elle la dernière release de CoproFirst ? `--ecrire` la met à jour |
 | `scripts/proposer-version.sh` | chaque heure (`version-produit.yml`), ouvre ou met à jour la PR « version » : la dernière release écrite dans l'accueil |
 | `scripts/verifier-app-ios.py` | ce que `confidentialite.html` dit de l'app iPhone (paquets embarqués, permissions) est-il vrai dans son dépôt ? (CI, chaque jour) |
-| `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright et Chrome ou Edge du poste |
+| `scripts/generer-captures.mjs` | photographie l'écran Affaires de la démo (compte Copropriétaire publié par `demo.html`) — Playwright, et Chrome, Edge ou le Chromium de Playwright (`scripts/navigateur.mjs`) |
 | `scripts/contenu-accueil.py` | `site/contenu.json` rend-il `index.html` tel qu'il est ? `--ecrire` le réécrit (pre-commit, CI) |
 | `scripts/empreintes.py` | l'adresse de chaque CSS, JS et capture porte l'empreinte de son contenu (`--ecrire`) |
 
