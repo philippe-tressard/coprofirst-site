@@ -53,6 +53,8 @@ jobs:
         run: python3 scripts/signaler-echec-ci.py --selftest
       - name: Alerte d'échec — chaque job finit par elle
         run: python3 scripts/signaler-echec-ci.py --verifier
+      - name: IndexNow — la requête d'essai (selftest)
+        run: scripts/signaler-indexnow.sh --selftest
       - name: Renvois aux tickets (selftest)
         run: python3 scripts/verifier-renvois.py --selftest
       - name: Lecture distante — réessais et jeton (selftest)
