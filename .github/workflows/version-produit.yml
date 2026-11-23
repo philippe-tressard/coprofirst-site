@@ -3,8 +3,9 @@
 #
 # La version affichée par l'accueil suit la dernière release de CoproFirst, qui en
 # publie une dizaine par jour (coprofirst-site#51) : chaque heure, une PR
-# « version » est ouverte ou mise à jour (scripts/proposer-version.sh). La fusion et
-# le déploiement restent à Philippe ; la PR ouverte est le signal du retard. Le
+# « version » est ouverte ou mise à jour (scripts/proposer-version.sh). Qui la fusionne
+# et qui déploie : CLAUDE.md, « Fusion et déploiement ». Une PR qui reste ouverte est
+# le signal du retard. Le
 # contrôle ne tourne plus sur les PR des autres sujets, qu'une release faisait
 # passer au rouge sans rapport avec elles.
 # Exige le réglage du dépôt « Allow GitHub Actions to create and approve pull
