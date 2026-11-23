@@ -20,13 +20,20 @@
 # --garder-avis. Le dernier export téléchargé (avis-coprofirst-*.json, dans les
 # Téléchargements) est installé d'office par scripts/recuperer-avis.py, qui efface
 # ensuite ces copies. Accès : la clé dédiée à l'instance, et elle seule (BatchMode,
-# IdentitiesOnly) — jamais d'autre clé ni identifiant.
+# IdentitiesOnly, et l'IdentityFile de l'alias) — jamais d'autre clé ni identifiant.
 set -euo pipefail
 
-HOTE=ubuntu@158.178.197.236
-CLE="$HOME/.ssh/id_ed25519_coprofirst_demo"
+# La cible — adresse, compte et clé — n'est pas écrite dans ce dépôt public : elle vit
+# dans la configuration SSH du poste, sous un alias (COPROFIRST_SITE_HOTE, défaut
+# « coprofirst-site ») qui porte HostName, User, IdentityFile et IdentitiesOnly. Sans
+# lui, rien ne part. verifier-depot.sh refuse une adresse IPv4 publique dans le dépôt.
+HOTE="${COPROFIRST_SITE_HOTE:-coprofirst-site}"
 DISTANT='~/coprofirst-site'
-SSH=(ssh -i "$CLE" -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 "$HOTE")
+SSH=(ssh -o BatchMode=yes -o IdentitiesOnly=yes -o ConnectTimeout=15 "$HOTE")
+if [ "$(ssh -G "$HOTE" 2>/dev/null | awk '$1 == "hostname" {print $2}')" = "$HOTE" ]; then
+  echo "INCONNU : l'alias SSH « $HOTE » n'est pas défini (~/.ssh/config) — rien n'a été fait." >&2
+  exit 2
+fi
 
 racine=$(git rev-parse --show-toplevel)
 cd "$racine"
