@@ -9,6 +9,8 @@
 #   bash deploiement/deployer.sh --export CHEMIN déployer avec cet export des avis
 #   bash deploiement/deployer.sh --garder-avis   déployer HEAD en gardant les avis déjà en ligne
 #   bash deploiement/deployer.sh --verifier      vérifier seulement, sans déployer
+#                                                (l'origine, puis ce que reçoit le public :
+#                                                scripts/verifier-public.sh)
 #
 # Depuis PowerShell ou d'un double-clic : deploiement\deployer.cmd (mêmes options).
 #
@@ -134,12 +136,18 @@ verifier() {
   if [ "$("${SSH[@]}" 'curl -fsS http://127.0.0.1:8080/ | sha256sum | cut -d" " -f1')" = \
        "$(git show "$commit:site/index.html" | sha256sum | cut -d' ' -f1)" ]; then echo "  ok      / → index.html"
   else echo "  ÉCART   / ne sert pas index.html"; ecarts=$((ecarts + 1)); fi
-  local etat_avis=0
+  local etat_avis=0 etat_public=0
   verifier_avis || etat_avis=$?
   [ "$etat_avis" -eq 1 ] && ecarts=$((ecarts + 1))
-  if [ "$ecarts" -gt 0 ]; then echo "verifier : $ecarts écart(s) sur $n fichiers et avis.json"; return 1; fi
-  if [ "$etat_avis" -eq 2 ]; then echo "verifier : INCONNU — $n fichiers identiques au commit ${commit:0:7}, avis.json non vérifié"; return 2; fi
-  echo "verifier : OK — $n fichiers servis identiques au commit ${commit:0:7}, et avis.json"
+  # Ce que reçoit le public, à travers Cloudflare : l'origine seule ne le dit pas
+  # (coprofirst-site#131). Réessayé le temps que la périphérie se renouvelle.
+  bash scripts/verifier-public.sh "$commit" || etat_public=$?
+  [ "$etat_public" -eq 1 ] && ecarts=$((ecarts + 1))
+  if [ "$ecarts" -gt 0 ]; then echo "verifier : $ecarts écart(s) sur $n fichiers, avis.json et https://coprofirst.fr/"; return 1; fi
+  if [ "$etat_avis" -eq 2 ] || [ "$etat_public" -eq 2 ]; then
+    echo "verifier : INCONNU — $n fichiers identiques au commit ${commit:0:7} à l'origine ; avis.json ou l'adresse publique non vérifiés"; return 2
+  fi
+  echo "verifier : OK — $n fichiers servis identiques au commit ${commit:0:7}, avis.json, et https://coprofirst.fr/ (accueil, commun.css)"
 }
 
 case "${1:-}" in

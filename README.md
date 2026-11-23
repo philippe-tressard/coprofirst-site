@@ -42,7 +42,7 @@ Le site est servi sur **https://coprofirst.fr** par un conteneur Caddy
 
 ```bash
 bash deploiement/deployer.sh             # déploie HEAD, une fois poussé
-bash deploiement/deployer.sh --verifier  # compare ce qui est servi au dépôt
+bash deploiement/deployer.sh --verifier  # compare au dépôt ce que sert l'origine, puis https://coprofirst.fr/
 ```
 
 ## Contrôles
