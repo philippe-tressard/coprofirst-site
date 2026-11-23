@@ -13,9 +13,13 @@
 #
 # FAITS est la table : pour chaque fait, le fichier source (dépôt public, branche
 # main, lu sans jeton), le motif qui en extrait la valeur — il doit trouver UNE
-# valeur, ni zéro ni deux —, la page, la section (par son aria-labelledby) et la
-# phrase qui doit y figurer, valeur comprise. La valeur se lit dans le code, elle
-# n'est jamais recopiée ici : seule la phrase autour l'est.
+# valeur, ni zéro ni deux —, la page, le lieu et la phrase qui doit y figurer, valeur
+# comprise. Le lieu est une section (son aria-labelledby), un élément de l'accueil
+# (« contenu:<id> », son data-contenu) ou, vide, la page entière (llms.txt, le JSON-LD
+# de l'accueil). Une traduction facultative passe de la valeur du code à celle du texte
+# (un niveau d'API Android à son numéro de version). La valeur se lit dans le code, elle
+# n'est jamais recopiée ici : seule la phrase autour l'est. L'accueil et llms.txt y
+# sont depuis le 23/11/2026 (coprofirst-site#126, coprofirst-site#122).
 #
 # Ce qu'il ne couvre pas (standards/04 §12) : le sens des phrases. Ce qui est effacé
 # et gardé (CONSEQUENCES, CONTENUS_GARDES de CoproFirst), et ce qui sonne sur un
@@ -55,8 +59,9 @@ class Fait:
     source: str  # chemin dans ce dépôt
     motif: str  # une expression régulière à UN groupe : la valeur
     page: str  # sous site/
-    section: str  # aria-labelledby de la <section>
-    phrase: str  # ce que la section doit dire, « {} » étant la valeur
+    section: str  # aria-labelledby de la <section>, « contenu:<id> », ou « » : la page
+    phrase: str  # ce que le lieu doit dire, « {} » étant la valeur
+    traduction: tuple = ()  # paires (valeur du code, valeur écrite), facultatives
 
 
 SERVEUR, IOS, ANDROID = "coprofirst", "coprofirst-ios", "coprofirst-android"
@@ -65,6 +70,16 @@ FRONT_SUPPR = "front/src/lib/components/SuppressionCompte.svelte"
 IOS_SUPPR = "CoproFirst/Fonctions/Profil/SuppressionCompte/SectionSuppressionCompte.swift"
 ANDROID_CHAINES = "app/src/main/res/values/strings_profil.xml"
 REGLES = "api/app/utils/purge_comptes/regles.py"
+ACCUEIL, LLMS = "index.html", "llms.txt"
+CONSERVATION = "api/app/utils/conservation_affaires.py"
+# Les trois durées de conservation d'une affaire close, dites partout ensemble.
+DUREES_AFFAIRES = (("brèves", "BREVES", "{}, 5 ou 10 exercices"),
+                   ("pannes et entretien", "ENTRETIEN", "2, {} ou 10 exercices"),
+                   ("travaux et sinistres", "TRAVAUX", "2, 5 ou {} exercices"))
+LIEUX_CONSERVATION = ((ACCUEIL, "contenu:conservation"), (LLMS, ""), ("supprimer-compte.html", "t-garde"))
+# Niveau d'API Android → numéro de version que lit un utilisateur.
+API_ANDROID = (("26", "8"), ("27", "8.1"), ("28", "9"), ("29", "10"), ("R", "11"), ("30", "11"),
+               ("S", "12"), ("31", "12"), ("TIRAMISU", "13"), ("33", "13"))
 
 FAITS = (
     # Supprimer votre compte (coprofirst-site#104)
@@ -107,6 +122,36 @@ FAITS = (
     Fait("jeton de montre : durée", SERVEUR, "api/app/auth/jetons_appareil.py",
          r'"montre": Portee\((?:(?!Portee\()[\s\S])*?duree=timedelta\(days=(\d+)\)', CONFID,
          "t-application", "expire au bout de {} jours"),
+    # La vitrine et llms.txt (coprofirst-site#122, coprofirst-site#126)
+    Fait("mode limité : plafond de comptes actifs", SERVEUR, "api/app/inscription/regime.py",
+         r"^PLAFOND_COMPTES_ACTIFS = (\d+)$", ACCUEIL, "contenu:installation", "{} comptes actifs au plus"),
+    Fait("mode limité : plafond (prix)", SERVEUR, "api/app/inscription/regime.py",
+         r"^PLAFOND_COMPTES_ACTIFS = (\d+)$", ACCUEIL, "contenu:cout", "à {} comptes actifs"),
+    Fait("mode limité : plafond (llms.txt)", SERVEUR, "api/app/inscription/regime.py",
+         r"^PLAFOND_COMPTES_ACTIFS = (\d+)$", LLMS, "", "{} comptes actifs au plus"),
+    Fait("Docker Compose minimal (question)", SERVEUR, "deploiement/standard/LISEZMOI.md",
+         r"Docker Compose \*\*(\d+\.\d+) ou plus récent", ACCUEIL, "contenu:installation",
+         "Docker Compose ({} ou plus récent)"),
+    Fait("Docker Compose minimal (données structurées)", SERVEUR, "deploiement/standard/LISEZMOI.md",
+         r"Docker Compose \*\*(\d+\.\d+) ou plus récent", ACCUEIL, "", "Docker Compose {} ou plus récent"),
+    Fait("Docker Compose minimal (llms.txt)", SERVEUR, "deploiement/standard/LISEZMOI.md",
+         r"Docker Compose \*\*(\d+\.\d+) ou plus récent", LLMS, "", "Docker Compose {} ou plus récent"),
+    *(Fait(f"conservation des affaires : {nom}", SERVEUR, CONSERVATION,
+           rf'^{const} = TypeConservation\(\s*"[^"]+",\s*"[^"]+",\s*(\d+),', page, lieu, phrase)
+      for nom, const, phrase in DUREES_AFFAIRES for page, lieu in LIEUX_CONSERVATION),
+    # Libellés et versions des pages légales
+    Fait("auteur d'un compte supprimé", SERVEUR, "api/app/utils/noms.py",
+         r'^ANCIEN_RESIDENT = "([^"]+)"$', SUPPR, "t-garde", "« {} »"),
+    Fait("iOS : oublier toutes les résidences", IOS, "CoproFirst/Fonctions/Profil/ProfilView.swift",
+         r'Button\("([^"]+)"\) \{ geste = \.oublierTout \}', CONFID, "t-application", "« {} »"),
+    Fait("Android : oublier toutes les résidences", ANDROID, "app/src/main/res/values/strings.xml",
+         r'name="sortie_oublier_bouton">([^<]+)<', CONFID, "t-application", "« {} »"),
+    Fait("Android : session gardée sous biométrie", ANDROID,
+         "app/src/main/java/fr/coprofirst/app/session/SessionsGardeesKeystore.kt",
+         r"^@RequiresApi\(Build\.VERSION_CODES\.(\w+)\)", CONFID, "t-application",
+         "Sur Android {} et suivants", API_ANDROID),
+    Fait("Android : version minimale", ANDROID, "build.gradle.kts",
+         r"^\s*defaultConfig\.minSdk = (\d+)$", CONFID, "t-application", "Sur Android {} à 10", API_ANDROID),
 )
 
 
@@ -121,14 +166,30 @@ def valeur(fait: Fait, source: str) -> str:
     if len(trouvees) != 1:
         raise Illisible(f"{fait.depot}/{fait.source} : {len(trouvees)} valeur(s) pour « {fait.nom} » "
                         "(une attendue — la forme du code a changé)")
-    return normaliser(trouvees[0]).strip()
+    v = normaliser(trouvees[0]).strip()
+    if not fait.traduction:
+        return v
+    table = dict(fait.traduction)
+    if v not in table:
+        raise Illisible(f"{fait.depot}/{fait.source} : « {v} » sans traduction pour « {fait.nom} »")
+    return table[v]
 
 
-def section(page: str, ancre: str, nom_page: str) -> str:
-    bloc = re.search(rf'<section aria-labelledby="{re.escape(ancre)}">(.*?)</section>', page, re.S)
-    if not bloc:
-        raise Illisible(f"{nom_page} : section #{ancre} introuvable")
-    return normaliser(re.sub(r"<[^>]+>", "", bloc.group(1)))
+def section(page: str, lieu: str, nom_page: str) -> str:
+    """Le texte du lieu : une section (aria-labelledby), un élément « contenu:<id> »
+    (data-contenu, jusqu'à la fermeture de sa balise), ou la page entière si vide."""
+    if not lieu:
+        return normaliser(re.sub(r"<[^>]+>", "", page))
+    if lieu.startswith("contenu:"):
+        ident = re.escape(lieu.removeprefix("contenu:"))
+        bloc = re.search(rf'<(\w+)[^>]*\bdata-contenu="{ident}"[^>]*>(.*?)</\1>', page, re.S)
+        texte = bloc.group(2) if bloc else None
+    else:
+        bloc = re.search(rf'<section aria-labelledby="{re.escape(lieu)}">(.*?)</section>', page, re.S)
+        texte = bloc.group(1) if bloc else None
+    if texte is None:
+        raise Illisible(f"{nom_page} : {lieu} introuvable")
+    return normaliser(re.sub(r"<[^>]+>", "", texte))
 
 
 def verifier(faits, lire_source, lire_page) -> tuple[int, list[str], list[str]]:
@@ -144,7 +205,7 @@ def verifier(faits, lire_source, lire_page) -> tuple[int, list[str], list[str]]:
             continue
         attendu = fait.phrase.format(v)
         if attendu not in texte:
-            ecarts.append(f"{fait.page}#{fait.section} ne dit pas « {attendu} » ({fait.nom}, "
+            ecarts.append(f"{fait.page}#{fait.section or 'page'} ne dit pas « {attendu} » ({fait.nom}, "
                           f"lu dans {fait.depot}/{fait.source})")
     verdict = INCONNU if inconnus else ECART if ecarts else OK
     return verdict, inconnus, ecarts
@@ -167,13 +228,30 @@ def selftest() -> int:
         ("section absente", sources, page.replace('"t-a"', '"t-b"'), INCONNU),
         ("source illisible", {"b.svelte": sources["b.svelte"]}, page, INCONNU),
     ]
+    # Les autres lieux, et la traduction : un élément data-contenu, la page entière.
+    lieux = (Fait("plafond", "d", "r.py", r"^PLAFOND = (\d+)$", "p.html", "contenu:q", "{} comptes actifs"),
+             Fait("compose", "d", "r.py", r"^COMPOSE = ([\d.]+)$", "p.html", "", "Compose {} ou plus"),
+             Fait("android", "d", "r.py", r"^API = (\w+)$", "p.html", "t-a", "Android {} et suivants",
+                  (("R", "11"),)))
+    srcs_l = {"r.py": "PLAFOND = 5\nCOMPOSE = 2.24\nAPI = R\n"}
+    page_l = ('<script>{"x": "Compose 2.24 ou plus"}</script><article data-contenu="q"><p>5 comptes '
+              'actifs</p></article><p>6 comptes actifs</p><section aria-labelledby="t-a">Android 11 '
+              'et suivants</section>')
+    cas_lieux = [
+        ("lieux conformes", srcs_l, page_l, OK),
+        ("plafond changé dans le code", {"r.py": srcs_l["r.py"].replace("= 5", "= 6")}, page_l, ECART),
+        ("plafond dit hors de l'élément seulement", srcs_l, page_l.replace("<p>5 comptes", "<p>cinq comptes"), ECART),
+        ("élément absent", srcs_l, page_l.replace('data-contenu="q"', 'data-contenu="r"'), INCONNU),
+        ("niveau d'API sans traduction", {"r.py": srcs_l["r.py"].replace("API = R", "API = S")}, page_l, INCONNU),
+        ("Compose changé", {"r.py": srcs_l["r.py"].replace("2.24", "2.30")}, page_l, ECART),
+    ]
     echecs = 0
-    for nom, srcs, pg, attendu in cas:
+    for table, (nom, srcs, pg, attendu) in [(exemple, c) for c in cas] + [(lieux, c) for c in cas_lieux]:
         def lire_source(_depot, chemin, srcs=srcs):
             if chemin not in srcs:
                 raise Illisible(f"{chemin} : introuvable")
             return srcs[chemin]
-        obtenu, _, _ = verifier(exemple, lire_source, lambda _nom, pg=pg: pg)
+        obtenu, _, _ = verifier(table, lire_source, lambda _nom, pg=pg: pg)
         if obtenu != attendu:
             echecs += 1
             print(f"selftest ÉCHEC : {nom} — attendu {attendu}, obtenu {obtenu}")
@@ -188,7 +266,7 @@ def selftest() -> int:
         except (OSError, Illisible) as e:
             echecs += 1
             print(f"selftest ÉCHEC : FAITS « {fait.nom} » — {e}")
-    total = len(cas) + len(FAITS)
+    total = len(cas) + len(cas_lieux) + len(FAITS)
     print(f"verifier-faits-produit --selftest : {total - echecs}/{total} cas")
     return 1 if echecs else 0
 

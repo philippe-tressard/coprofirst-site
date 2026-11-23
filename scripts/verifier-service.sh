@@ -6,6 +6,8 @@
 # promet ? Construit l'image (deploiement/Dockerfile), la démarre, et l'interroge :
 #   - page et 404 : code, en-têtes de sécurité, Cache-Control no-transform, pas de
 #     Server, et le corps octet pour octet celui du dépôt (index.html, 404.html) ;
+#   - la CSP servie est, mot pour mot, celle que verifier-depot.sh juge dans le
+#     Caddyfile (aucune source tierce) : présente ne suffit pas (coprofirst-site#121) ;
 #   - compression : gzip quand le navigateur l'accepte — page,
 #     feuille de style, 404 —, jamais sur une image JPEG, et rien sans
 #     Accept-Encoding (c'est ce que reçoit deployer.sh --verifier) ;
@@ -25,6 +27,8 @@ cd "$racine" || exit 2
 command -v docker >/dev/null 2>&1 || { echo "INCONNU : Docker absent — rien n'a été vérifié"; exit 2; }
 
 PORT=18080
+CSP=$(bash scripts/verifier-depot.sh --csp)
+[ -n "$CSP" ] || { echo "INCONNU : aucune CSP lue dans le Caddyfile"; exit 2; }
 IMAGE=coprofirst-site:verification
 t=$(mktemp -d)
 conteneur=""
@@ -56,6 +60,7 @@ securite() {
   for e in Content-Security-Policy Strict-Transport-Security X-Content-Type-Options Referrer-Policy Permissions-Policy; do
     [ -n "$(entete "$nom" "$e")" ] || ecart "$nom : en-tête $e absent"
   done
+  [ "$(entete "$nom" Content-Security-Policy)" = "$CSP" ] || ecart "$nom : CSP servie différente de celle du Caddyfile"
   case "$(entete "$nom" Cache-Control)" in *no-transform*) ;; *) ecart "$nom : Cache-Control sans no-transform" ;; esac
   [ -z "$(entete "$nom" Server)" ] || ecart "$nom : en-tête Server présent"
 }

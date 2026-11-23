@@ -3,8 +3,8 @@
 # SPDX-License-Identifier: AGPL-3.0-or-later
 """contenu-accueil.py — site/contenu.json est extrait de site/index.html, et de lui seul.
 
-L'application iOS présente CoproFirst avec le contenu de l'accueil, en écrans natifs
-(coprofirst-site#42). Recopier les textes dans l'app les ferait diverger à la
+Les applications iOS et Android présentent CoproFirst avec le contenu de l'accueil,
+en écrans natifs (coprofirst-site#42). Recopier les textes dans l'app les ferait diverger à la
 première retouche du site : la source est index.html, contenu.json en est la
 projection, écrite dans le dépôt par --ecrire et refusée par le contrôle dès
 qu'elle diffère de ce que la page donne aujourd'hui.
@@ -30,16 +30,16 @@ Les adresses sont absolues ; les images, des chemins relatifs à contenu.json, q
 doivent exister dans site/. Un champ vide est omis. `format` change si un champ
 change de sens ou disparaît ; un champ ajouté le laisse.
 
-Ce dont l'app iOS dépend est FIGÉ dans CONTRAT_APP (coprofirst-site#66) : les `id`
-des éléments qu'elle accroche à ses symboles, et ce qu'elle lit de chacun (`titre`,
+Ce dont les apps dépendent est FIGÉ dans CONTRAT_APP (coprofirst-site#66) : les `id`
+des éléments qu'elles accrochent à ses symboles, et ce qu'elle lit de chacun (`titre`,
 `textes[0]` ; pour la section `demo`, aussi `textes[1]`, l'avertissement). Un `id`
 retiré, renommé, ou un `textes[1]` déplacé fait échouer le contrôle (CONTRAT), et
 --ecrire refuse d'écrire un tel fichier : l'app refuse un contenu incomplet et
 garde sa dernière lecture, donc toutes les apps installées cesseraient de suivre le
-site sans que personne le voie. Pareil changement se décide AVEC coprofirst-ios :
-nouvelle version de l'app d'abord, ou `format: 2`. La liste est recopiée de
-`ContenuVitrine.idsRequis` (CoproFirst/Entree/Contenu/ContenuVitrine.swift de
-coprofirst-ios) ; elle se modifie des deux côtés ensemble.
+site sans que personne le voie. Pareil changement se décide AVEC coprofirst-ios et
+coprofirst-android : nouvelle version des apps d'abord, ou `format: 2`. La liste est
+recopiée de `ContenuVitrine.idsRequis` des deux apps ; verifier-contrat-apps.py
+la compare chaque jour à leur branche main.
 
   python3 scripts/contenu-accueil.py            contrôle (pre-commit, CI) : 0 à jour, 1 écart, 2 INCONNU
   python3 scripts/contenu-accueil.py --ecrire   réécrit site/contenu.json depuis index.html
@@ -59,7 +59,8 @@ BASE = "https://coprofirst.fr/"
 FORMAT = 1
 OK, ECART, INCONNU = 0, 1, 2
 VIDES = {"area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "source", "track", "wbr"}
-# Le contrat avec l'app iOS (coprofirst-ios#51, ContenuVitrine.idsRequis). Pour chaque
+# Le contrat avec les apps (ContenuVitrine.idsRequis d'iOS et d'Android, comparés par
+# verifier-contrat-apps.py). Pour chaque
 # section : le nombre de textes qu'elle doit porter (l'app lit textes[0], et pour la
 # démo textes[1]) et les éléments requis, chacun avec un titre et textes[0].
 CONTRAT_APP = {
@@ -257,17 +258,17 @@ def nettoyer(p):
 
 
 def ecarts_contrat(contenu, contrat):
-    """Les écarts entre ce que la page donne et ce que l'app iOS lit (CONTRAT_APP)."""
+    """Les écarts entre ce que la page donne et ce que les apps lisent (CONTRAT_APP)."""
     ecarts = []
 
     def verifier(quoi, noeud, textes):
         if noeud is None:
-            ecarts.append(f"CONTRAT  {quoi} : absent — l'app iOS l'exige, à décider avec coprofirst-ios")
+            ecarts.append(f"CONTRAT  {quoi} : absent — une app l'exige, à décider avec coprofirst-ios et coprofirst-android")
             return
         if not noeud.get("titre"):
-            ecarts.append(f"CONTRAT  {quoi} : plus de titre — l'app iOS le lit")
+            ecarts.append(f"CONTRAT  {quoi} : plus de titre — les apps le lisent")
         if len(noeud.get("textes", [])) < textes:
-            ecarts.append(f"CONTRAT  {quoi} : textes[{textes - 1}] absent — l'app iOS le lit")
+            ecarts.append(f"CONTRAT  {quoi} : textes[{textes - 1}] absent — les apps le lisent")
 
     sections = {s.get("id"): s for s in contenu.get("sections", [])}
     for sid, regle in (contrat or {}).items():
@@ -388,7 +389,7 @@ def selftest():
         verifie("--ecrire refuse une page fautive", principal(site, ecrire=True, contrat=None) == ECART and (site / "contenu.json").read_text(encoding="utf-8") == avant)
         (site / "index.html").unlink()
         verifie("index.html absent → INCONNU, jamais OK", juger(site, None)[0] == INCONNU)
-        # Le contrat avec l'app iOS : chaque cas fautif doit être refusé (coprofirst-site#66).
+        # Le contrat avec les apps : chaque cas fautif doit être refusé (coprofirst-site#66).
         contrat = {"heros": {"textes": 2, "elements": ()}, "fonctions": {"textes": 1, "elements": ("demande",)}}
 
         def contrat_sur(html):
