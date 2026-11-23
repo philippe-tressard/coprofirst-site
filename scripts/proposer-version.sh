@@ -31,8 +31,9 @@
 # Tout appel à GitHub est tenté trois fois (essayer) : un 500, un 504 ou un push
 # refusé passagers ne doivent pas ouvrir un ticket « CI rouge » ; l'échec qui dure,
 # lui, fait échouer le passage et le signale.
-# La fusion reste celle de Philippe (champ `fusion` de projets.json), le déploiement
-# aussi : la PR ouverte EST le signal du retard.
+# Qui fusionne et qui déploie : CLAUDE.md, « Fusion et déploiement ». Une PR qui reste
+# ouverte EST le signal du retard : ne pas la fermer puis la rouvrir à la main, son
+# défaut doit se voir (coprofirst-site#63).
 #
 # Usage : bash scripts/proposer-version.sh           (en CI : GH_TOKEN, git configuré)
 #         bash scripts/proposer-version.sh --selftest (dépôt jetable, gh simulé)
