@@ -207,14 +207,15 @@ déploiement sert le nouveau HTML avec l'ancien script (avis masqués le
 `--selftest`. Écrite dans le dépôt, pas au déploiement : le site servi reste
 celui du commit.
 
-`python3 scripts/contenu-accueil.py` — `site/contenu.json`, que lit l'application
-iOS (`philippe-tressard/coprofirst-ios`, sans WebView), est la projection de
+`python3 scripts/contenu-accueil.py` — `site/contenu.json`, que lisent les apps
+iOS et Android (sans WebView), est la projection de
 `index.html` : la page reste la seule source. Ce qui part, elle le déclare par
 `data-contenu="<id>"` ; cet identifiant est un **contrat** avec les apps
-installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios.
-`CONTRAT_APP` (même script) fige les `id` et les champs que l'app lit, recopiés de
-`ContenuVitrine.idsRequis` : en retirer ou renommer un fait échouer le contrôle, et
-`--ecrire` refuse d'écrire un tel fichier — se décide avec coprofirst-ios. Les
+installées : ne pas le renommer ni le retirer sans ticket dans coprofirst-ios et
+coprofirst-android. `CONTRAT_APP` (même script) fige les `id` et les champs que les
+apps lisent : en retirer ou renommer un fait échouer le contrôle, et `--ecrire`
+refuse d'écrire un tel fichier ; `scripts/verifier-contrat-apps.py` (CI, chaque jour)
+le compare aux `ContenuVitrine.idsRequis` des deux apps. Les
 règles d'extraction et le format sont dans la docstring du script. **Après toute
 modification de `index.html`** (texte, empreinte d'une capture, version du
 produit) : `python3 scripts/contenu-accueil.py --ecrire` — la PR « version »

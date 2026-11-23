@@ -58,6 +58,12 @@ jobs:
         run: python3 scripts/verifier-faits-produit.py --selftest
       - name: Les pages contre coprofirst, coprofirst-ios et coprofirst-android (main)
         run: python3 scripts/verifier-faits-produit.py
+      # contenu.json est lu par les deux apps : CONTRAT_APP protège exactement les id
+      # qu'elles exigent (coprofirst-site#126).
+      - name: Le contrat de contenu.json (selftest)
+        run: python3 scripts/verifier-contrat-apps.py --selftest
+      - name: CONTRAT_APP contre coprofirst-ios et coprofirst-android (main)
+        run: python3 scripts/verifier-contrat-apps.py
       # Pas une concordance : une date qui passe. Sa place est dans le passage quotidien.
       - name: L'échéance de security.txt (un mois de préavis)
         run: python3 scripts/verifier-security-txt.py
