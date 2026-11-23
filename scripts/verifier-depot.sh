@@ -139,6 +139,20 @@ juger_dependances() {
   return 0
 }
 
+# juger_branchement <racine> — fonction PURE : chaque scripts/verifier-* est lancé par
+# scripts/controles.sh ou par un workflow. Un contrôle écrit et jamais lancé ne protège
+# rien (standards/05 §2 ; coprofirst-site#130).
+juger_branchement() {
+  local r="$1" f nom
+  for f in "$r"/scripts/verifier-*; do
+    [ -f "$f" ] || continue
+    nom=${f##*/}
+    grep -qsF "scripts/$nom" "$r/scripts/controles.sh" "$r"/.github/workflows/*.yml \
+      || echo "BRANCHE  scripts/$nom n'est lancé ni par scripts/controles.sh ni par un workflow"
+  done
+  return 0
+}
+
 # juger_fichier <chemin> <mode git> — fonction PURE : lit le fichier, n'écrit rien.
 # Écrit un écart par ligne ; rien si le fichier est conforme.
 juger_fichier() {
@@ -390,6 +404,16 @@ selftest() {
   depend "DEPENDANCES " "$t/recopie"
   printf 'reuse==1\n' > "$t/complet/.github/requirements-ci.txt"
   depend "DEPENDANCES " "$t/complet"
+  # Branchement des contrôles (coprofirst-site#130).
+  mkdir -p "$t/branche/scripts" "$t/branche/.github/workflows"
+  : > "$t/branche/scripts/verifier-a.sh"; : > "$t/branche/scripts/verifier-b.py"
+  printf 'bash scripts/verifier-a.sh\n' > "$t/branche/scripts/controles.sh"
+  printf '  run: python3 scripts/verifier-b.py\n' > "$t/branche/.github/workflows/x.yml"
+  local obtenu; obtenu=$(juger_branchement "$t/branche" | awk '{print $1}' | tr '\n' ' ')
+  [ "$obtenu" = "" ] && echo "  ok      contrôles branchés → «»" || { echo "  ÉCHEC   contrôles branchés → «$obtenu»"; echecs=$((echecs + 1)); }
+  : > "$t/branche/scripts/verifier-c.py"
+  obtenu=$(juger_branchement "$t/branche" | awk '{print $1}' | tr '\n' ' ')
+  [ "$obtenu" = "BRANCHE " ] && echo "  ok      contrôle jamais lancé → «BRANCHE »" || { echo "  ÉCHEC   contrôle jamais lancé → «$obtenu»"; echecs=$((echecs + 1)); }
   rm -rf "$t"
   [ "$echecs" -eq 0 ] && echo "selftest : OK" || { echo "selftest : $echecs ÉCHEC(S)"; return 1; }
 }
@@ -407,7 +431,7 @@ nb=$(git ls-files | wc -l)
 ecarts=$(git ls-files -s | while read -r mode _ _ f; do
            juger_fichier "$f" "$mode"
            [[ "$f" == site/* && -f "$f" ]] && juger_publie "$f"
-         done; juger_site; juger_csp "$(csp_du_caddyfile)"; juger_dependances "$racine")
+         done; juger_site; juger_csp "$(csp_du_caddyfile)"; juger_dependances "$racine"; juger_branchement "$racine")
 if [ -n "$ecarts" ]; then
   echo "$ecarts"
   echo "verifier-depot : $(echo "$ecarts" | wc -l) écart(s) sur $nb fichiers"

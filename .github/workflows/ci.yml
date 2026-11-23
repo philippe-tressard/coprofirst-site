@@ -22,45 +22,10 @@ jobs:
           # L'historique entier : verifier-referencement.py date chaque page de son
           # dernier commit (un clone superficiel les daterait toutes du dernier).
           fetch-depth: 0
-      - name: Le contrôle lui-même (selftest)
-        run: bash scripts/verifier-depot.sh --selftest
-      - name: Encodage, fins de ligne, bits d'exécution, syntaxe des scripts
-        run: bash scripts/verifier-depot.sh
-      - name: Référencement (selftest)
-        run: python3 scripts/verifier-referencement.py --selftest
-      - name: Référencement — canoniques, Open Graph, JSON-LD, sitemap, robots.txt, llms.txt
-        run: python3 scripts/verifier-referencement.py
-      # avis.json n'est pas versionné : le fichier lui-même se contrôle au déploiement.
-      - name: Contrôle des avis publiés (selftest)
-        run: python3 scripts/verifier-avis.py --selftest
-      - name: Récupération de l'export des avis (selftest)
-        run: python3 scripts/recuperer-avis.py --selftest
-      - name: Empreintes des CSS et JS (selftest)
-        run: python3 scripts/empreintes.py --selftest
-      - name: Empreintes des CSS et JS — chaque adresse porte l'empreinte de son contenu
-        run: python3 scripts/empreintes.py
-      - name: Contenu de l'accueil (selftest)
-        run: python3 scripts/contenu-accueil.py --selftest
-      - name: Contenu de l'accueil — contenu.json extrait de index.html, sans écart
-        run: python3 scripts/contenu-accueil.py
-      - name: Feuilles de style (selftest)
-        run: python3 scripts/verifier-css.py --selftest
-      - name: Feuilles de style — contrastes des jetons, survol et appui
-        run: python3 scripts/verifier-css.py
-      - name: security.txt (selftest)
-        run: python3 scripts/verifier-security-txt.py --selftest
-      - name: Alerte d'échec (selftest)
-        run: python3 scripts/signaler-echec-ci.py --selftest
-      - name: Alerte d'échec — chaque job finit par elle
-        run: python3 scripts/signaler-echec-ci.py --verifier
-      - name: IndexNow — la requête d'essai (selftest)
-        run: scripts/signaler-indexnow.sh --selftest
-      - name: Renvois aux tickets (selftest)
-        run: python3 scripts/verifier-renvois.py --selftest
-      - name: Lecture distante — réessais et jeton (selftest)
-        run: python3 scripts/lecture_distante.py --selftest
-      - name: Renvois aux tickets — aucun renvoi nu
-        run: python3 scripts/verifier-renvois.py
+      # Les contrôles hors réseau, leurs selftests d'abord : la liste vit dans
+      # scripts/controles.sh, que le pre-commit appelle aussi (coprofirst-site#130).
+      - name: Contrôles hors réseau (selftests, puis le dépôt)
+        run: bash scripts/controles.sh --selftest
       # Le même Caddy que l'image, lu au FROM du Dockerfile (une seule écriture, que
       # Dependabot monte) : un Caddyfile invalide ne part pas.
       - name: Caddyfile valide
