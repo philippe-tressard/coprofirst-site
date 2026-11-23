@@ -385,6 +385,7 @@
      "titre": "Combien coûte CoproFirst ?",
      "textes": [
       "Le logiciel est gratuit, sans prix de licence : son code, ses images et ses archives d'installation sont publics, et sa licence permet de l'utiliser, de l'étudier, de le modifier et de le redistribuer. Restent à la charge de la résidence le serveur qui l'héberge et, si elle l'active, l'assistant IA, facturé par le fournisseur qu'elle choisit, avec sa propre clé.",
+      "Installée à partir des images publiées, elle démarre en mode limité, à 5 comptes actifs, tant que son inscription au registre de CoproFirst n'est pas validée : voir « Comment l'installer ? ».",
       "Pour une copropriété qui ne veut pas tenir de serveur, une offre hébergée, payante, est à l'étude : rien n'est encore proposé à la vente."
      ]
     },
@@ -393,6 +394,7 @@
      "titre": "Comment l'installer ?",
      "textes": [
       "Sur un serveur Linux (amd64 ou arm64) équipé de Docker et Docker Compose (2.24 ou plus récent), à partir des images publiées pour chaque version, derrière un accès HTTPS, avec une adresse d'envoi de courriels. Le mode d'emploi pas à pas est dans le dépôt : installer CoproFirst.",
+      "Une installation faite de ces images fonctionne d'abord en mode limité : 5 comptes actifs au plus, sans compter ses deux comptes techniques, sans mise à jour automatique ni services du registre. Son opérateur l'inscrit au registre de CoproFirst depuis l'administration ; l'inscription validée lève le plafond. Elle transmet les coordonnées de l'administrateur de l'installation et, chaque nuit, un rapport sur son état — jamais une donnée de résident.",
       "Une installation sert une copropriété, ou plusieurs : l'installation commune donne à chacune sa base, ses fichiers et ses textes légaux, sans rien voir des autres."
      ],
      "liens": [

@@ -17,7 +17,7 @@ page `demo.html` en publie les trois comptes publics.
 | Chemin | Rôle |
 |---|---|
 | `site/index.html` | la page d'accueil — HTML et CSS, sans dépendance ni build |
-| `site/contenu.json` | le contenu de l'accueil en JSON, lu par l'application iOS : **extrait** de `index.html` par `scripts/contenu-accueil.py --ecrire`, jamais écrit à la main. Ce qui part, la page le déclare (`data-contenu="<id>"`) ; l'identifiant est un contrat avec l'app |
+| `site/contenu.json` | le contenu de l'accueil en JSON, lu par les applications iOS et Android : **extrait** de `index.html` par `scripts/contenu-accueil.py --ecrire`, jamais écrit à la main. Ce qui part, la page le déclare (`data-contenu="<id>"`) ; l'identifiant est un contrat avec les apps (`scripts/verifier-contrat-apps.py`) |
 | `site/demo.html` | la page Démo : les comptes publics de la démonstration, repris de `api/app/demo/personnages.py` de CoproFirst |
 | `site/mentions-legales.html`, `site/confidentialite.html` | les pages obligatoires |
 | `site/404.html` | la page des adresses inconnues, servie avec le code 404 par le Caddyfile (`noindex`, hors du sitemap) |
