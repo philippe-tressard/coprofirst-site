@@ -32,7 +32,9 @@
 #
 # Verdicts (standards/04 §1) : 0 = conforme, 1 = écart, 2 = INCONNU — source
 # injoignable, motif introuvable ou ambigu, section absente. Jamais un vert faute
-# d'avoir pu lire.
+# d'avoir pu lire. Chaque INCONNU de motif et chaque écart disent en plus quel côté a
+# bougé — le code, la page, ou les deux — d'après ce que la page dit encore (une piste,
+# avec les lignes de la source : cote_du_motif, cote_de_l_ecart).
 #
 # Usage : python3 scripts/verifier-faits-produit.py
 #         python3 scripts/verifier-faits-produit.py --racine DOSSIER   (sources locales)
@@ -89,9 +91,10 @@ FAITS = (
          r"^INACTIVITE_ANS = (\d+)$", SUPPR, "t-inactif", "{} ans sans connexion"),
     Fait("délai entre l'avertissement et la suppression", SERVEUR, REGLES,
          r"^DELAI_AVANT_SUPPRESSION_JOURS = (\d+)$", SUPPR, "t-inactif", "{} jours plus tard"),
-    Fait("conservation de l'historique des courriels", SERVEUR, "api/app/seed/contenus_legaux.py",
-         r"Historique des envois de courriels\\xa0: conservé <strong>(\d+)\\xa0jours", SUPPR, "t-garde",
-         "gardé {} jours"),
+    # La constante que la purge applique, et dont la politique compose sa phrase depuis
+    # coprofirst#3029 (24/11/2026) : la phrase n'écrit plus le nombre.
+    Fait("conservation de l'historique des courriels", SERVEUR, "api/app/utils/maintenance.py",
+         r"^CONSERVATION_COURRIELS_JOURS = (\d+)$", SUPPR, "t-garde", "gardé {} jours"),
     Fait("site : titre du bloc", SERVEUR, FRONT_SUPPR,
          r'<h3 class="titre-suppression">([^<]+)</h3>', SUPPR, "t-demander", "« {} »"),
     Fait("site : bouton qui ouvre la demande", SERVEUR, FRONT_SUPPR,
@@ -100,8 +103,10 @@ FAITS = (
          r'type="submit"[^>]*>\s*([^<]+?)\s*</button>', SUPPR, "t-demander", "« {} »"),
     Fait("site : bouton qui retire la demande", SERVEUR, FRONT_SUPPR,
          r"on:click=\{retirer\}>\s*([^<]+?)\s*</button>", SUPPR, "t-ensuite", "« {} »"),
-    Fait("iOS : titre de l'écran", IOS, IOS_SUPPR,
-         r'\.navigationTitle\("([^"]+)"\)', SUPPR, "t-demander", "« {} »"),
+    # L'en-tête de la rubrique du Profil, que la page nomme (la feuille qu'elle ouvre porte
+    # le même titre, en FeuilleDeSaisie depuis coprofirst-ios#382).
+    Fait("iOS : titre de la rubrique", IOS, IOS_SUPPR,
+         r'\} header: \{\s*Text\("([^"]+)"\)', SUPPR, "t-demander", "« {} »"),
     Fait("iOS : bouton qui ouvre la demande", IOS, IOS_SUPPR,
          r'Label\("([^"]+)", systemImage: "person\.crop\.circle\.badge\.xmark"\)', SUPPR, "t-demander", "« {} »"),
     Fait("Android : titre de la rubrique", ANDROID, ANDROID_CHAINES,
@@ -165,7 +170,7 @@ def valeur(fait: Fait, source: str) -> str:
     trouvees = re.findall(fait.motif, source, re.M)
     if len(trouvees) != 1:
         raise Illisible(f"{fait.depot}/{fait.source} : {len(trouvees)} valeur(s) pour « {fait.nom} » "
-                        "(une attendue — la forme du code a changé)")
+                        "(une attendue)")
     v = normaliser(trouvees[0]).strip()
     if not fait.traduction:
         return v
@@ -192,21 +197,73 @@ def section(page: str, lieu: str, nom_page: str) -> str:
     return normaliser(re.sub(r"<[^>]+>", "", texte))
 
 
+# Quel côté a bougé ? (coprofirst-site#147, 24/11/2026 : deux motifs muets le même jour,
+# la politique réécrite d'un côté, l'écran iOS refait de l'autre, et le message ne
+# disait que « la forme du code a changé ».) La page se relit avec sa phrase, la valeur
+# laissée libre : ce qu'elle dit encore, et si le code l'écrit encore quelque part. Une
+# PISTE, jamais un verdict : 0 ou 2 valeurs restent INCONNU, et une phrase « « {} » »
+# attrape tous les libellés cités du lieu.
+def valeurs_lues(fait: Fait, texte: str) -> list[str]:
+    """Les valeurs que le lieu donne au fait, sans doublon, dans l'ordre de la page."""
+    avant, apres = (re.escape(morceau) for morceau in fait.phrase.split("{}"))
+    return list(dict.fromkeys(re.findall(avant + r"([^«»]{1,60}?)" + apres, texte)))
+
+
+def lignes(source: str, lue: str, fait: Fait) -> list[int]:
+    """Les lignes de la source qui écrivent la valeur de la page (traduite en retour)."""
+    ecritures = [code for code, ecrit in fait.traduction if ecrit == lue] or [lue]
+    motifs = [re.compile(rf"(?<!\w){re.escape(e)}(?!\w)") for e in ecritures]
+    return [n for n, ligne in enumerate(source.splitlines(), 1)
+            if any(m.search(normaliser(ligne)) for m in motifs)]
+
+
+def cote_du_motif(fait: Fait, source: str, lues: list[str]) -> str:
+    """Le motif ne rend pas une valeur : le code a-t-il changé de forme, ou la valeur
+    a-t-elle quitté le fichier ?"""
+    gabarit = fait.phrase.replace("{}", "…")
+    if not lues:
+        return f"et la page ne dit plus « {gabarit} » non plus : les deux côtés ont bougé"
+    encore = [(lue, n) for lue in lues if (n := lignes(source, lue, fait))][:3]
+    if encore:
+        dits = " ; ".join(f"« {lue} » ligne(s) {', '.join(map(str, n[:4]))}" for lue, n in encore)
+        return (f"piste : la page dit encore « {gabarit} », et la source écrit encore {dits} — "
+                "le code a changé de FORME : si c'est bien la valeur, adapter le motif")
+    cites = ", ".join(f"« {lue} »" for lue in lues[:3])
+    return (f"piste : la page dit encore « {gabarit} » ({cites}), que la source n'écrit plus — "
+            "la valeur a quitté ce fichier ou changé : chercher où le code la tient désormais")
+
+
+def cote_de_l_ecart(fait: Fait, v: str, lues: list[str]) -> str:
+    """La valeur se lit des deux côtés mais diffère, ou la page a perdu sa phrase."""
+    if not lues:
+        return (f"la page ne dit plus « {fait.phrase.replace('{}', '…')} » sous aucune valeur : "
+                f"c'est la phrase de la page qui a changé (le code dit « {v} »)")
+    cites = ", ".join(f"« {lue} »" for lue in lues[:4]) + (" …" if len(lues) > 4 else "")
+    return f"le code dit « {v} », la page {cites} : la valeur a bougé — l'historique des deux dépôts dit où"
+
+
 def verifier(faits, lire_source, lire_page) -> tuple[int, list[str], list[str]]:
     """(verdict, inconnus, écarts). lire_source(depot, chemin) et lire_page(nom) rendent
     du texte ou lèvent Illisible."""
     ecarts, inconnus = [], []
     for fait in faits:
         try:
-            v = valeur(fait, lire_source(fait.depot, fait.source))
+            # Une source en CRLF (maintenance.py, 24/11/2026) ferait taire tout motif en « $ ».
+            source = lire_source(fait.depot, fait.source).replace("\r\n", "\n")
             texte = section(lire_page(fait.page), fait.section, fait.page)
         except Illisible as e:
             inconnus.append(str(e))
             continue
+        lues = valeurs_lues(fait, texte)
+        try:
+            v = valeur(fait, source)
+        except Illisible as e:
+            inconnus.append(f"{e} ; {cote_du_motif(fait, source, lues)}")
+            continue
         attendu = fait.phrase.format(v)
         if attendu not in texte:
             ecarts.append(f"{fait.page}#{fait.section or 'page'} ne dit pas « {attendu} » ({fait.nom}, "
-                          f"lu dans {fait.depot}/{fait.source})")
+                          f"lu dans {fait.depot}/{fait.source}) ; {cote_de_l_ecart(fait, v, lues)}")
     verdict = INCONNU if inconnus else ECART if ecarts else OK
     return verdict, inconnus, ecarts
 
@@ -227,6 +284,18 @@ def selftest() -> int:
         ("valeur écrite deux fois", {**sources, "s.py": "DELAI = 30\nDELAI = 30\n"}, page, INCONNU),
         ("section absente", sources, page.replace('"t-a"', '"t-b"'), INCONNU),
         ("source illisible", {"b.svelte": sources["b.svelte"]}, page, INCONNU),
+        ("source en CRLF", {**sources, "s.py": "DELAI = 30\r\n"}, page, OK),
+    ]
+    # Le message dit quel côté a bougé (coprofirst-site#147) : son texte est jugé.
+    seul = sources["s.py"]
+    diagnostics = [
+        ("forme du code changée, valeur encore écrite", "DELAI_JOURS = 30\n", page, "écrit encore « 30 » ligne(s) 1"),
+        ("valeur partie du fichier", "AUTRE = 7\n", page, "que la source n'écrit plus"),
+        ("forme changée des deux côtés", "DELAI_JOURS = 30\n", page.replace("sous 30&nbsp;jours", "dans le"),
+         "les deux côtés ont bougé"),
+        ("phrase de la page changée", seul, page.replace("sous 30&nbsp;jours", "dans le"),
+         "c'est la phrase de la page qui a changé (le code dit « 30 »)"),
+        ("valeur différente", "DELAI = 45\n", page, "le code dit « 45 », la page « 30 »"),
     ]
     # Les autres lieux, et la traduction : un élément data-contenu, la page entière.
     lieux = (Fait("plafond", "d", "r.py", r"^PLAFOND = (\d+)$", "p.html", "contenu:q", "{} comptes actifs"),
@@ -245,16 +314,24 @@ def selftest() -> int:
         ("niveau d'API sans traduction", {"r.py": srcs_l["r.py"].replace("API = R", "API = S")}, page_l, INCONNU),
         ("Compose changé", {"r.py": srcs_l["r.py"].replace("2.24", "2.30")}, page_l, ECART),
     ]
-    echecs = 0
-    for table, (nom, srcs, pg, attendu) in [(exemple, c) for c in cas] + [(lieux, c) for c in cas_lieux]:
-        def lire_source(_depot, chemin, srcs=srcs):
+    def lecteur(srcs):
+        def lire_source(_depot, chemin):
             if chemin not in srcs:
                 raise Illisible(f"{chemin} : introuvable")
             return srcs[chemin]
-        obtenu, _, _ = verifier(table, lire_source, lambda _nom, pg=pg: pg)
+        return lire_source
+
+    echecs = 0
+    for table, (nom, srcs, pg, attendu) in [(exemple, c) for c in cas] + [(lieux, c) for c in cas_lieux]:
+        obtenu, _, _ = verifier(table, lecteur(srcs), lambda _nom, pg=pg: pg)
         if obtenu != attendu:
             echecs += 1
             print(f"selftest ÉCHEC : {nom} — attendu {attendu}, obtenu {obtenu}")
+    for nom, src, pg, extrait in diagnostics:
+        _, inconnus, ecarts = verifier(exemple[:1], lecteur({"s.py": src}), lambda _nom, pg=pg: pg)
+        if extrait not in " ".join(inconnus + ecarts):
+            echecs += 1
+            print(f"selftest ÉCHEC : {nom} — « {extrait} » absent de {inconnus + ecarts}")
     # La table réelle : chaque motif a un groupe, chaque phrase une place pour la valeur,
     # chaque page et chaque section existent dans le dépôt (sans réseau).
     for fait in FAITS:
@@ -266,7 +343,7 @@ def selftest() -> int:
         except (OSError, Illisible) as e:
             echecs += 1
             print(f"selftest ÉCHEC : FAITS « {fait.nom} » — {e}")
-    total = len(cas) + len(cas_lieux) + len(FAITS)
+    total = len(cas) + len(cas_lieux) + len(diagnostics) + len(FAITS)
     print(f"verifier-faits-produit --selftest : {total - echecs}/{total} cas")
     return 1 if echecs else 0
 
