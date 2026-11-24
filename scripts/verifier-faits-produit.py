@@ -21,8 +21,11 @@
 # n'est jamais recopiée ici : seule la phrase autour l'est. L'accueil et llms.txt y
 # sont depuis le 23/11/2026 (coprofirst-site#126, coprofirst-site#122).
 #
+# La liste de ce qui est gardé (#t-garde, CONTENUS_GARDES) se compare paire par paire,
+# dans les deux sens : contenus_gardes.py, appelé d'ici.
+#
 # Ce qu'il ne couvre pas (standards/04 §12) : le sens des phrases. Ce qui est effacé
-# et gardé (CONSEQUENCES, CONTENUS_GARDES de CoproFirst), et ce qui sonne sur un
+# (CONSEQUENCES, CONTENUS_PERSONNELS de CoproFirst), et ce qui sonne sur un
 # téléphone (porte.TYPE_POUSSE, l'alerte d'une actualité ⚡), se relisent à la main
 # quand ces sources changent : le commentaire de tête de supprimer-compte.html les
 # nomme. Les apps ont leur propre contrôle (verifier-app-ios.py, verifier-app-android.py).
@@ -47,6 +50,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
+import contenus_gardes
 from lecture_distante import Illisible, lire
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -343,7 +347,16 @@ def selftest() -> int:
         except (OSError, Illisible) as e:
             echecs += 1
             print(f"selftest ÉCHEC : FAITS « {fait.nom} » — {e}")
-    total = len(cas) + len(cas_lieux) + len(diagnostics) + len(FAITS)
+    # La liste de ce qui est gardé : son propre selftest, et chaque phrase de NOMMES dans
+    # la vraie page (sans réseau).
+    n_gardes, e_gardes = contenus_gardes.selftest()
+    echecs += e_gardes
+    garde = section((RACINE / "site" / contenus_gardes.PAGE).read_text(encoding="utf-8"),
+                    contenus_gardes.LIEU, contenus_gardes.PAGE)
+    for phrase in sorted({p for p in contenus_gardes.NOMMES.values() if p not in garde}):
+        echecs += 1
+        print(f"selftest ÉCHEC : NOMMES « {phrase} » absent de {contenus_gardes.PAGE}#{contenus_gardes.LIEU}")
+    total = len(cas) + len(cas_lieux) + len(diagnostics) + len(FAITS) + n_gardes
     print(f"verifier-faits-produit --selftest : {total - echecs}/{total} cas")
     return 1 if echecs else 0
 
@@ -365,11 +378,15 @@ def main() -> int:
         return lire(str(RACINE / "site" / nom))
 
     verdict, inconnus, ecarts = verifier(FAITS, lire_source, lire_page)
+    inc_gardes, ec_gardes = contenus_gardes.verifier(
+        lire_source, lambda page, lieu: section(lire_page(page), lieu, page))
+    inconnus, ecarts = inconnus + inc_gardes, ecarts + ec_gardes
+    verdict = INCONNU if inconnus else ECART if ecarts else OK
     for m in inconnus:
         print("INCONNU : " + m)
     for m in ecarts:
         print("ÉCART : " + m)
-    print("verifier-faits-produit : " + {OK: f"conforme ({len(FAITS)} faits)",
+    print("verifier-faits-produit : " + {OK: f"conforme ({len(FAITS)} faits, et la liste de ce qui est gardé)",
                                          ECART: f"{len(ecarts)} écart(s)", INCONNU: "INCONNU"}[verdict])
     return verdict
 

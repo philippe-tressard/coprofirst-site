@@ -15,7 +15,8 @@ branche main) ou de ses apps ; quand la source change, la page suit :
 - le délai, l'inactivité, les journaux : api/app/utils/delais_rgpd.py,
   api/app/utils/purge_comptes/regles.py, api/app/seed/contenus_legaux.py
   (JOURNAL_SECURITE, CONSERVATION_COURRIELS, ANONYMISATION_CONTENUS).
-Les chiffres et les libellés d'écran sont relus chaque jour par
+Les chiffres, les libellés d'écran et la liste de ce qui est gardé (#t-garde, face à
+CONTENUS_GARDES : scripts/contenus_gardes.py) sont relus chaque jour par
 scripts/verifier-faits-produit.py.
 -->
 <html lang="fr">
@@ -80,7 +81,7 @@ scripts/verifier-faits-produit.py.
 <main id="contenu" class="document">
   <h1>Supprimer votre compte</h1>
   <p class="chapo">Votre compte de l'application CoproFirst (éditeur&nbsp;: Philippe Tressard) est ouvert par votre résidence, sur son propre site&nbsp;: c'est elle qui le supprime, à votre demande. Vous pouvez la faire depuis l'application, depuis le site de la résidence dans un navigateur, sans installer l'application, ou par courriel.</p>
-  <span class="maj">Mise à jour le 18 novembre 2026</span>
+  <span class="maj">Mise à jour le 24 novembre 2026</span>
 
   <section aria-labelledby="t-demander">
     <h2 id="t-demander">Demander la suppression</h2>
@@ -129,7 +130,7 @@ scripts/verifier-faits-produit.py.
   <section aria-labelledby="t-garde">
     <h2 id="t-garde">Ce qui est gardé, combien de temps, et pourquoi</h2>
     <h3>Ce que vous avez écrit pour la copropriété, sans votre nom</h3>
-    <p>Les affaires et leurs messages, les documents publiés, les votes et les soutiens, les réponses dans les échanges, les idées, les sondages et l'évaluation des prestataires restent à la copropriété&nbsp;; votre nom y est remplacé par «&nbsp;Ancien résident&nbsp;». <strong>Pourquoi</strong>&nbsp;: c'est la mémoire de la copropriété, dont son carnet d'entretien, et retirer un vote ou un soutien changerait un résultat que d'autres ont vu. Les textes ne sont pas réécrits&nbsp;: pour faire retirer un passage qui vous identifie, écrivez au responsable de traitement de la résidence.</p>
+    <p>Les affaires, leur suivi et leurs messages, les documents publiés et les rapports de diagnostic, les règles de la résidence et les annonces affichées dans le hall, les sondages et les votes, les idées et leurs soutiens, les questions au règlement, les réponses dans les échanges et l'évaluation des prestataires restent à la copropriété, comme, sur une délégation que vous avez créée entre deux autres personnes, la mention de qui l'a créée&nbsp;; votre nom y est remplacé par «&nbsp;Ancien résident&nbsp;». <strong>Pourquoi</strong>&nbsp;: c'est la mémoire de la copropriété, dont son carnet d'entretien, et retirer un vote ou un soutien changerait un résultat que d'autres ont vu. Les textes ne sont pas réécrits&nbsp;: pour faire retirer un passage qui vous identifie, écrivez au responsable de traitement de la résidence.</p>
     <p><strong>Combien de temps</strong>&nbsp;: aussi longtemps que la copropriété les garde. Si la résidence a activé la conservation des affaires, une affaire close perd ses pièces jointes et le nom de ses auteurs après 2, 5 ou 10&nbsp;exercices selon sa catégorie.</p>
     <h3>Les journaux et les sauvegardes</h3>
     <ul>
