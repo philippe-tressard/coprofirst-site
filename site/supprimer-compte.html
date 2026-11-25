@@ -15,9 +15,9 @@ branche main) ou de ses apps ; quand la source change, la page suit :
 - le délai, l'inactivité, les journaux : api/app/utils/delais_rgpd.py,
   api/app/utils/purge_comptes/regles.py, api/app/seed/contenus_legaux.py
   (JOURNAL_SECURITE, CONSERVATION_COURRIELS, ANONYMISATION_CONTENUS).
-Les chiffres, les libellés d'écran et la liste de ce qui est gardé (#t-garde, face à
-CONTENUS_GARDES : scripts/contenus_gardes.py) sont relus chaque jour par
-scripts/verifier-faits-produit.py.
+Les chiffres, les libellés d'écran et les listes de ce qui est effacé (#t-efface, face à
+CONTENUS_PERSONNELS) et gardé (#t-garde, face à CONTENUS_GARDES) — scripts/contenus_compte.py —
+sont relus chaque jour par scripts/verifier-faits-produit.py ; CONSEQUENCES, à la main.
 -->
 <html lang="fr">
 <head>
@@ -81,7 +81,7 @@ scripts/verifier-faits-produit.py.
 <main id="contenu" class="document">
   <h1>Supprimer votre compte</h1>
   <p class="chapo">Votre compte de l'application CoproFirst (éditeur&nbsp;: Philippe Tressard) est ouvert par votre résidence, sur son propre site&nbsp;: c'est elle qui le supprime, à votre demande. Vous pouvez la faire depuis l'application, depuis le site de la résidence dans un navigateur, sans installer l'application, ou par courriel.</p>
-  <span class="maj">Mise à jour le 24 novembre 2026</span>
+  <span class="maj">Mise à jour le 25 novembre 2026</span>
 
   <section aria-labelledby="t-demander">
     <h2 id="t-demander">Demander la suppression</h2>
@@ -118,11 +118,13 @@ scripts/verifier-faits-produit.py.
     <p>Votre compte et vos données personnelles&nbsp;:</p>
     <ul>
       <li>votre profil et les liens à vos lots&nbsp;;</li>
-      <li>vos badges et vos demandes (de badge, de modification de votre profil)&nbsp;;</li>
-      <li>vos notifications, vos sessions, et les téléphones et montres enregistrés pour vous avertir&nbsp;;</li>
+      <li>le lien entre vous et vos badges, qui restent sur leur lot, et vos demandes (de badge, de modification de votre profil)&nbsp;;</li>
+      <li>vos notifications, vos sessions, les liens envoyés par courriel pour la vérification de votre adresse ou un mot de passe oublié, et les téléphones et montres enregistrés pour vous avertir&nbsp;;</li>
       <li>vos petites annonces et vos avis sur l'application&nbsp;; un avis publié sur ce site en sort à sa mise à jour suivante&nbsp;;</li>
-      <li>vos délégations, données ou reçues, et vos mandats de gestion&nbsp;;</li>
-      <li>votre historique de navigation dans l'application (la mesure d'audience de la résidence).</li>
+      <li>vos délégations, données ou reçues, vos mandats de gestion, et les baux des lots que vous mettez en location, avec la liste des objets remis au locataire&nbsp;;</li>
+      <li>vos signalements à la modération, qui garde sa décision, les auteurs que vous avez masqués et les masques posés sur vous&nbsp;;</li>
+      <li>votre historique de navigation dans l'application (la mesure d'audience de la résidence)&nbsp;;</li>
+      <li>votre demande de suppression elle-même, une fois traitée&nbsp;: le journal de sécurité en garde la trace (ci-dessous).</li>
     </ul>
     <p>Ce que l'application garde de vos résidences sur le téléphone ne dépend pas de la résidence&nbsp;: «&nbsp;Oublier toutes les résidences&nbsp;», au bas du Profil de l'application, l'efface.</p>
   </section>
