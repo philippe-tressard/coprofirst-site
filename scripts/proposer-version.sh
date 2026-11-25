@@ -25,15 +25,20 @@
 #      robot approuve donc CES runs-là — même dépôt, sa branche, son commit, ouverts
 #      par lui (filtre_en_attente) —, puis relit les checks sur la PR jusqu'à y voir
 #      `depot` et `comptes` ; absents au bout des essais, le passage échoue et le
-#      signale. Une relance par workflow_dispatch ne sert à rien : le rollup du
-#      commit, que lit la PR, ignore ces suites (mesuré le 11/11/2026). Une PR déjà à
-#      jour mais sans ses checks est reprise au passage suivant.
+#      signale, avec les runs du commit au journal. Une relance par
+#      workflow_dispatch ne sert à rien : le rollup du commit, que lit la PR, ignore
+#      ces suites (mesuré le 11/11/2026). Une PR déjà à jour mais sans ses checks est
+#      reprise au passage suivant.
 # Tout appel à GitHub est tenté trois fois (essayer) : un 500, un 504 ou un push
 # refusé passagers ne doivent pas ouvrir un ticket « CI rouge » ; l'échec qui dure,
 # lui, fait échouer le passage et le signale.
 # Qui fusionne et qui déploie : CLAUDE.md, « Fusion et déploiement ». Une PR qui reste
 # ouverte EST le signal du retard : ne pas la fermer puis la rouvrir à la main, son
-# défaut doit se voir (coprofirst-site#63).
+# défaut doit se voir (coprofirst-site#63). Ses checks apparaissent 20 à 40 s après
+# sa création, le temps que le robot les approuve : « sans check » ne se juge
+# qu'une fois fini le passage de « Version affichée » qui l'a ouverte. Les PR
+# coprofirst-site#163 et #165, rouvertes 14 à 18 s après leur création, avaient
+# leurs runs approuvés (25/11/2026).
 #
 # Usage : bash scripts/proposer-version.sh           (en CI : GH_TOKEN, git configuré)
 #         bash scripts/proposer-version.sh --selftest (dépôt jetable, gh simulé)
@@ -70,8 +75,11 @@ checks_vus() {
 # le commit est celui que le robot vient d'écrire depuis main.
 # Un run en attente d'approbation est TERMINÉ : `status` vaut `completed`, et c'est
 # `conclusion` qui vaut `action_required` (relevé sur la PR coprofirst-site#82). Le
-# paramètre `status=action_required` de la requête, lui, porte sur l'un ou l'autre.
-# Le 11/11/2026, le filtre testait `.status` : il n'a rien trouvé en vrai.
+# 11/11/2026, le filtre testait `.status` : il n'a rien trouvé en vrai.
+# Ce filtre seul décide : la requête ne filtre PAS l'état côté serveur. Le
+# 25/11/2026 (PR coprofirst-site#161), `?status=action_required` a rendu un des deux
+# runs en attente et jamais l'autre, en trois lectures sur une minute ; ce run CI
+# (45579123287) a attendu dix minutes, sans job, jusqu'à la fermeture de la PR.
 filtre_en_attente() {
   printf '.workflow_runs[] | select(.event == "pull_request" and .conclusion == "action_required" and .head_sha == "%s" and .head_branch == "%s" and .head_repository.full_name == .repository.full_name and .actor.login == "github-actions[bot]") | .id' \
     "$1" "$BRANCHE"
@@ -81,12 +89,22 @@ filtre_en_attente() {
 approuver_en_attente() {
   local sha ids id
   sha=$(essayer gh pr view "$BRANCHE" --json headRefOid --jq .headRefOid) || return 1
-  ids=$(essayer gh api "repos/{owner}/{repo}/actions/runs?event=pull_request&status=action_required&head_sha=$sha" \
+  ids=$(essayer gh api "repos/{owner}/{repo}/actions/runs?event=pull_request&head_sha=$sha&per_page=100" \
     --jq "$(filtre_en_attente "$sha")") || return 1
   for id in $ids; do
     essayer gh api -X POST "repos/{owner}/{repo}/actions/runs/$id/approve" >/dev/null || return 1
     echo "proposer-version : run $id approuvé (pull_request du robot sur $sha)"
   done
+}
+
+# relever_runs : au journal, chaque run qui porte la tête de la PR — l'échec qui
+# n'en dit rien laisse le raté suivant aussi opaque que celui du 25/11/2026.
+relever_runs() {
+  local sha
+  sha=$(essayer gh pr view "$BRANCHE" --json headRefOid --jq .headRefOid) || return 0
+  echo "proposer-version : runs sur $sha (id nom événement état conclusion) :" >&2
+  essayer gh api "repos/{owner}/{repo}/actions/runs?head_sha=$sha&per_page=100" \
+    --jq '.workflow_runs[] | "  \(.id) \(.name) \(.event) \(.status) \(.conclusion)"' >&2 || true
 }
 
 # obtenir_checks : jusqu'à ce que la PR montre ses checks, approuver ce qui attend
@@ -104,6 +122,7 @@ obtenir_checks() {
     fi
     if [ "$((n + 1))" -ge "${#attentes[@]}" ]; then
       echo "proposer-version : la PR ne montre toujours pas ses checks ($vus sur 2) — fusion bloquée (coprofirst-site#63)" >&2
+      relever_runs
       return 1
     fi
     approuver_en_attente || return 1
@@ -209,6 +228,7 @@ echo "gh $*" >> "$MOCK_DIR/appels"
 if [ "$1 $2 $3" = "api -X POST" ]; then
   if [ -f "$MOCK_DIR/echec_une_fois" ]; then rm -f "$MOCK_DIR/echec_une_fois"; exit 1; fi
   id=$(echo "$4" | sed -n 's|.*/runs/\([0-9]*\)/approve|\1|p')
+  [ -f "$MOCK_DIR/garder" ] && exit 0
   grep -vx "$id" "$MOCK_DIR/attente" > "$MOCK_DIR/attente.suite" 2>/dev/null; mv "$MOCK_DIR/attente.suite" "$MOCK_DIR/attente"
   exit 0
 fi
@@ -275,7 +295,7 @@ MOCK
   # coprofirst-site#63 : les runs pull_request du robot attendent une approbation ;
   # sans elle la PR reste sans check et la fusion bloquée.
   attend 111 222
-  passe "nouvelle release → PR ouverte, runs du robot approuvés" v1.1.0 "gh pr create;runs/111/approve;runs/222/approve" "pr edit|workflow run"
+  passe "nouvelle release → PR ouverte, runs du robot approuvés" v1.1.0 "gh pr create;runs/111/approve;runs/222/approve" "pr edit|workflow run|status="
   passe "même release, PR ouverte → rien" v1.1.0 "" "pr create|pr edit|approve"
   attend 333
   passe "release suivante → PR mise à jour, runs approuvés" v1.2.0 "gh pr edit;runs/333/approve" "pr create"
@@ -304,9 +324,17 @@ MOCK
   touch "$t/echec_une_fois"
   passe "approbation refusée une fois → retentée" v1.3.0 "gh pr edit" "pr create"
   compte "approbation retentée : deux appels" "runs/666/approve" 2
-  attend
+  attend 777
+  touch "$t/garder"
   printf '0\n0\n0\n0\n0\n' > "$t/checks"
-  echoue "checks jamais vus sur la PR → passage en échec" v1.4.0
+  local journal
+  if journal=$(lancer v1.4.0); then echo "  ÉCHEC   checks jamais vus sur la PR : le passage aurait dû échouer"; echecs=$((echecs + 1))
+  else echo "  ok      checks jamais vus sur la PR → passage en échec"; fi
+  # coprofirst-site#63 (#161, 25/11/2026) : l'échec doit dire quels runs portent le
+  # commit, sinon le raté suivant est aussi muet que celui-là.
+  case "$journal" in *"runs sur cafe123"*"777 "*action_required*) echo "  ok      l'échec relève les runs du commit au journal" ;;
+    *) echo "  ÉCHEC   l'échec ne relève pas les runs du commit : $journal"; echecs=$((echecs + 1)) ;; esac
+  rm -f "$t/garder"
   rm -f "$t/checks" "$t/attente" "$t/pr"
   touch "$t/echec_toujours"
   echoue "échec qui dure → passage en échec (le ticket s'ouvre)" v1.5.0

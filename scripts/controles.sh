@@ -37,6 +37,9 @@ SELFTESTS_SEULS=(
   "python3 scripts/recuperer-avis.py --selftest"
   "python3 scripts/lecture_distante.py --selftest"
   "bash scripts/verifier-public.sh --selftest"
+  # Le robot le rejoue avant chaque passage, mais une PR qui le change doit le
+  # prouver avant la fusion, pas au passage suivant (coprofirst-site#63).
+  "bash scripts/proposer-version.sh --selftest"
 )
 
 code=0
