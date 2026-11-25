@@ -21,11 +21,12 @@
 # n'est jamais recopiée ici : seule la phrase autour l'est. L'accueil et llms.txt y
 # sont depuis le 23/11/2026 (coprofirst-site#126, coprofirst-site#122).
 #
-# La liste de ce qui est gardé (#t-garde, CONTENUS_GARDES) se compare paire par paire,
-# dans les deux sens : contenus_gardes.py, appelé d'ici.
+# Les listes de ce qu'efface et de ce que garde une suppression de compte (#t-efface,
+# CONTENUS_PERSONNELS ; #t-garde, CONTENUS_GARDES) se comparent paire par paire, dans
+# les deux sens : contenus_compte.py, appelé d'ici.
 #
-# Ce qu'il ne couvre pas (standards/04 §12) : le sens des phrases. Ce qui est effacé
-# (CONSEQUENCES, CONTENUS_PERSONNELS de CoproFirst), et ce qui sonne sur un
+# Ce qu'il ne couvre pas (standards/04 §12) : le sens des phrases. Le résumé montré
+# avant la confirmation (CONSEQUENCES de CoproFirst), et ce qui sonne sur un
 # téléphone (porte.TYPE_POUSSE, l'alerte d'une actualité ⚡), se relisent à la main
 # quand ces sources changent : le commentaire de tête de supprimer-compte.html les
 # nomme. Les apps ont leur propre contrôle (verifier-app-ios.py, verifier-app-android.py).
@@ -50,7 +51,7 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 
-import contenus_gardes
+import contenus_compte
 from lecture_distante import Illisible, lire
 
 RACINE = Path(__file__).resolve().parent.parent
@@ -347,16 +348,18 @@ def selftest() -> int:
         except (OSError, Illisible) as e:
             echecs += 1
             print(f"selftest ÉCHEC : FAITS « {fait.nom} » — {e}")
-    # La liste de ce qui est gardé : son propre selftest, et chaque phrase de NOMMES dans
-    # la vraie page (sans réseau).
-    n_gardes, e_gardes = contenus_gardes.selftest()
-    echecs += e_gardes
-    garde = section((RACINE / "site" / contenus_gardes.PAGE).read_text(encoding="utf-8"),
-                    contenus_gardes.LIEU, contenus_gardes.PAGE)
-    for phrase in sorted({p for p in contenus_gardes.NOMMES.values() if p not in garde}):
-        echecs += 1
-        print(f"selftest ÉCHEC : NOMMES « {phrase} » absent de {contenus_gardes.PAGE}#{contenus_gardes.LIEU}")
-    total = len(cas) + len(cas_lieux) + len(diagnostics) + len(FAITS) + n_gardes
+    # Les listes du compte supprimé : leur propre selftest, et chaque phrase de NOMMES et
+    # d'ETAPES dans la vraie page (sans réseau).
+    n_listes, e_listes = contenus_compte.selftest()
+    echecs += e_listes
+    page_compte = (RACINE / "site" / contenus_compte.PAGE).read_text(encoding="utf-8")
+    for liste in contenus_compte.LISTES:
+        texte = section(page_compte, liste.lieu, contenus_compte.PAGE)
+        for phrase in sorted({p for p in (*liste.nommes.values(), *liste.etapes) if p not in texte}):
+            echecs += 1
+            print(f"selftest ÉCHEC : {liste.dictionnaire} « {phrase} » absent de "
+                  f"{contenus_compte.PAGE}#{liste.lieu}")
+    total = len(cas) + len(cas_lieux) + len(diagnostics) + len(FAITS) + n_listes
     print(f"verifier-faits-produit --selftest : {total - echecs}/{total} cas")
     return 1 if echecs else 0
 
@@ -378,15 +381,15 @@ def main() -> int:
         return lire(str(RACINE / "site" / nom))
 
     verdict, inconnus, ecarts = verifier(FAITS, lire_source, lire_page)
-    inc_gardes, ec_gardes = contenus_gardes.verifier(
+    inc_listes, ec_listes = contenus_compte.verifier(
         lire_source, lambda page, lieu: section(lire_page(page), lieu, page))
-    inconnus, ecarts = inconnus + inc_gardes, ecarts + ec_gardes
+    inconnus, ecarts = inconnus + inc_listes, ecarts + ec_listes
     verdict = INCONNU if inconnus else ECART if ecarts else OK
     for m in inconnus:
         print("INCONNU : " + m)
     for m in ecarts:
         print("ÉCART : " + m)
-    print("verifier-faits-produit : " + {OK: f"conforme ({len(FAITS)} faits, et la liste de ce qui est gardé)",
+    print("verifier-faits-produit : " + {OK: f"conforme ({len(FAITS)} faits, et les listes du compte supprimé)",
                                          ECART: f"{len(ecarts)} écart(s)", INCONNU: "INCONNU"}[verdict])
     return verdict
 
