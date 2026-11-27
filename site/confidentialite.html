@@ -65,7 +65,7 @@ SPDX-License-Identifier: AGPL-3.0-or-later
 <main id="contenu" class="document">
   <h1>Confidentialité</h1>
   <p class="chapo">Ce site présente CoproFirst. Il ne vous demande rien et ne cherche pas à savoir qui vous êtes. Les applications pour iPhone et Android ont <a href="#t-application">leur section</a>, plus bas.</p>
-  <span class="maj">Mise à jour le 23 novembre 2026</span>
+  <span class="maj">Mise à jour le 27 novembre 2026</span>
 
   <section aria-labelledby="t-rien">
     <h2 id="t-rien">Ce que ce site ne fait pas</h2>
@@ -147,9 +147,10 @@ SPDX-License-Identifier: AGPL-3.0-or-later
       <li>«&nbsp;Continuer sur le téléphone&nbsp;», sur la montre, ne fait passer au téléphone que l'adresse d'une page de la résidence, sans rien de son contenu.</li>
     </ul>
     <h3 id="t-apple-watch">L'Apple&nbsp;Watch, reliée à l'iPhone</h3>
-    <p>Une application pour l'Apple&nbsp;Watch accompagne celle de l'iPhone. Son lien avec l'iPhone n'est <strong>pas encore en service</strong>&nbsp;: d'ici là, l'iPhone ne demande ni ne transmet rien, et la montre ne garde rien et n'appelle rien&nbsp;; elle invite seulement à la relier depuis l'iPhone. Quand il le sera&nbsp;:</p>
+    <p>Une application pour l'Apple&nbsp;Watch accompagne celle de l'iPhone. Reliée par l'iPhone, elle montre en lecture seule les alertes de la cloche d'une résidence, la dernière ouverte sur l'iPhone&nbsp;:</p>
     <ul>
-      <li>À l'ouverture d'une résidence, l'iPhone lui demande un <strong>jeton de montre</strong>, le même que pour Wear&nbsp;OS&nbsp;: il ne lit que la cloche, et il est retiré quand vous vous déconnectez. L'iPhone le transmet à la montre, avec l'adresse et le nom de la résidence, par WatchConnectivity, le lien d'Apple entre l'iPhone et sa montre&nbsp;; il ne garde lui-même que l'identifiant de la montre reliée, jamais son jeton.</li>
+      <li>À l'ouverture d'une résidence, si une Apple&nbsp;Watch jumelée porte l'application, l'iPhone demande à la résidence un <strong>jeton de montre</strong>, le même que pour Wear&nbsp;OS&nbsp;: il ne lit que la cloche, vos notifications, rien d'autre&nbsp;; il expire au bout de 30&nbsp;jours, l'iPhone le renouvelle, et il le retire quand vous vous déconnectez. L'iPhone le transmet à la montre, avec l'adresse et le nom de la résidence, par WatchConnectivity, le lien d'Apple entre l'iPhone et sa montre&nbsp;; il ne garde lui-même que l'identifiant de la montre reliée, jamais son jeton.</li>
+      <li>La montre lit elle-même la cloche sur le site de la résidence, avec ce seul jeton, sans rien envoyer d'autre&nbsp;: quand vous l'ouvrez et, en arrière-plan, au plus toutes les 30&nbsp;minutes.</li>
       <li>La montre garde la résidence et son jeton dans son Trousseau, jamais synchronisé avec iCloud, et les efface quand l'iPhone ferme la résidence ou que la résidence refuse le jeton. Elle garde aussi la dernière lecture de la cloche, pour l'afficher hors ligne&nbsp;: chiffrée, hors des sauvegardes, effacée au bout de 7&nbsp;jours et dès que la montre n'est plus reliée. Son widget ne montre que le nombre d'alertes non lues et urgentes, sans titre ni nom de résidence.</li>
       <li>«&nbsp;Continuer sur l'iPhone&nbsp;», sur la montre, ne fait passer à l'iPhone que l'adresse de la cloche de la résidence, sans rien de son contenu.</li>
     </ul>
